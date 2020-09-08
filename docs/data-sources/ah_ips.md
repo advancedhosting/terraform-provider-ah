@@ -61,11 +61,11 @@ data "ah_ips" "example" {
 ---
 
 The `filter` block supports:
-* `key` - (Required) Filter the results by specified key. Can be one of: `id`, `reverse_dns`
+* `key` - (Required) Filter the results by specified key. Can be one of: `id`, `ip_address`, `type`,  `datacenter`, `reverse_dns`, `cloud_server_id`, `primary`, `created_at`
 * `values` - (Required) A list of values to match against the `key` field.
 
 The `sort` block supports:
-* `key` - (Required) Filter the results by specified key. Can be one of: `id`, `ip_address`, `reverse_dns`, `created_at`
+* `key` - (Required) Filter the results by specified key. Can be one of: `id`, `ip_address`, `type`,  `datacenter`, `reverse_dns`, `cloud_server_id`, `primary`, `created_at`
 * `direction` - (Optional) Sort direction of the results. Can be one of: `asc`, `desc`. Default option is `desc`.
 
 ---
@@ -81,5 +81,5 @@ The following attributes are exported:
     * `datacenter` - Datacenter Slug where IP addresses is allocated (returned only if `type="public"`). 
     * `reverse_dns` - Reverse DNS assigned to the IP address.
     * `cloud_server_ids` - List of Cloud Server IDs the IP addresses is assigned to.
-    * `created_at` - Creation datetime of the IP address.
     * `primary` - Boolean for the Primary IP flag. Only IPs of `public` type will have this flag, can contain a value only if IP is assigned to a server.
+    * `created_at` - Creation datetime of the IP address.

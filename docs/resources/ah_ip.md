@@ -17,7 +17,7 @@ Provides an Advanced Hosting IP address resource to represent a publicly-accessi
 
 resource "ah_ip" "example" {
   type = "public"
-  datacenter = "c54e8896-53d8-479a-8ff1-4d7d9d856a50"
+  datacenter = "ams1"
 }
 
 ```
@@ -27,7 +27,7 @@ resource "ah_ip" "example" {
 The following arguments are supported:
 
 * `type` - (Required) IP type. Can be either `public` or `anycast`.
-* `datacenter` - (Optional) Datacenter ID to create IP addresses. Required if `type="public"`, ignored if `type="anycast"`.
+* `datacenter` - (Optional) Datacenter ID or Slug to create IP addresses. Required if `type="public"`, ignored if `type="anycast"`.
 * `reverse_dns` - (Optional) Reverse DNS to be assigned to the IP address. If not specified, will be automatically generated.
 
 ---

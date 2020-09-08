@@ -8,7 +8,9 @@ description: |-
 
 # ah_ip_assignment
 
-Provides an Advanced Hosting IP Assignment resource to assign an IP address to a Cloud Server.
+Provides an Advanced Hosting IP Assignment resource to assign an IP address to a Cloud Server. Can be done either using this resource or in `ips` argument of `ah_cloud_server`.
+
+If IP address is not set using `ah_ip_assignment` and not provided in the list of IP addresses defined in the `ips` argument of `ah_cloud_server`, IP address will be unassigned from the Server.
 
 ## Example Usage
 
