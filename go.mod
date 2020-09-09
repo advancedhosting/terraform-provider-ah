@@ -1,4 +1,4 @@
-module github.com/advancedhosters/terraform-provider-advancedhosting
+module github.com/advancedhosting/terraform-provider-ah
 
 go 1.14
 
