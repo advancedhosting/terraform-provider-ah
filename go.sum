@@ -48,6 +48,8 @@ github.com/advancedhosting/advancedhosting-api-go v0.1.1-0.20200909105429-53f105
 github.com/advancedhosting/advancedhosting-api-go v0.1.1-0.20200909105429-53f1059d910b/go.mod h1:4Tt6i7RT3ptHGuc8TaifppMCSciCHgs+mVjeFM0imHs=
 github.com/advancedhosting/advancedhosting-api-go v0.1.1-0.20200909120118-dfce9ac71924 h1:xpg92/ty/02UeEtMHV/OcYM0u0rMVqLExFbiSe94euQ=
 github.com/advancedhosting/advancedhosting-api-go v0.1.1-0.20200909120118-dfce9ac71924/go.mod h1:4Tt6i7RT3ptHGuc8TaifppMCSciCHgs+mVjeFM0imHs=
+github.com/advancedhosting/advancedhosting-api-go v0.1.1-0.20200909175748-16818131af44 h1:YR/wwygM8awXyf1i7/OVaTRRhDIwJumphymcRT1Vmz4=
+github.com/advancedhosting/advancedhosting-api-go v0.1.1-0.20200909175748-16818131af44/go.mod h1:4Tt6i7RT3ptHGuc8TaifppMCSciCHgs+mVjeFM0imHs=
 github.com/advancedhosting/advancedhosting-api-go v0.1.2-0.20200904182243-500daa7a1dcb h1:pL7Agktj3OKY4nMdC1ej67Zsaw16dZ+WkH7qdND7Ajo=
 github.com/advancedhosting/advancedhosting-api-go v0.1.2-0.20200904182243-500daa7a1dcb/go.mod h1:4Tt6i7RT3ptHGuc8TaifppMCSciCHgs+mVjeFM0imHs=
 github.com/advancedhosting/advancedhosting-api-go v0.1.2-0.20200904192302-71d74448be74 h1:taKwpOfYjzrTNsIbnh69nksnvZtPBKOVgx0NFtDUWVU=
@@ -56,6 +58,10 @@ github.com/advancedhosting/advancedhosting-api-go v0.1.3 h1:dE1CJrDbJlLH9Pbl1fUF
 github.com/advancedhosting/advancedhosting-api-go v0.1.3/go.mod h1:4Tt6i7RT3ptHGuc8TaifppMCSciCHgs+mVjeFM0imHs=
 github.com/advancedhosting/advancedhosting-api-go v0.1.4-0.20200904194915-72b92aa90411 h1:ARiXIapdy5dfo3LBEc3M5uLPDkjMFt3WE45L64V/Vzw=
 github.com/advancedhosting/advancedhosting-api-go v0.1.4-0.20200904194915-72b92aa90411/go.mod h1:4Tt6i7RT3ptHGuc8TaifppMCSciCHgs+mVjeFM0imHs=
+github.com/advancedhosting/advancedhosting-api-go v0.2.0 h1:Knq9X2jssmRc854De21WsCrV2/SPPDeWQ7Pp8O3IZLk=
+github.com/advancedhosting/advancedhosting-api-go v0.2.0/go.mod h1:4Tt6i7RT3ptHGuc8TaifppMCSciCHgs+mVjeFM0imHs=
+github.com/advancedhosting/advancedhosting-api-go v0.2.1-0.20200910064323-ff992c2a7222 h1:1LaeVF6/5sYxJi/bqXcKeUxyBw462fgy08LCdFbQAv4=
+github.com/advancedhosting/advancedhosting-api-go v0.2.1-0.20200910064323-ff992c2a7222/go.mod h1:4Tt6i7RT3ptHGuc8TaifppMCSciCHgs+mVjeFM0imHs=
 github.com/agext/levenshtein v1.2.1/go.mod h1:JEDfjyjHDjOF/1e4FlBE/PkbqA9OfWu2ki2W0IB5558=
 github.com/agext/levenshtein v1.2.2 h1:0S/Yg6LYmFJ5stwQeRp6EeOcCbj7xiqQSdNelsXvaqE=
 github.com/agext/levenshtein v1.2.2/go.mod h1:JEDfjyjHDjOF/1e4FlBE/PkbqA9OfWu2ki2W0IB5558=

@@ -24,8 +24,7 @@ func resourceAHPrivateNetwork() *schema.Resource {
 			},
 			"name": {
 				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
+				Required: true,
 			},
 			"state": {
 				Type:     schema.TypeString,
@@ -74,6 +73,7 @@ func resourceAHPrivateNetworkRead(d *schema.ResourceData, meta interface{}) erro
 		return err
 	}
 
+	d.Set("ip_range", privateNetwork.CIDR)
 	d.Set("name", privateNetwork.Name)
 	d.Set("state", privateNetwork.State)
 	d.Set("created_at", privateNetwork.CreatedAt)
