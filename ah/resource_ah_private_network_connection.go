@@ -58,7 +58,7 @@ func resourceAHPrivateNetworkConnectionCreate(d *schema.ResourceData, meta inter
 	}
 
 	d.SetId(instancePrivateNetwork.ID)
-	d.Set("private_network_id", instancePrivateNetwork.PrivateNetwork.ID)
+	d.Set("private_network_id", instancePrivateNetwork.PrivateNetwork.ID) // TODO Delete after WCS-3557
 
 	if err = waitForInstanceConnectionToPrivateNetwork(d, meta); err != nil {
 		return err
@@ -69,12 +69,13 @@ func resourceAHPrivateNetworkConnectionCreate(d *schema.ResourceData, meta inter
 }
 
 func resourceAHPrivateNetworkConnectionRead(d *schema.ResourceData, meta interface{}) error {
-	privateNetworkID := d.Get("private_network_id").(string)
-	instancePrivateNetwork, err := instancePrivateNetworkConnection(privateNetworkID, d, meta)
+	privateNetworkID := d.Get("private_network_id").(string)                                   // TODO Delete after WCS-3557
+	instancePrivateNetwork, err := instancePrivateNetworkConnection(privateNetworkID, d, meta) // TODO Replace with instancePrivateNetwork.Get after WCS-3557
+
 	if err != nil {
 		return err
 	}
-
+	// TODO add d.Set("private_network_id", instancePrivateNetwork.PrivateNetwork.ID) after WCS-3557
 	d.Set("cloud_server_id", instancePrivateNetwork.Instance.ID)
 	d.Set("ip_address", instancePrivateNetwork.IP)
 
@@ -117,6 +118,7 @@ func resourceAHPrivateNetworkConnectionDelete(d *schema.ResourceData, meta inter
 }
 
 func instancePrivateNetworkConnection(privateNetworkID string, d *schema.ResourceData, meta interface{}) (*ah.InstancePrivateNetworkInfo, error) {
+	// TODO Remove after WCS-3557
 	client := meta.(*ah.APIClient)
 	privateNetwork, err := client.PrivateNetworks.Get(context.Background(), privateNetworkID)
 	if err != nil {
@@ -133,7 +135,7 @@ func instancePrivateNetworkConnection(privateNetworkID string, d *schema.Resourc
 func waitForInstanceConnectionToPrivateNetwork(d *schema.ResourceData, meta interface{}) error {
 	privateNetworkID := d.Get("private_network_id").(string)
 	stateRefreshFunc := func() (interface{}, string, error) {
-		instancePrivateNetwork, err := instancePrivateNetworkConnection(privateNetworkID, d, meta)
+		instancePrivateNetwork, err := instancePrivateNetworkConnection(privateNetworkID, d, meta) // TODO Replace with instancePrivateNetwork.Get after WCS-3557
 		if err != nil || instancePrivateNetwork == nil {
 			log.Printf("Error on waitForInstanceConnectionToPrivateNetwork: %v", err)
 			return nil, "", err
@@ -162,7 +164,7 @@ func waitForInstanceConnectionToPrivateNetwork(d *schema.ResourceData, meta inte
 func waitForInstancePrivateNetworkDestroy(d *schema.ResourceData, meta interface{}) error {
 	privateNetworkID := d.Get("private_network_id").(string)
 	stateRefreshFunc := func() (interface{}, string, error) {
-		instancePrivateNetwork, err := instancePrivateNetworkConnection(privateNetworkID, d, meta)
+		instancePrivateNetwork, err := instancePrivateNetworkConnection(privateNetworkID, d, meta) // TODO Replace with instancePrivateNetwork.Get after WCS-3557
 		if err == ah.ErrResourceNotFound {
 			return d.Id(), "disconnected", nil
 		}
