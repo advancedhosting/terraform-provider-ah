@@ -10,8 +10,8 @@ import (
 )
 
 func dataSourceAHIPs() *schema.Resource {
-	allowedFilterKeys := []string{"id", "reverse_dns"}
-	allowedSortingKeys := []string{"id", "created_at", "reverse_dns", "ip_address"}
+	allowedFilterKeys := []string{"id", "reverse_dns"}                              // TODO add filters after WCS-3497
+	allowedSortingKeys := []string{"id", "created_at", "reverse_dns", "ip_address"} // TODO add sortings after WCS-3497
 	return &schema.Resource{
 		Read: dataSourceAHIPsRead,
 		Schema: map[string]*schema.Schema{
@@ -113,7 +113,7 @@ func dataSourceAHIPsSchema(d *schema.ResourceData, meta interface{}, ipAddresses
 		ip := map[string]interface{}{
 			"id":               ipAddress.ID,
 			"ip_address":       ipAddress.Address,
-			"datacenter":       ipAddress.DatacenterFullName,
+			"datacenter":       ipAddress.DatacenterFullName, // Replace with Datacenter ID after WCS-3498
 			"type":             ipAddress.Type,
 			"reverse_dns":      ipAddress.ReverseDNS,
 			"cloud_server_ids": ipAddress.InstanceIDs,

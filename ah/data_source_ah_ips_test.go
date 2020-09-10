@@ -12,7 +12,7 @@ func TestAccDataSourceAHIPs_Basic(t *testing.T) {
 	resource "ah_ip" "test" {
 	  type = "public"
 	  datacenter = "c54e8896-53d8-479a-8ff1-4d7d9d856a50"
-	}`
+	}` // Add count=2 after WCS-3499
 
 	datasourceConfig := `
 	data "ah_ips" "test" {

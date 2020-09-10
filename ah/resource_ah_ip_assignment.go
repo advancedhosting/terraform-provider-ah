@@ -76,19 +76,23 @@ func resourceAHIPAssignmentCreate(d *schema.ResourceData, meta interface{}) erro
 		}
 	}
 
+	// TODO wait for assignments status after WCS-3500
+
 	return resourceAHIPAssignmentRead(d, meta)
 
 }
 
 func resourceAHIPAssignmentRead(d *schema.ResourceData, meta interface{}) error {
 
-	client := meta.(*ah.APIClient)
+	client := meta.(*ah.APIClient) // TODO IPAddressAssignments.GET Replace with after WCS-3500
 	instanceID := d.Get("cloud_server_id").(string)
 
 	instance, err := client.Instances.Get(context.Background(), instanceID)
 	if err != nil {
 		return err
 	}
+
+	// TODO Set cloud_server_id and ip_address after WCS-3500
 
 	d.Set("primary", instance.PrimaryInstanceIPAddressID == d.Id())
 	return nil
@@ -122,7 +126,7 @@ func resourceAHIPAssignmentDelete(d *schema.ResourceData, meta interface{}) erro
 	// 		"Error waiting for removing ip assignment %s: %v", d.Id(), err)
 	// }
 
-	//TODO Be sure assigmnent was removed!!! (See WCS-3540)
+	//TODO Be sure assigmnent was removed!!! (See WCS-3500)
 	time.Sleep(20 * time.Second)
 
 	return nil
