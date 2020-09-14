@@ -31,6 +31,7 @@ func Provider() terraform.ResourceProvider {
 			"ah_cloud_server":  resourceAHCloudServer(),
 			"ah_ip":            resourceAHIP(),
 			"ah_ip_assignment": resourceAHIPAssignment(),
+			"ah_volume":        resourceAHVolume(),
 		},
 	}
 
