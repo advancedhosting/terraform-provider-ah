@@ -51,12 +51,12 @@ data "ah_volumes" "example" {
 
 The `filter` block supports:
 * `key` - (Required) Filter the results by specified key. Can be one of: `id`, `name`, `state`,  `product_id`, `size`, `file_system`.
-<!-- * `key` - (Required) Filter the results by specified key. Can be one of: `id`, `name`, `state`,  `product`, `size`, `file_system`, `cloud_server_id`, `created_at` TODO add cloud_server_id filter-->
+<!-- * `key` - (Required) Filter the results by specified key. Can be one of: `id`, `name`, `state`,  `product`, `size`, `file_system`, `cloud_server_id`, `created_at` TODO add cloud_server_id filter WCS-3584-->
 * `values` - (Required) A list of values to match against the `key` field.
 
 The `sort` block supports:
 * `key` - (Required) Filter the results by specified key. Can be one of: `id`, `name`, `state`,  `product_id`, `size`, `file_system`, `created_at`
-<!-- * `key` - (Required) Filter the results by specified key. Can be one of: `id`, `name`, `state`,  `product`, `size`, `file_system`, `cloud_server_id`, `created_at` TODO add cloud_server_id sorting--> 
+<!-- * `key` - (Required) Filter the results by specified key. Can be one of: `id`, `name`, `state`,  `product`, `size`, `file_system`, `cloud_server_id`, `created_at` TODO add cloud_server_id sorting WCS-3584--> 
 * `direction` - (Optional) Sort direction of the results. Can be one of: `asc`, `desc`. Default option is `desc`.
 
 ---

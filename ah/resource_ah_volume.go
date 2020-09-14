@@ -71,7 +71,7 @@ func resourceAHVolumeCreate(d *schema.ResourceData, meta interface{}) error {
 
 	d.SetId(volume.ID)
 
-	if err := waitForVolumeState([]string{"creating"}, []string{"ready"}, d, meta); err != nil {
+	if err := waitForVolumeState(d.Id(), []string{"creating"}, []string{"ready"}, d, meta); err != nil {
 		return fmt.Errorf(
 			"Error waiting for volume (%s) to become ready: %s", d.Id(), err)
 	}
@@ -117,7 +117,7 @@ func resourceAHVolumeUpdate(d *schema.ResourceData, meta interface{}) error {
 			return fmt.Errorf(
 				"Error resizing volume (%s): %s", d.Id(), err)
 		}
-		if err := waitForVolumeState([]string{"resizing"}, []string{"ready"}, d, meta); err != nil {
+		if err := waitForVolumeState(d.Id(), []string{"resizing"}, []string{"ready", "attached"}, d, meta); err != nil {
 			return fmt.Errorf(
 				"Error waiting for volume (%s) to become ready: %s", d.Id(), err)
 		}
@@ -140,11 +140,11 @@ func resourceAHVolumeDelete(d *schema.ResourceData, meta interface{}) error {
 	return nil
 }
 
-func waitForVolumeState(pending, target []string, d *schema.ResourceData, meta interface{}) error {
+func waitForVolumeState(volumeID string, pending, target []string, d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*ah.APIClient)
 
 	stateRefreshFunc := func() (interface{}, string, error) {
-		volume, err := client.Volumes.Get(context.Background(), d.Id())
+		volume, err := client.Volumes.Get(context.Background(), volumeID)
 		if err != nil || volume == nil {
 			log.Printf("Error on waitForVolumeState: %v", err)
 			return nil, "", err
@@ -189,7 +189,7 @@ func waitForVolumeDestroy(d *schema.ResourceData, meta interface{}) error {
 
 	stateChangeConf := resource.StateChangeConf{
 		Delay:      5 * time.Second,
-		Pending:    []string{"deleting"},
+		Pending:    []string{"deleting", "detaching"},
 		Refresh:    stateRefreshFunc,
 		Target:     []string{"deleted"},
 		Timeout:    d.Timeout(schema.TimeoutUpdate),
