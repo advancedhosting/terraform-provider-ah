@@ -175,16 +175,16 @@ func waitForVolumeDestroy(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*ah.APIClient)
 
 	stateRefreshFunc := func() (interface{}, string, error) {
-		instance, err := client.Volumes.Get(context.Background(), d.Id())
+		volume, err := client.Volumes.Get(context.Background(), d.Id())
 		if err == ah.ErrResourceNotFound {
 			return d.Id(), "deleted", nil
 		}
-		if err != nil || instance == nil {
+		if err != nil || volume == nil {
 			log.Printf("Error on waitForVolumeDestroy: %v", err)
 			return nil, "", err
 		}
 
-		return instance.ID, instance.State, nil
+		return volume.ID, volume.State, nil
 	}
 
 	stateChangeConf := resource.StateChangeConf{
