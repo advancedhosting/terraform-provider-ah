@@ -63,12 +63,12 @@ func resourceAHIPAssignmentCreate(d *schema.ResourceData, meta interface{}) erro
 		return err
 	}
 
-	if err := waitForIPAssignmentStatus(d, meta, []string{""}, []string{d.Id()}); err != nil {
+	d.SetId(ipAssignment.ID)
+
+	if err := waitIPAssignmentReady(d, meta); err != nil {
 		return fmt.Errorf(
 			"Error waiting for ip assignment %s: %v", d.Id(), err)
 	}
-
-	d.SetId(ipAssignment.ID)
 
 	if d.Get("primary").(bool) {
 		if err := setIPAsPrimary(d, meta); err != nil {
@@ -76,23 +76,19 @@ func resourceAHIPAssignmentCreate(d *schema.ResourceData, meta interface{}) erro
 		}
 	}
 
-	// TODO wait for assignments status after WCS-3500
-
 	return resourceAHIPAssignmentRead(d, meta)
 
 }
 
 func resourceAHIPAssignmentRead(d *schema.ResourceData, meta interface{}) error {
 
-	client := meta.(*ah.APIClient) // TODO IPAddressAssignments.GET Replace with after WCS-3500
+	client := meta.(*ah.APIClient)
 	instanceID := d.Get("cloud_server_id").(string)
 
 	instance, err := client.Instances.Get(context.Background(), instanceID)
 	if err != nil {
 		return err
 	}
-
-	// TODO Set cloud_server_id and ip_address after WCS-3500
 
 	d.Set("primary", instance.PrimaryInstanceIPAddressID == d.Id())
 	return nil
@@ -121,13 +117,10 @@ func resourceAHIPAssignmentDelete(d *schema.ResourceData, meta interface{}) erro
 			"Error deleting ip address assignment (%s): %s", d.Id(), err)
 	}
 
-	// if err := waitForIPAssignmentStatus(d, meta, []string{d.Id()}, []string{""}); err != nil {
-	// 	return fmt.Errorf(
-	// 		"Error waiting for removing ip assignment %s: %v", d.Id(), err)
-	// }
-
-	//TODO Be sure assigmnent was removed!!! (See WCS-3500)
-	time.Sleep(20 * time.Second)
+	if err := waitIPAssignmentDestroy(d, meta); err != nil {
+		return fmt.Errorf(
+			"Error waiting for ip assignment %s: %v", d.Id(), err)
+	}
 
 	return nil
 }
@@ -143,14 +136,14 @@ func setIPAsPrimary(d *schema.ResourceData, meta interface{}) error {
 		return err
 	}
 
-	if err := waitForAction(action.ID, d, meta); err != nil {
+	if err := waitForInstanceAction(action.ID, d, meta); err != nil {
 		return fmt.Errorf(
 			"Error waiting for setting primary ip %s: %v", d.Id(), err)
 	}
 	return nil
 }
 
-func waitForAction(actionID string, d *schema.ResourceData, meta interface{}) error {
+func waitForInstanceAction(actionID string, d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*ah.APIClient)
 	instanceID := d.Get("cloud_server_id").(string)
 
@@ -182,31 +175,24 @@ func waitForAction(actionID string, d *schema.ResourceData, meta interface{}) er
 	return nil
 }
 
-func waitForIPAssignmentStatus(d *schema.ResourceData, meta interface{}, pending, target []string) error {
+func waitIPAssignmentReady(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*ah.APIClient)
-	instanceID := d.Get("cloud_server_id").(string)
 
 	stateRefreshFunc := func() (interface{}, string, error) {
-		instance, err := client.Instances.Get(context.Background(), instanceID)
-		if err != nil || instance == nil {
-			log.Printf("Error getting instance: %v", err)
+		ipAddressAssignment, err := client.IPAddressAssignments.Get(context.Background(), d.Id())
+		if err != nil || ipAddressAssignment == nil {
+			log.Printf("Error getting ipAddressAssignment: %v", err)
 			return nil, "", err
 		}
 
-		for _, ipAddress := range instance.IPAddresses {
-			if ipAddress.ID == d.Id() {
-				return instance.ID, ipAddress.ID, nil
-			}
-		}
-
-		return instance.ID, "", nil
+		return ipAddressAssignment.ID, ipAddressAssignment.State, nil
 	}
 
 	stateChangeConf := resource.StateChangeConf{
 		Delay:      2 * time.Second,
-		Pending:    pending,
+		Pending:    []string{"attaching"},
 		Refresh:    stateRefreshFunc,
-		Target:     target,
+		Target:     []string{"active"},
 		Timeout:    d.Timeout(schema.TimeoutUpdate),
 		MinTimeout: 2 * time.Second,
 	}
@@ -214,12 +200,48 @@ func waitForIPAssignmentStatus(d *schema.ResourceData, meta interface{}, pending
 
 	if err != nil {
 		return fmt.Errorf(
-			"Error waiting for instance to reach desired assignment status: %s", err)
+			"Error waiting for ip address assignment to become ready: %s", err)
 	}
 
 	return nil
 }
 
+func waitIPAssignmentDestroy(d *schema.ResourceData, meta interface{}) error {
+	client := meta.(*ah.APIClient)
+
+	stateRefreshFunc := func() (interface{}, string, error) {
+		ipAddressAssignment, err := client.IPAddressAssignments.Get(context.Background(), d.Id())
+		if err == ah.ErrResourceNotFound {
+			return d.Id(), "deleted", nil
+		}
+
+		if err != nil || ipAddressAssignment == nil {
+			log.Printf("Error getting ipAddressAssignment: %v", err)
+			return nil, "", err
+		}
+
+		return ipAddressAssignment.ID, ipAddressAssignment.State, nil
+	}
+
+	stateChangeConf := resource.StateChangeConf{
+		Delay:      2 * time.Second,
+		Pending:    []string{"deleting"},
+		Refresh:    stateRefreshFunc,
+		Target:     []string{"deleted"},
+		Timeout:    d.Timeout(schema.TimeoutUpdate),
+		MinTimeout: 2 * time.Second,
+	}
+	_, err := stateChangeConf.WaitForState()
+
+	if err != nil {
+		return fmt.Errorf(
+			"Error waiting for ip address assignment to become destroyed: %s", err)
+	}
+
+	return nil
+}
+
+// TODO Change after WCS-3497
 func ipAddressByIP(ip string, meta interface{}) (*ah.IPAddress, error) {
 	client := meta.(*ah.APIClient)
 	options := &ah.ListOptions{
