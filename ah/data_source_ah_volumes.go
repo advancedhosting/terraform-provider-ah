@@ -10,8 +10,8 @@ import (
 )
 
 func dataSourceAHVolumes() *schema.Resource {
-	allowedFilterKeys := []string{"id", "name", "state", "product_id", "size", "file_system"}
-	allowedSortingKeys := []string{"id", "name", "state", "product_id", "size", "file_system", "created_at"}
+	allowedFilterKeys := []string{"id", "name", "state", "product_id", "size", "file_system", "cloud_server_id"}
+	allowedSortingKeys := []string{"id", "name", "state", "product_id", "size", "file_system", "cloud_server_id", "created_at"}
 	return &schema.Resource{
 		Read: dataSourceAHVolumesRead,
 		Schema: map[string]*schema.Schema{
@@ -65,8 +65,16 @@ func buildAHVolumeListSorting(set *schema.Set) []*ah.Sorting {
 	var sortings []*ah.Sorting
 	for _, v := range set.List() {
 		m := v.(map[string]interface{})
+
+		key := m["key"].(string)
+
+		switch key {
+		case "cloud_server_id":
+			key = "instance_id"
+		}
+
 		sorting := &ah.Sorting{
-			Key:   m["key"].(string),
+			Key:   key,
 			Order: m["direction"].(string),
 		}
 
@@ -84,8 +92,15 @@ func buildAHVolumesListFilter(set *schema.Set) []ah.FilterInterface {
 			filterValues = append(filterValues, e.(string))
 		}
 
+		key := m["key"].(string)
+
+		switch key {
+		case "cloud_server_id":
+			key = "instance_id"
+		}
+
 		filter := &ah.InFilter{
-			Keys:   []string{m["key"].(string)},
+			Keys:   []string{key},
 			Values: filterValues,
 		}
 
