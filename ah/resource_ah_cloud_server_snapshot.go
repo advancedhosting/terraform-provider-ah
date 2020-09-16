@@ -24,9 +24,9 @@ func resourceAHCloudServerSnapshot() *schema.Resource {
 				ForceNew: true,
 			},
 			"name": {
-				Type:        schema.TypeString,
-				Optional:    true,
-				DefaultFunc: func() (interface{}, error) { return time.Now().Format("2006-01-02 at 15:04:05"), nil },
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
 			},
 			"cloud_server_name": {
 				Type:     schema.TypeString,
@@ -56,7 +56,13 @@ func resourceAHCloudServerSnapshotCreate(d *schema.ResourceData, meta interface{
 	client := meta.(*ah.APIClient)
 
 	instanceID := d.Get("cloud_server_id").(string)
-	note := d.Get("name").(string)
+
+	var note string
+	if attr, ok := d.GetOk("name"); ok {
+		note = attr.(string)
+	} else {
+		note = time.Now().Format("2006-01-02 at 15:04:05")
+	}
 
 	_, err := client.Instances.CreateBackup(context.Background(), instanceID, note)
 
