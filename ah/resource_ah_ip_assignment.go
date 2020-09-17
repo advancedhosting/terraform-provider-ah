@@ -29,7 +29,7 @@ func resourceAHIPAssignment() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 			},
-			"primary": {
+			"primary": { // TODO Can't be set for anycast ip
 				Type:     schema.TypeBool,
 				Optional: true,
 				Computed: true,
