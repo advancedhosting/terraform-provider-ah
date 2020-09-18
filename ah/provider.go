@@ -34,6 +34,7 @@ func Provider() terraform.ResourceProvider {
 			"ah_ip_assignment":     resourceAHIPAssignment(),
 			"ah_volume":            resourceAHVolume(),
 			"ah_volume_attachment": resourceAHVolumeAttachment(),
+			"ah_ssh_key":           resourceAHSSHKey(),
 		},
 	}
 
