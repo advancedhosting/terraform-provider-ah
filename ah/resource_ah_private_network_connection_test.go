@@ -1,9 +1,11 @@
 package ah
 
 import (
+	"context"
 	"fmt"
 	"testing"
 
+	"github.com/advancedhosting/advancedhosting-api-go/ah"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/terraform"
 	"github.com/hashicorp/terraform/helper/acctest"
@@ -12,8 +14,9 @@ import (
 func TestAccAHPrivateNetworkConnection_Basic(t *testing.T) {
 	name := fmt.Sprintf("test-%s", acctest.RandString(10))
 	resource.Test(t, resource.TestCase{
-		PreCheck:  func() { testAccPreCheck(t) },
-		Providers: testAccProviders, // TODO add CheckDestroy after InstancePrivateNetwork.Get method implementation
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckAHPrivateNetworkConnectionDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckAHPrivateNetworkConnectionConfigBasic(name),
@@ -32,8 +35,9 @@ func TestAccAHPrivateNetworkConnection_UpdateIP(t *testing.T) {
 	var beforeID, afterID string
 	name := fmt.Sprintf("test-%s", acctest.RandString(10))
 	resource.Test(t, resource.TestCase{
-		PreCheck:  func() { testAccPreCheck(t) },
-		Providers: testAccProviders, // TODO add CheckDestroy after InstancePrivateNetwork.Get method implementation
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckAHPrivateNetworkConnectionDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckAHPrivateNetworkConnectionConfigBasic(name),
@@ -57,8 +61,9 @@ func TestAccAHPrivateNetworkConnection_ChangeCloudServer(t *testing.T) {
 	var beforeID, afterID string
 	name := fmt.Sprintf("test-%s", acctest.RandString(10))
 	resource.Test(t, resource.TestCase{
-		PreCheck:  func() { testAccPreCheck(t) },
-		Providers: testAccProviders, // TODO add CheckDestroy after InstancePrivateNetwork.Get method implementation
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckAHPrivateNetworkConnectionDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckAHPrivateNetworkConnectionConfigBasic(name),
@@ -82,8 +87,9 @@ func TestAccAHPrivateNetworkConnection_ChangePrivateNetwork(t *testing.T) {
 	var beforeID, afterID string
 	name := fmt.Sprintf("test-%s", acctest.RandString(10))
 	resource.Test(t, resource.TestCase{
-		PreCheck:  func() { testAccPreCheck(t) },
-		Providers: testAccProviders, // TODO add CheckDestroy after InstancePrivateNetwork.Get method implementation
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckAHPrivateNetworkConnectionDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckAHPrivateNetworkConnectionConfigBasic(name),
@@ -101,6 +107,24 @@ func TestAccAHPrivateNetworkConnection_ChangePrivateNetwork(t *testing.T) {
 			},
 		},
 	})
+}
+
+func testAccCheckAHPrivateNetworkConnectionDestroy(s *terraform.State) error {
+	client := testAccProvider.Meta().(*ah.APIClient)
+
+	for _, rs := range s.RootModule().Resources {
+		if rs.Type != "ah_private_network_connection" {
+			continue
+		}
+
+		_, err := client.IPAddresses.Get(context.Background(), rs.Primary.ID)
+
+		if err != ah.ErrResourceNotFound {
+			return fmt.Errorf("Error removing private network connection (%s): %s", rs.Primary.ID, err)
+		}
+	}
+
+	return nil
 }
 
 func testAccCheckAHPrivateNetworkConnectionConfigBasic(cloudServerName string) string {
