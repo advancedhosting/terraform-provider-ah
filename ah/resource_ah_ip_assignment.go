@@ -29,7 +29,7 @@ func resourceAHIPAssignment() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 			},
-			"primary": { // TODO Can't be set for anycast ip
+			"primary": {
 				Type:     schema.TypeBool,
 				Optional: true,
 				Computed: true,
@@ -241,7 +241,6 @@ func waitIPAssignmentDestroy(d *schema.ResourceData, meta interface{}) error {
 	return nil
 }
 
-// TODO Change after WCS-3497
 func ipAddressByIP(ip string, meta interface{}) (*ah.IPAddress, error) {
 	client := meta.(*ah.APIClient)
 	options := &ah.ListOptions{

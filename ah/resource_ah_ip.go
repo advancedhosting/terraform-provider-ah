@@ -114,7 +114,10 @@ func resourceAHIPUpdate(d *schema.ResourceData, meta interface{}) error {
 func resourceAHIPDelete(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*ah.APIClient)
 	if err := client.IPAddresses.Delete(context.Background(), d.Id()); err != nil {
-		return fmt.Errorf( // TODO add 404 handler after WCS-3544
+		if err == ah.ErrResourceNotFound {
+			return nil
+		}
+		return fmt.Errorf(
 			"Error deleting ip address (%s): %s", d.Id(), err)
 	}
 	return nil
