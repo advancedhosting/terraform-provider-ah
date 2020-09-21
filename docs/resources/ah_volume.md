@@ -30,7 +30,7 @@ The following arguments are supported:
 * `product` - (Required) Volume Product ID or Slug that indentifies the desired product type of Volume. Changing this erases and recreates the volume.
 * `size` - (Optional) Desired volume size in GB. Changing allowed to a greater value only. Changing this increases the volume size, data is preserved. Required unless `origin_volume_id` is set.
 * `file_system` - (Optional) File system formatting option. Can be one of: `ext4`, `btrfs`, `xfs`, or empty. If empty, volume is not formatted. Default value is `ext4`. Changing this erases and recreates the volume.
-<!-- * `origin_volume_id` - (Optional) ID of the volume to copy from.  Changing this erases and recreates the volume.  If this argument is set, `size` is ignored. -->
+* `origin_volume_id` - (Optional) ID of the volume to copy from.  Changing this erases and recreates the volume.  If this argument is set, `size` is ignored.
 
 ---
 
