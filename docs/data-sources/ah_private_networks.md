@@ -53,13 +53,11 @@ The following arguments are supported:
 ---
 
 The `filter` block supports:
-<!-- * `key` - (Required) Filter the results by specified key. Can be one of: `id`, `ip_range`, `name`,  `state`, `cloud_server_id`, `created_at` -->
-* `key` - (Required) Filter the results by specified key. Can be one of: `id`, `ip_range`, `name`,  `cloud_server_id`, `state`
+* `key` - (Required) Filter the results by specified key. Can be one of: `id`, `ip_range`, `name`, `cloud_server_id`.
 * `values` - (Required) A list of values to match against the `key` field.
 
 The `sort` block supports:
-<!-- * `key` - (Required) Filter the results by specified key. Can be one of: `id`, `ip_range`, `name`,  `state`, `cloud_server_id`, `created_at` -->
-* `key` - (Required) Filter the results by specified key. Can be one of: `id`, `ip_range`, `name`,  `state`, `created_at`
+* `key` - (Required) Filter the results by specified key. Can be one of: `id`, `ip_range`, `name`, `cloud_server_id`, `created_at`.
 * `direction` - (Optional) Sort direction of the results. Can be one of: `asc`, `desc`. Default option is `desc`.
 
 ---

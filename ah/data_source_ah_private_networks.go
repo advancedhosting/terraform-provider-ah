@@ -10,8 +10,8 @@ import (
 )
 
 func dataSourceAHPrivateNetworks() *schema.Resource {
-	allowedFilterKeys := []string{"id", "ip_range", "name", "cloud_server_id", "state"}
-	allowedSortingKeys := []string{"id", "ip_range", "name", "created_at", "state"}
+	allowedFilterKeys := []string{"id", "ip_range", "name", "cloud_server_id"}
+	allowedSortingKeys := []string{"id", "ip_range", "name", "created_at"}
 	return &schema.Resource{
 		Read: dataSourceAHPrivateNetworksRead,
 		Schema: map[string]*schema.Schema{
@@ -70,8 +70,17 @@ func buildAHPrivateNetworksListSorting(set *schema.Set) []*ah.Sorting {
 	for _, v := range set.List() {
 		m := v.(map[string]interface{})
 
+		key := m["key"].(string)
+
+		switch key {
+		case "ip_range":
+			key = "cidr"
+		case "cloud_server_id":
+			key = "instances_id"
+		}
+
 		sorting := &ah.Sorting{
-			Key:   m["key"].(string),
+			Key:   key,
 			Order: m["direction"].(string),
 		}
 
@@ -89,8 +98,17 @@ func buildAHPrivateNetworksListFilter(set *schema.Set) []ah.FilterInterface {
 			filterValues = append(filterValues, e.(string))
 		}
 
+		key := m["key"].(string)
+
+		switch key {
+		case "ip_range":
+			key = "cidr"
+		case "cloud_server_id":
+			key = "instances_id"
+		}
+
 		filter := &ah.InFilter{
-			Keys:   []string{m["key"].(string)},
+			Keys:   []string{key},
 			Values: filterValues,
 		}
 
@@ -99,7 +117,6 @@ func buildAHPrivateNetworksListFilter(set *schema.Set) []ah.FilterInterface {
 	return filters
 }
 
-// TODO Wait for Ransack for private network (WCS-3548)
 func dataSourceAHPrivateNetworksRead(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*ah.APIClient)
 	options := &ah.ListOptions{}
@@ -138,15 +155,18 @@ func dataSourceAHPrivateNetworksSchema(d *schema.ResourceData, meta interface{},
 		if err != nil {
 			return err
 		}
-		cloudServers := make([]map[string]interface{}, len(privateNetworkInfo.InstancePrivateNetworks))
-		for i, cloudServerInfo := range privateNetworkInfo.InstancePrivateNetworks {
-			cloudServer := map[string]interface{}{
-				"id": cloudServerInfo.ID,
-				"ip": cloudServerInfo.IP,
+		if len(privateNetworkInfo.InstancePrivateNetworks) > 0 {
+			cloudServers := make([]map[string]interface{}, len(privateNetworkInfo.InstancePrivateNetworks))
+			for i, cloudServerInfo := range privateNetworkInfo.InstancePrivateNetworks {
+				cloudServer := map[string]interface{}{
+					"id": cloudServerInfo.Instance.ID,
+					"ip": cloudServerInfo.IP,
+				}
+				cloudServers[i] = cloudServer
 			}
-			cloudServers[i] = cloudServer
+			pn["cloud_servers"] = cloudServers
 		}
-		pn["cloud_server_ids"] = cloudServers
+
 		pns[i] = pn
 	}
 
