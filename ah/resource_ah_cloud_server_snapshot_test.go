@@ -161,7 +161,7 @@ func testAccCheckAHCloudServerSnapshotConfigBasic() string {
 	  image = "f0438a4b-7c4a-4a63-a593-8e619ec63d16"
 	  product = "1a4cdeb2-6ca4-4745-819e-ac2ea99dc0cc"
 	}
-	
+
 	resource "ah_cloud_server_snapshot" "test" {
 	  cloud_server_id = ah_cloud_server.web.id
 	  name = "example-snapshot-1"

@@ -64,37 +64,23 @@ func resourceAHCloudServerSnapshotCreate(d *schema.ResourceData, meta interface{
 		note = time.Now().Format("2006-01-02 at 15:04:05")
 	}
 
-	_, err := client.Instances.CreateBackup(context.Background(), instanceID, note)
+	action, err := client.Instances.CreateBackup(context.Background(), instanceID, note)
 
 	if err != nil {
 		return fmt.Errorf("Error creating backup: %s", err)
 	}
 
-	//d.SetId(volume.ID) // TODO get backup id after WCS-3600
-
-	// ------------------------------------
-	//TEMPORARY MOCK. ONLY FOR TEST. REMOVE AFTER WCS-3600
-	options := &ah.ListOptions{
-		Filters: []ah.FilterInterface{
-			&ah.EqFilter{
-				Keys:  []string{"instance_id"},
-				Value: instanceID,
-			},
-		},
-	}
-	instanceBackups, err := client.Backups.List(context.Background(), options)
-	if err != nil {
-		return err
-	}
-	backupID := instanceBackups[0].Backups[0].ID
-	d.SetId(backupID)
-	// -------------------------------------
-
-	if err := waitForBackupReady(d, meta); err != nil {
+	if err := waitForBackupReady(instanceID, action.ID, d, meta); err != nil {
 		return fmt.Errorf(
 			"Error waiting for backup (%s) to become ready: %s", d.Id(), err)
 	}
 
+	action, err = client.Instances.ActionInfo(context.Background(), instanceID, action.ID)
+	if err != nil {
+		return fmt.Errorf("Error getting backup info: %s", err)
+	}
+
+	d.SetId(action.ResultParams.SnapshotID)
 	return resourceAHCloudServerSnapshotRead(d, meta)
 
 }
@@ -173,23 +159,23 @@ func resourceAHCloudServerSnapshotDelete(d *schema.ResourceData, meta interface{
 	return nil
 }
 
-func waitForBackupReady(d *schema.ResourceData, meta interface{}) error {
+func waitForBackupReady(instanceID, actionID string, d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*ah.APIClient)
 
 	stateRefreshFunc := func() (interface{}, string, error) {
-		backup, err := client.Backups.Get(context.Background(), d.Id())
-		if err != nil || backup == nil {
+		action, err := client.Instances.ActionInfo(context.Background(), instanceID, actionID)
+		if err != nil {
 			log.Printf("Error on waitForBackupReady: %v", err)
 			return nil, "", err
 		}
-		return backup.ID, backup.Status, nil
+		return action.ID, action.State, nil
 	}
 
 	stateChangeConf := resource.StateChangeConf{
 		Delay:                     2 * time.Second,
-		Pending:                   []string{"queued", "saving"},
+		Pending:                   []string{"queued", "running"},
 		Refresh:                   stateRefreshFunc,
-		Target:                    []string{"active"},
+		Target:                    []string{"success"},
 		Timeout:                   d.Timeout(schema.TimeoutUpdate),
 		MinTimeout:                2 * time.Second,
 		ContinuousTargetOccurence: 3,
