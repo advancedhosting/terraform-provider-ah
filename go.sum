@@ -42,6 +42,7 @@ github.com/PuerkitoBio/purell v1.0.0/go.mod h1:c11w/QuzBsJSee3cPx9rAFu61PvFxuPbt
 github.com/PuerkitoBio/urlesc v0.0.0-20160726150825-5bd2802263f2/go.mod h1:uGdkoq3SwY9Y+13GIhn11/XLaGBb4BfwItxLd5jeuXE=
 github.com/QcloudApi/qcloud_sign_golang v0.0.0-20141224014652-e4130a326409/go.mod h1:1pk82RBxDY/JZnPQrtqHlUFfCctgdorsd9M06fMynOM=
 github.com/abdullin/seq v0.0.0-20160510034733-d5467c17e7af/go.mod h1:5Jv4cbFiHJMsVxt52+i0Ha45fjshj6wxYr1r19tB9bw=
+github.com/advancedhosters/advancedhosting-api-go v0.1.1/go.mod h1:/RsYDzljgourscFDmvvn49/cA5U600y0JQFw4RapxN8=
 github.com/advancedhosting/advancedhosting-api-go v0.1.0 h1:Z5T7RjP694XWadp6ySGAILyd70oqUVnjwEOfaJYPc0o=
 github.com/advancedhosting/advancedhosting-api-go v0.1.0/go.mod h1:4Tt6i7RT3ptHGuc8TaifppMCSciCHgs+mVjeFM0imHs=
 github.com/advancedhosting/advancedhosting-api-go v0.1.2-0.20200904182243-500daa7a1dcb h1:pL7Agktj3OKY4nMdC1ej67Zsaw16dZ+WkH7qdND7Ajo=
@@ -62,6 +63,8 @@ github.com/advancedhosting/advancedhosting-api-go v0.3.2-0.20200914131251-c800d7
 github.com/advancedhosting/advancedhosting-api-go v0.3.2-0.20200914131251-c800d797338f/go.mod h1:4Tt6i7RT3ptHGuc8TaifppMCSciCHgs+mVjeFM0imHs=
 github.com/advancedhosting/advancedhosting-api-go v0.3.2-0.20200915091637-c8877619edc2 h1:Whf+tfngIkS4c/Yi5Il4moUc2Cn6RnZA704gnmpaa/U=
 github.com/advancedhosting/advancedhosting-api-go v0.3.2-0.20200915091637-c8877619edc2/go.mod h1:4Tt6i7RT3ptHGuc8TaifppMCSciCHgs+mVjeFM0imHs=
+github.com/advancedhosting/advancedhosting-api-go v0.3.4-0.20200923141533-f22dcbf10f6c h1:jLpxr41ffp2onusaciW45bwiZdSkXfm2Vde32XBSEPQ=
+github.com/advancedhosting/advancedhosting-api-go v0.3.4-0.20200923141533-f22dcbf10f6c/go.mod h1:IzTBQv6WqV7ZUviriNO1/zamu3/qmDUGZiy692VqAEo=
 github.com/agext/levenshtein v1.2.1/go.mod h1:JEDfjyjHDjOF/1e4FlBE/PkbqA9OfWu2ki2W0IB5558=
 github.com/agext/levenshtein v1.2.2 h1:0S/Yg6LYmFJ5stwQeRp6EeOcCbj7xiqQSdNelsXvaqE=
 github.com/agext/levenshtein v1.2.2/go.mod h1:JEDfjyjHDjOF/1e4FlBE/PkbqA9OfWu2ki2W0IB5558=
