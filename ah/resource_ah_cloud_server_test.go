@@ -44,6 +44,24 @@ func TestAccAHCloudServer_Basic(t *testing.T) {
 	})
 }
 
+func TestAccAHCloudServer_CreateWithSlugs(t *testing.T) {
+	name := fmt.Sprintf("test-%s", acctest.RandString(10))
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckAHCloudServerDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccCheckAHCloudServerConfigCreateWithSlugs(name),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("ah_cloud_server.web", "name", name),
+				),
+			},
+		},
+	})
+}
+
 func TestAccAHCloudServer_CreateWithSSHKey(t *testing.T) {
 	name := fmt.Sprintf("test-%s", acctest.RandString(10))
 
@@ -134,6 +152,35 @@ func TestAccAHCloudServer_Upgrade(t *testing.T) {
 	})
 }
 
+func TestAccAHCloudServer_UpgradeWithSlug(t *testing.T) {
+	var beforeID, afterID string
+	name := fmt.Sprintf("test-%s", acctest.RandString(10))
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckAHCloudServerDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccCheckAHCloudServerConfigCreateWithSlugs(name),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("ah_cloud_server.web", "name", name),
+					testAccCheckAHCloudServerExists("ah_cloud_server.web", &beforeID),
+					resource.TestCheckResourceAttr("ah_cloud_server.web", "product", "start-xs"),
+				),
+			},
+			{
+				Config: testAccCheckAHCloudServerConfigUpgradeWithSlug(name),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("ah_cloud_server.web", "product", "start-m"),
+					testAccCheckAHCloudServerExists("ah_cloud_server.web", &afterID),
+					testAccCheckAHCloudServerNoRecreated(t, beforeID, afterID),
+				),
+			},
+		},
+	})
+}
+
 func TestAccAHCloudServer_UpdateImage(t *testing.T) {
 	var beforeID, afterID string
 	name := fmt.Sprintf("test-%s", acctest.RandString(10))
@@ -191,6 +238,27 @@ func testAccCheckAHCloudServerConfigBasic(name string) string {
 	   product = "df42a96b-b381-412c-a605-d66d7bf081af"
 	 }`, name)
 }
+
+func testAccCheckAHCloudServerConfigCreateWithSlugs(name string) string {
+	return fmt.Sprintf(`
+	 resource "ah_cloud_server" "web" {
+	   name = "%s"
+	   datacenter = "c54e8896-53d8-479a-8ff1-4d7d9d856a50"
+	   image = "centos7-64"
+	   product = "start-xs"
+	 }`, name)
+}
+
+func testAccCheckAHCloudServerConfigUpgradeWithSlug(name string) string {
+	return fmt.Sprintf(`
+	 resource "ah_cloud_server" "web" {
+	   name = "%s"
+	   datacenter = "c54e8896-53d8-479a-8ff1-4d7d9d856a50"
+	   image = "centos7-64"
+	   product = "start-m"
+	 }`, name)
+}
+
 func testAccCheckAHCloudServerConfigWithSSHKey(name string) string {
 	return fmt.Sprintf(`
 	 resource "ah_cloud_server" "web" {

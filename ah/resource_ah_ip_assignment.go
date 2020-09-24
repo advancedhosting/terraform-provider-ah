@@ -41,21 +41,20 @@ func resourceAHIPAssignment() *schema.Resource {
 func resourceAHIPAssignmentCreate(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*ah.APIClient)
 
-	instanceID := d.Get("cloud_server_id").(string)
+	request := &ah.IPAddressAssignmentCreateRequest{
+		InstanceID: d.Get("cloud_server_id").(string),
+	}
 
-	ipAddressID := d.Get("ip_address").(string)
+	ipAddressAttr := d.Get("ip_address").(string)
 
-	if _, err := uuid.Parse(ipAddressID); err != nil {
-		ipAddress, err := ipAddressByIP(ipAddressID, meta)
+	if _, err := uuid.Parse(ipAddressAttr); err != nil {
+		request.IPAddressID = ipAddressAttr
+	} else {
+		ipAddress, err := ipAddressByIP(ipAddressAttr, meta)
 		if err != nil {
 			return err
 		}
-		ipAddressID = ipAddress.ID
-	}
-
-	request := &ah.IPAddressAssignmentCreateRequest{
-		IPAddressID: ipAddressID,
-		InstanceID:  instanceID,
+		request.IPAddressID = ipAddress.ID
 	}
 
 	ipAssignment, err := client.IPAddressAssignments.Create(context.Background(), request)

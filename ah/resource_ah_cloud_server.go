@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/advancedhosting/advancedhosting-api-go/ah"
+	"github.com/google/uuid"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
@@ -121,11 +122,29 @@ func resourceAHCloudServerCreate(d *schema.ResourceData, meta interface{}) error
 	client := meta.(*ah.APIClient)
 	request := &ah.InstanceCreateRequest{
 		Name:                  d.Get("name").(string),
-		DatacenterID:          d.Get("datacenter").(string),
-		ImageID:               d.Get("image").(string),
-		ProductID:             d.Get("product").(string),
 		CreatePublicIPAddress: d.Get("create_public_ip_address").(bool),
 		UseSSHPassword:        d.Get("use_password").(bool),
+	}
+
+	datacenterAttr := d.Get("datacenter").(string)
+	if _, err := uuid.Parse(datacenterAttr); err != nil {
+		request.DatacenterSlug = datacenterAttr
+	} else {
+		request.DatacenterID = datacenterAttr
+	}
+
+	imageAttr := d.Get("image").(string)
+	if _, err := uuid.Parse(imageAttr); err != nil {
+		request.ImageSlug = imageAttr
+	} else {
+		request.ImageID = imageAttr
+	}
+
+	productAttr := d.Get("product").(string)
+	if _, err := uuid.Parse(productAttr); err != nil {
+		request.ProductSlug = productAttr
+	} else {
+		request.ProductID = productAttr
 	}
 
 	if attr, ok := d.GetOk("ssh_keys"); ok {
@@ -178,12 +197,9 @@ func resourceAHCloudServerRead(d *schema.ResourceData, meta interface{}) error {
 	d.Set("name", instance.Name)
 	d.Set("created_at", instance.CreatedAt)
 	d.Set("state", instance.State)
-	d.Set("product", instance.ProductID)
 	d.Set("vcpu", instance.Vcpu)
 	d.Set("ram", instance.RAM)
 	d.Set("disk", instance.RAM)
-	d.Set("datacenter", instance.Datacenter.ID)
-	d.Set("image", instance.Image.ID)
 
 	var ips []map[string]interface{}
 	for _, instanceIPAddress := range instance.IPAddresses {
@@ -224,10 +240,18 @@ func resourceAHCloudServerUpdate(d *schema.ResourceData, meta interface{}) error
 	}
 
 	if d.HasChange("product") {
-		newProductID := d.Get("product").(string)
 		client := meta.(*ah.APIClient)
 
-		if err := client.Instances.Upgrade(context.Background(), d.Id(), newProductID); err != nil {
+		request := &ah.InstanceUpgradeRequest{}
+
+		newProductAttr := d.Get("product").(string)
+		if _, err := uuid.Parse(newProductAttr); err != nil {
+			request.ProductSlug = newProductAttr
+		} else {
+			request.ProductID = newProductAttr
+		}
+
+		if err := client.Instances.Upgrade(context.Background(), d.Id(), request); err != nil {
 			return fmt.Errorf(
 				"Error upgrade instance (%s): %s", d.Id(), err)
 		}
