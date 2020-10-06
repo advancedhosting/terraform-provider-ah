@@ -91,6 +91,14 @@ func buildAHVolumeProductsListSorting(set *schema.Set) []*ah.Sorting {
 		switch key {
 		case "cloud_server_id":
 			key = "instance_id"
+		case "datacenter_id":
+			key = "datacenters_id"
+		case "datacenter_name":
+			key = "datacenters_name"
+		case "datacenter_slug":
+			key = "datacenters_api_slug"
+		case "datacenter_full_name":
+			key = "datacenters_full_name"
 		}
 
 		sorting := &ah.Sorting{
@@ -117,6 +125,14 @@ func buildAHVolumeProductsListFilter(set *schema.Set) []ah.FilterInterface {
 		switch key {
 		case "cloud_server_id":
 			key = "instance_id"
+		case "datacenter_id":
+			key = "datacenters_id"
+		case "datacenter_name":
+			key = "datacenters_name"
+		case "datacenter_slug":
+			key = "datacenters_api_slug"
+		case "datacenter_full_name":
+			key = "datacenters_full_name"
 		}
 
 		filter := &ah.InFilter{
@@ -220,15 +236,9 @@ func allVolumeProducts(client *ah.APIClient, options *ah.ListOptions) ([]ah.Volu
 
 func datacenterInfo(datacenterID string, meta interface{}) (*ah.Datacenter, error) {
 	client := meta.(*ah.APIClient)
-	datacenters, err := client.Datacenters.List(context.Background(), nil)
+	datacenter, err := client.Datacenters.Get(context.Background(), datacenterID)
 	if err != nil {
 		return nil, err
 	}
-
-	for _, datacenter := range datacenters {
-		if datacenter.ID == datacenterID {
-			return &datacenter, nil
-		}
-	}
-	return nil, ah.ErrResourceNotFound
+	return datacenter, nil
 }
