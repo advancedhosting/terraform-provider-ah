@@ -243,7 +243,7 @@ func testAccCheckAHCloudServerConfigCreateWithSlugs(name string) string {
 	return fmt.Sprintf(`
 	 resource "ah_cloud_server" "web" {
 	   name = "%s"
-	   datacenter = "c54e8896-53d8-479a-8ff1-4d7d9d856a50"
+	   datacenter = "ams1"
 	   image = "centos7-64"
 	   product = "start-xs"
 	 }`, name)
@@ -253,7 +253,7 @@ func testAccCheckAHCloudServerConfigUpgradeWithSlug(name string) string {
 	return fmt.Sprintf(`
 	 resource "ah_cloud_server" "web" {
 	   name = "%s"
-	   datacenter = "c54e8896-53d8-479a-8ff1-4d7d9d856a50"
+	   datacenter = "ams1"
 	   image = "centos7-64"
 	   product = "start-m"
 	 }`, name)
