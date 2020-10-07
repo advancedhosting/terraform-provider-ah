@@ -25,10 +25,10 @@ resource "ah_cloud_server" "example" {
 
 The following arguments are supported:
 
-* `image` - (Required) The Cloud Server image ID of the desired image for the server OR a Cloud Server Snapshot / Auto Backup ID. Changing this creates a new server.
+* `image` - (Required) The Cloud Server image ID or Slug of the desired image for the server OR a Cloud Server Snapshot / Auto Backup ID. Changing this creates a new server.
 * `name` - (Required) Name for the Cloud Server.
-* `datacenter` - (Required) Datacenter ID to start the Cloud Server in.
-* `product` - (Required) Cloud Server Product ID that indentifies the desired product type of the Cloud Server. Changing this resizes the existing server.
+* `datacenter` - (Required) Datacenter ID or Slug to start the Cloud Server in.
+* `product` - (Required) Cloud Server Product ID or Slug that indentifies the desired product type of the Cloud Server. Changing this resizes the existing server.
 * `backups` - (Optional) Boolean to enable or disable backups. Defaults to false.
 * `use_password` - (Optional) Boolean defining if password should be generated for the server and sent by email. Defaults to true.
 * `ssh_keys` - (Optional) Array of SSH IDs or fingerprints to enable in

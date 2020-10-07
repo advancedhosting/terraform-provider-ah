@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/advancedhosting/advancedhosting-api-go/ah"
+	"github.com/google/uuid"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/customdiff"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
@@ -62,6 +63,22 @@ func resourceAHVolume() *schema.Resource {
 func resourceAHVolumeCreate(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*ah.APIClient)
 
+<<<<<<< HEAD
+	request := &ah.VolumeCreateRequest{
+		Name:       d.Get("name").(string),
+		Size:       d.Get("size").(int),
+		FileSystem: d.Get("file_system").(string),
+	}
+
+	productAttr := d.Get("product").(string)
+	if _, err := uuid.Parse(productAttr); err != nil {
+		request.ProductSlug = productAttr
+	} else {
+		request.ProductID = productAttr
+	}
+
+	volume, err := client.Volumes.Create(context.Background(), request)
+=======
 	name := d.Get("name").(string)
 	productID := d.Get("product").(string)
 	if attr, ok := d.GetOk("origin_volume_id"); ok {
@@ -87,6 +104,7 @@ func resourceAHVolumeCreate(d *schema.ResourceData, meta interface{}) error {
 		}
 
 		volume, err := client.Volumes.Create(context.Background(), request)
+>>>>>>> master
 
 		if err != nil {
 			return fmt.Errorf("Error creating volume: %s", err)
@@ -111,7 +129,6 @@ func resourceAHVolumeRead(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	d.Set("name", volume.Name)
-	d.Set("product", volume.ProductID)
 	d.Set("size", volume.Size)
 	d.Set("file_system", volume.FileSystem)
 

@@ -29,6 +29,22 @@ func TestAccAHIP_BasicPublicIP(t *testing.T) {
 		},
 	})
 }
+
+func TestAccAHIP_BasicPublicIPWithSlug(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckAHCloudServerDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccCheckAHPublicIPConfigWithSlug(),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttrSet("ah_ip.test", "id"),
+				),
+			},
+		},
+	})
+}
 func TestAccAHIP_BasicPublicIPWithoutDatacenter(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -180,6 +196,14 @@ func testAccCheckAHPublicIPConfigBasic() string {
 	 resource "ah_ip" "test" {
 	   type = "public"
 	   datacenter = "c54e8896-53d8-479a-8ff1-4d7d9d856a50"
+	 }`)
+}
+
+func testAccCheckAHPublicIPConfigWithSlug() string {
+	return fmt.Sprintf(`
+	 resource "ah_ip" "test" {
+	   type = "public"
+	   datacenter = "ams1"
 	 }`)
 }
 
