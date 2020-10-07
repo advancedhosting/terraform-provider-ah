@@ -9,15 +9,15 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
-func dataSourceAHVolumes() *schema.Resource {
-	allowedFilterKeys := []string{"id", "name", "state", "product_id", "size", "file_system", "cloud_server_id"}
-	allowedSortingKeys := []string{"id", "name", "state", "product_id", "size", "file_system", "cloud_server_id", "created_at"}
+func dataSourceAHImages() *schema.Resource {
+	allowedFilterKeys := []string{"id", "name", "distribution", "version", "architecture", "slug"}
+	allowedSortingKeys := []string{"id", "name", "distribution", "version", "architecture", "slug"}
 	return &schema.Resource{
-		Read: dataSourceAHVolumesRead,
+		Read: dataSourceAHImagesRead,
 		Schema: map[string]*schema.Schema{
 			"filter": dataSourceFilterSchema(allowedFilterKeys),
 			"sort":   dataSourceSortingSchema(allowedSortingKeys),
-			"volumes": {
+			"images": {
 				Type:     schema.TypeList,
 				Computed: true,
 				Elem: &schema.Resource{
@@ -30,27 +30,19 @@ func dataSourceAHVolumes() *schema.Resource {
 							Type:     schema.TypeString,
 							Computed: true,
 						},
-						"state": {
+						"distribution": {
 							Type:     schema.TypeString,
 							Computed: true,
 						},
-						"product": {
+						"version": {
 							Type:     schema.TypeString,
 							Computed: true,
 						},
-						"size": {
-							Type:     schema.TypeInt,
-							Computed: true,
-						},
-						"file_system": {
+						"architecture": {
 							Type:     schema.TypeString,
 							Computed: true,
 						},
-						"cloud_server_id": {
-							Type:     schema.TypeString,
-							Computed: true,
-						},
-						"created_at": {
+						"slug": {
 							Type:     schema.TypeString,
 							Computed: true,
 						},
@@ -60,18 +52,12 @@ func dataSourceAHVolumes() *schema.Resource {
 		},
 	}
 }
-
-func buildAHVolumeListSorting(set *schema.Set) []*ah.Sorting {
+func buildAHImagesListSorting(set *schema.Set) []*ah.Sorting {
 	var sortings []*ah.Sorting
 	for _, v := range set.List() {
 		m := v.(map[string]interface{})
 
 		key := m["key"].(string)
-
-		switch key {
-		case "cloud_server_id":
-			key = "instance_id"
-		}
 
 		sorting := &ah.Sorting{
 			Key:   key,
@@ -83,7 +69,7 @@ func buildAHVolumeListSorting(set *schema.Set) []*ah.Sorting {
 	return sortings
 }
 
-func buildAHVolumesListFilter(set *schema.Set) []ah.FilterInterface {
+func buildAHImagesListFilter(set *schema.Set) []ah.FilterInterface {
 	var filters []ah.FilterInterface
 	for _, v := range set.List() {
 		m := v.(map[string]interface{})
@@ -93,11 +79,6 @@ func buildAHVolumesListFilter(set *schema.Set) []ah.FilterInterface {
 		}
 
 		key := m["key"].(string)
-
-		switch key {
-		case "cloud_server_id":
-			key = "instance_id"
-		}
 
 		filter := &ah.InFilter{
 			Keys:   []string{key},
@@ -109,7 +90,7 @@ func buildAHVolumesListFilter(set *schema.Set) []ah.FilterInterface {
 	return filters
 }
 
-func dataSourceAHVolumesRead(d *schema.ResourceData, meta interface{}) error {
+func dataSourceAHImagesRead(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*ah.APIClient)
 	options := &ah.ListOptions{}
 
@@ -121,59 +102,56 @@ func dataSourceAHVolumesRead(d *schema.ResourceData, meta interface{}) error {
 		options.Sortings = buildAHVolumeListSorting(v.(*schema.Set))
 	}
 
-	volumes, err := allVolumes(client, options)
+	images, err := allImages(client, options)
 	if err != nil {
 		return err
 	}
 
-	if err = dataSourceAHVolemesSchema(d, meta, volumes); err != nil { // TODO s/VolUmes
+	if err = dataSourceAHImagesSchema(d, meta, images); err != nil {
 		return err
 	}
 	return nil
 }
 
-func dataSourceAHVolemesSchema(d *schema.ResourceData, meta interface{}, volumes []ah.Volume) error {
-	allVolumes := make([]map[string]interface{}, len(volumes))
-	for i, volume := range volumes {
-		volumeInfo := map[string]interface{}{
-			"id":          volume.ID,
-			"name":        volume.Name,
-			"state":       volume.State,
-			"product":     volume.ProductID,
-			"size":        volume.Size,
-			"file_system": volume.FileSystem,
-			"created_at":  volume.CreatedAt,
+func dataSourceAHImagesSchema(d *schema.ResourceData, meta interface{}, images []ah.Image) error {
+	allImages := make([]map[string]interface{}, len(images))
+	for i, image := range images {
+		imageInfo := map[string]interface{}{
+			"id":           image.ID,
+			"name":         image.Name,
+			"distribution": image.Distribution,
+			"version":      image.Version,
+			"architecture": image.Architecture,
+			"slug":         image.Slug,
 		}
-		if volume.Instance != nil {
-			volumeInfo["cloud_server_id"] = volume.Instance.ID
-		}
-		allVolumes[i] = volumeInfo
+
+		allImages[i] = imageInfo
 	}
-	if err := d.Set("volumes", allVolumes); err != nil {
-		return fmt.Errorf("unable to set volumes attribute: %s", err)
+	if err := d.Set("images", allImages); err != nil {
+		return fmt.Errorf("unable to set images attribute: %s", err)
 	}
 	d.SetId(resource.UniqueId())
 
 	return nil
 }
 
-func allVolumes(client *ah.APIClient, options *ah.ListOptions) ([]ah.Volume, error) {
+func allImages(client *ah.APIClient, options *ah.ListOptions) ([]ah.Image, error) {
 	meta := &ah.ListMetaOptions{
 		Page: 1,
 	}
 
 	options.Meta = meta
 
-	var allVolumes []ah.Volume
+	var images []ah.Image
 
 	for {
-		volumes, meta, err := client.Volumes.List(context.Background(), options)
+		pageImage, meta, err := client.Images.List(context.Background(), options)
 
 		if err != nil {
-			return nil, fmt.Errorf("Error list volumes: %s", err)
+			return nil, fmt.Errorf("Error list images: %s", err)
 		}
 
-		allVolumes = append(allVolumes, volumes...)
+		images = append(images, pageImage...)
 		if meta.IsLastPage() {
 			break
 		}
@@ -181,5 +159,5 @@ func allVolumes(client *ah.APIClient, options *ah.ListOptions) ([]ah.Volume, err
 		options.Meta.Page++
 	}
 
-	return allVolumes, nil
+	return images, nil
 }

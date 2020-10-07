@@ -32,7 +32,8 @@ func resourceAHVolume() *schema.Resource {
 			},
 			"size": {
 				Type:     schema.TypeInt,
-				Required: true,
+				Optional: true,
+				Computed: true,
 			},
 			"file_system": {
 				Type:         schema.TypeString,
@@ -40,6 +41,11 @@ func resourceAHVolume() *schema.Resource {
 				ForceNew:     true,
 				Default:      "ext4",
 				ValidateFunc: validation.StringInSlice([]string{"ext4", "btrfs", "xfs"}, false),
+			},
+			"origin_volume_id": {
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
 			},
 		},
 		CustomizeDiff: customdiff.All(
@@ -56,20 +62,37 @@ func resourceAHVolume() *schema.Resource {
 func resourceAHVolumeCreate(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*ah.APIClient)
 
-	request := &ah.VolumeCreateRequest{
-		Name:       d.Get("name").(string),
-		Size:       d.Get("size").(int),
-		ProductID:  d.Get("product").(string),
-		FileSystem: d.Get("file_system").(string),
+	name := d.Get("name").(string)
+	productID := d.Get("product").(string)
+	if attr, ok := d.GetOk("origin_volume_id"); ok {
+		originVolumeID := attr.(string)
+		action, err := client.Volumes.Copy(context.Background(), originVolumeID, name, productID)
+		if err != nil {
+			return fmt.Errorf("Error creating volume from origin: %s", err)
+		}
+		if err := waitForActionCopyReady(originVolumeID, action.ID, d, meta); err != nil {
+			return err
+		}
+		action, err = client.Volumes.ActionInfo(context.Background(), originVolumeID, action.ID)
+		if err != nil {
+			return err
+		}
+		d.SetId(action.ResultParams.CopiedVolumeID)
+	} else {
+		request := &ah.VolumeCreateRequest{
+			Name:       name,
+			Size:       d.Get("size").(int),
+			ProductID:  productID,
+			FileSystem: d.Get("file_system").(string),
+		}
+
+		volume, err := client.Volumes.Create(context.Background(), request)
+
+		if err != nil {
+			return fmt.Errorf("Error creating volume: %s", err)
+		}
+		d.SetId(volume.ID)
 	}
-
-	volume, err := client.Volumes.Create(context.Background(), request)
-
-	if err != nil {
-		return fmt.Errorf("Error creating volume: %s", err)
-	}
-
-	d.SetId(volume.ID)
 
 	if err := waitForVolumeState(d.Id(), []string{"creating"}, []string{"ready"}, d, meta); err != nil {
 		return fmt.Errorf(
@@ -203,4 +226,35 @@ func waitForVolumeDestroy(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	return nil
+}
+
+func waitForActionCopyReady(VolumeID, actionID string, d *schema.ResourceData, meta interface{}) error {
+	client := meta.(*ah.APIClient)
+
+	stateRefreshFunc := func() (interface{}, string, error) {
+		action, err := client.Volumes.ActionInfo(context.Background(), VolumeID, actionID)
+		if err != nil {
+			log.Printf("Error on waitForActionCopyReady: %v", err)
+			return nil, "", err
+		}
+		return action.ID, action.State, nil
+	}
+
+	stateChangeConf := resource.StateChangeConf{
+		Delay:                     2 * time.Second,
+		Pending:                   []string{"queued", "running"},
+		Refresh:                   stateRefreshFunc,
+		Target:                    []string{"success"},
+		Timeout:                   d.Timeout(schema.TimeoutUpdate),
+		MinTimeout:                2 * time.Second,
+		ContinuousTargetOccurence: 2,
+	}
+	_, err := stateChangeConf.WaitForState()
+
+	if err != nil {
+		return fmt.Errorf(
+			"Error waiting for volume coping success status: %v", err)
+	}
+	return nil
+
 }
