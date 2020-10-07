@@ -127,7 +127,7 @@ func TestAccAHCloudServer_Upgrade(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("ah_cloud_server.web", "product", "3ca84dd3-e439-46f4-8f47-f0fbb810896e"),
 					testAccCheckAHCloudServerExists("ah_cloud_server.web", &afterID),
-					testAccCheckAHCloudServerNoRecreated(t, beforeID, afterID),
+					testAccCheckAHResourceNoRecreated(t, beforeID, afterID),
 				),
 			},
 		},
@@ -155,7 +155,7 @@ func TestAccAHCloudServer_UpdateImage(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("ah_cloud_server.web", "image", "52ed921b-b5ca-4a5f-a3c9-69e283a126bf"),
 					testAccCheckAHCloudServerExists("ah_cloud_server.web", &afterID),
-					testAccCheckAHCloudServerRecreated(t, &beforeID, &afterID),
+					testAccCheckAHResourceRecreated(t, &beforeID, &afterID),
 				),
 			},
 		},
@@ -249,7 +249,7 @@ func testAccCheckAHCloudServerExists(n string, instanceID *string) resource.Test
 	}
 }
 
-func testAccCheckAHCloudServerNoRecreated(t *testing.T, beforeID, afterID string) resource.TestCheckFunc {
+func testAccCheckAHResourceNoRecreated(t *testing.T, beforeID, afterID string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		if beforeID != afterID {
 			t.Fatalf("Resource has been recreated, old ID: %s, new ID: %s", beforeID, afterID)
@@ -258,7 +258,7 @@ func testAccCheckAHCloudServerNoRecreated(t *testing.T, beforeID, afterID string
 	}
 }
 
-func testAccCheckAHCloudServerRecreated(t *testing.T, beforeID, afterID *string) resource.TestCheckFunc {
+func testAccCheckAHResourceRecreated(t *testing.T, beforeID, afterID *string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		if beforeID == afterID {
 			t.Fatalf("Resource hasn't been recreated, ID: %s", *beforeID)

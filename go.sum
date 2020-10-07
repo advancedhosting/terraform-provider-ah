@@ -45,6 +45,12 @@ github.com/abdullin/seq v0.0.0-20160510034733-d5467c17e7af/go.mod h1:5Jv4cbFiHJM
 github.com/advancedhosters/advancedhosting-api-go v0.1.1/go.mod h1:/RsYDzljgourscFDmvvn49/cA5U600y0JQFw4RapxN8=
 github.com/advancedhosting/advancedhosting-api-go v0.1.0 h1:Z5T7RjP694XWadp6ySGAILyd70oqUVnjwEOfaJYPc0o=
 github.com/advancedhosting/advancedhosting-api-go v0.1.0/go.mod h1:4Tt6i7RT3ptHGuc8TaifppMCSciCHgs+mVjeFM0imHs=
+github.com/advancedhosting/advancedhosting-api-go v0.1.1-0.20200909105429-53f1059d910b h1:iw4WaOTS7IAcDx6PQuOEPOpYt2LX3livgaXyVAqqB94=
+github.com/advancedhosting/advancedhosting-api-go v0.1.1-0.20200909105429-53f1059d910b/go.mod h1:4Tt6i7RT3ptHGuc8TaifppMCSciCHgs+mVjeFM0imHs=
+github.com/advancedhosting/advancedhosting-api-go v0.1.1-0.20200909120118-dfce9ac71924 h1:xpg92/ty/02UeEtMHV/OcYM0u0rMVqLExFbiSe94euQ=
+github.com/advancedhosting/advancedhosting-api-go v0.1.1-0.20200909120118-dfce9ac71924/go.mod h1:4Tt6i7RT3ptHGuc8TaifppMCSciCHgs+mVjeFM0imHs=
+github.com/advancedhosting/advancedhosting-api-go v0.1.1-0.20200909175748-16818131af44 h1:YR/wwygM8awXyf1i7/OVaTRRhDIwJumphymcRT1Vmz4=
+github.com/advancedhosting/advancedhosting-api-go v0.1.1-0.20200909175748-16818131af44/go.mod h1:4Tt6i7RT3ptHGuc8TaifppMCSciCHgs+mVjeFM0imHs=
 github.com/advancedhosting/advancedhosting-api-go v0.1.2-0.20200904182243-500daa7a1dcb h1:pL7Agktj3OKY4nMdC1ej67Zsaw16dZ+WkH7qdND7Ajo=
 github.com/advancedhosting/advancedhosting-api-go v0.1.2-0.20200904182243-500daa7a1dcb/go.mod h1:4Tt6i7RT3ptHGuc8TaifppMCSciCHgs+mVjeFM0imHs=
 github.com/advancedhosting/advancedhosting-api-go v0.1.2-0.20200904192302-71d74448be74 h1:taKwpOfYjzrTNsIbnh69nksnvZtPBKOVgx0NFtDUWVU=
