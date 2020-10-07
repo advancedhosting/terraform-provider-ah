@@ -33,6 +33,7 @@ func Provider() terraform.ResourceProvider {
 			"ah_volume_products":                   dataSourceAHVolumeProducts(),
 			"ah_datacenters":                       dataSourceAHDatacenters(),
 			"ah_cloud_images":                      dataSourceAHImages(),
+			"ah_cloud_server_products":             dataSourceAHCloudServerProducts(),
 		},
 		ResourcesMap: map[string]*schema.Resource{
 			"ah_cloud_server":               resourceAHCloudServer(),
