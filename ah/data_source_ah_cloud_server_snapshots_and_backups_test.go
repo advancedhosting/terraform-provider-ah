@@ -12,9 +12,9 @@ func TestAccDataSourceAHCloudServerSnapshotsAndBackups_Basic(t *testing.T) {
 	resource "ah_cloud_server" "web" {
 	  count = 3
 	  name = "test_${count.index}"
-	  datacenter = "c54e8896-53d8-479a-8ff1-4d7d9d856a50"
-	  image = "f0438a4b-7c4a-4a63-a593-8e619ec63d16"
-	  product = "df42a96b-b381-412c-a605-d66d7bf081af"
+	  datacenter = "ams1"
+	  image = "centos7-64"
+	  product = "start-xs"
 	}
 
 	resource "ah_cloud_server_snapshot" "test" {
@@ -39,7 +39,7 @@ func TestAccDataSourceAHCloudServerSnapshotsAndBackups_Basic(t *testing.T) {
 	  }
 	}`
 
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		PreCheck:  func() { testAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{

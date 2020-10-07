@@ -11,7 +11,7 @@ import (
 
 func dataSourceAHIPs() *schema.Resource {
 	allowedFilterKeys := []string{"id", "ip_address", "type", "datacenter", "reverse_dns", "cloud_server_id"}
-	allowedSortingKeys := []string{"id", "ip_address", "type", "datacenter", "reverse_dns", "cloud_server_id"}
+	allowedSortingKeys := []string{"id", "ip_address", "type", "datacenter", "reverse_dns", "cloud_server_id", "created_at"}
 	return &schema.Resource{
 		Read: dataSourceAHIPsRead,
 		Schema: map[string]*schema.Schema{

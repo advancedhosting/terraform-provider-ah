@@ -12,7 +12,7 @@ import (
 )
 
 func TestAccAHVolume_Basic(t *testing.T) {
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckAHVolumeDestroy,
@@ -31,7 +31,7 @@ func TestAccAHVolume_Basic(t *testing.T) {
 }
 
 func TestAccAHVolume_CreateWithSlug(t *testing.T) {
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckAHVolumeDestroy,
@@ -50,7 +50,7 @@ func TestAccAHVolume_CreateWithSlug(t *testing.T) {
 }
 
 func TestAccAHVolume_CreateFromOrigin(t *testing.T) {
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckAHVolumeDestroy,
@@ -71,7 +71,7 @@ func TestAccAHVolume_CreateFromOrigin(t *testing.T) {
 
 func TestAccAHVolume_ChangeName(t *testing.T) {
 	var beforeID, afterID string
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckAHVolumeDestroy,
@@ -96,7 +96,7 @@ func TestAccAHVolume_ChangeName(t *testing.T) {
 
 func TestAccAHVolume_IncreaseSize(t *testing.T) {
 	var beforeID, afterID string
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckAHVolumeDestroy,
@@ -120,7 +120,7 @@ func TestAccAHVolume_IncreaseSize(t *testing.T) {
 }
 
 func TestAccAHVolume_DowngradeSize(t *testing.T) {
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckAHVolumeDestroy,
@@ -138,7 +138,7 @@ func TestAccAHVolume_DowngradeSize(t *testing.T) {
 
 func TestAccAHVolume_ChangeFileSystem(t *testing.T) {
 	var beforeID, afterID string
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckAHVolumeDestroy,
@@ -163,7 +163,7 @@ func TestAccAHVolume_ChangeFileSystem(t *testing.T) {
 
 func TestAccAHVolume_ChangeProduct(t *testing.T) {
 	var beforeID, afterID string
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckAHVolumeDestroy,

@@ -14,7 +14,7 @@ import (
 func TestAccAHCloudServer_Basic(t *testing.T) {
 	name := fmt.Sprintf("test-%s", acctest.RandString(10))
 
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckAHCloudServerDestroy,
@@ -47,7 +47,7 @@ func TestAccAHCloudServer_Basic(t *testing.T) {
 func TestAccAHCloudServer_CreateWithSlugs(t *testing.T) {
 	name := fmt.Sprintf("test-%s", acctest.RandString(10))
 
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckAHCloudServerDestroy,
@@ -71,7 +71,7 @@ func TestAccAHCloudServer_CreateWithSSHKey(t *testing.T) {
 		t.Fatalf("RandSSHKeyPair error: %s", err)
 	}
 
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckAHCloudServerDestroy,
@@ -91,7 +91,7 @@ func TestAccAHCloudServer_CreateWithSSHKey(t *testing.T) {
 func TestAccAHCloudServer_CreateWithoutPublicIP(t *testing.T) {
 	name := fmt.Sprintf("test-%s", acctest.RandString(10))
 
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckAHCloudServerDestroy,
@@ -110,7 +110,7 @@ func TestAccAHCloudServer_Rename(t *testing.T) {
 	name := fmt.Sprintf("test-%s", acctest.RandString(10))
 	newName := fmt.Sprintf("test-%s", acctest.RandString(10))
 
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckAHCloudServerDestroy,
@@ -135,7 +135,7 @@ func TestAccAHCloudServer_Upgrade(t *testing.T) {
 	var beforeID, afterID string
 	name := fmt.Sprintf("test-%s", acctest.RandString(10))
 
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckAHCloudServerDestroy,
@@ -164,7 +164,7 @@ func TestAccAHCloudServer_UpgradeWithSlug(t *testing.T) {
 	var beforeID, afterID string
 	name := fmt.Sprintf("test-%s", acctest.RandString(10))
 
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckAHCloudServerDestroy,
@@ -193,7 +193,7 @@ func TestAccAHCloudServer_UpdateImage(t *testing.T) {
 	var beforeID, afterID string
 	name := fmt.Sprintf("test-%s", acctest.RandString(10))
 
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckAHCloudServerDestroy,

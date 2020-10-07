@@ -13,7 +13,7 @@ import (
 
 func TestAccAHPrivateNetworkConnection_Basic(t *testing.T) {
 	name := fmt.Sprintf("test-%s", acctest.RandString(10))
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckAHPrivateNetworkConnectionDestroy,
@@ -34,7 +34,7 @@ func TestAccAHPrivateNetworkConnection_Basic(t *testing.T) {
 func TestAccAHPrivateNetworkConnection_UpdateIP(t *testing.T) {
 	var beforeID, afterID string
 	name := fmt.Sprintf("test-%s", acctest.RandString(10))
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckAHPrivateNetworkConnectionDestroy,
@@ -60,7 +60,7 @@ func TestAccAHPrivateNetworkConnection_UpdateIP(t *testing.T) {
 func TestAccAHPrivateNetworkConnection_ChangeCloudServer(t *testing.T) {
 	var beforeID, afterID string
 	name := fmt.Sprintf("test-%s", acctest.RandString(10))
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckAHPrivateNetworkConnectionDestroy,
@@ -86,7 +86,7 @@ func TestAccAHPrivateNetworkConnection_ChangeCloudServer(t *testing.T) {
 func TestAccAHPrivateNetworkConnection_ChangePrivateNetwork(t *testing.T) {
 	var beforeID, afterID string
 	name := fmt.Sprintf("test-%s", acctest.RandString(10))
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckAHPrivateNetworkConnectionDestroy,
