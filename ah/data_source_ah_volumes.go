@@ -126,13 +126,13 @@ func dataSourceAHVolumesRead(d *schema.ResourceData, meta interface{}) error {
 		return err
 	}
 
-	if err = dataSourceAHVolemesSchema(d, meta, volumes); err != nil { // TODO s/VolUmes
+	if err = dataSourceAHVolumesSchema(d, meta, volumes); err != nil {
 		return err
 	}
 	return nil
 }
 
-func dataSourceAHVolemesSchema(d *schema.ResourceData, meta interface{}, volumes []ah.Volume) error {
+func dataSourceAHVolumesSchema(d *schema.ResourceData, meta interface{}, volumes []ah.Volume) error {
 	allVolumes := make([]map[string]interface{}, len(volumes))
 	for i, volume := range volumes {
 		volumeInfo := map[string]interface{}{
