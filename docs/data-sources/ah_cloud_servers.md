@@ -80,8 +80,8 @@ The following attributes are exported:
   * `use_password` - Boolean indicating whether the Cloud Server was created with a password generated.
   * `ssh_keys` - Array of SSH fingerprints the Cloud Server was created with.
   * `ips` - Array of Public and Anycast IP addresses assigned to the the Cloud Server. The structure of the block is documented below.
-  <!-- * `volumes` - Array of Volume IDs attached to the server.
-  * `private_networks` - Array of Private Networks connected to the server. The structure of the block is documented below. -->
+  * `volumes` - Array of Volume IDs attached to the server.
+  * `private_networks` - Array of Private Networks connected to the server. The structure of the block is documented below.
   <!-- * `firewall_rules` - Array of Firewall Rules applied to the server. The structure of the block is documented below. -->
   
 ---
@@ -93,10 +93,10 @@ The `ips` block contains:
 * `reverse_dns` - Reverse DNS assigned to the IP address.
 * `assignment_id` - ID of the IP Address Assignment.
 
-<!-- The `private_networks` block contains:
+The `private_networks` block contains:
 
 * `id` - Private Network ID.
-* `ip` - Private network IP address of the Cloud Server within the network. -->
+* `ip` - Private network IP address of the Cloud Server within the network.
 
 
 <!-- The `firewall_rules` block supports:
