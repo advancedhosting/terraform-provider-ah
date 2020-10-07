@@ -150,7 +150,17 @@ func resourceAHCloudServerCreate(d *schema.ResourceData, meta interface{}) error
 	if attr, ok := d.GetOk("ssh_keys"); ok {
 		var sshKeyIDs []string
 		for _, v := range attr.([]interface{}) {
-			sshKeyIDs = append(sshKeyIDs, v.(string))
+			if IsUUID(v.(string)) {
+				sshKeyIDs = append(sshKeyIDs, v.(string))
+			} else {
+				sshKey, err := sshKeyByFingerprint(v.(string), meta)
+				if err != nil {
+					return fmt.Errorf("Error searching ssh key by fingerprint %s: %v", v.(string), err)
+				}
+				sshKeyIDs = append(sshKeyIDs, sshKey.ID)
+
+			}
+
 		}
 		request.SSHKeyIDs = sshKeyIDs
 	}
@@ -352,4 +362,19 @@ func waitForDestroy(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	return nil
+}
+
+func sshKeyByFingerprint(fingerprint string, meta interface{}) (*ah.SSHKey, error) {
+	client := meta.(*ah.APIClient)
+	sshKeys, err := allSSHKeysInfo(client, &ah.ListOptions{})
+	if err != nil {
+		return nil, err
+	}
+
+	for _, sshKey := range sshKeys {
+		if sshKey.Fingerprint == fingerprint {
+			return &sshKey, nil
+		}
+	}
+	return nil, ah.ErrResourceNotFound
 }

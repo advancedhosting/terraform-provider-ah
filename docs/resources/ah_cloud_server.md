@@ -31,8 +31,8 @@ The following arguments are supported:
 * `product` - (Required) Cloud Server Product ID or Slug that indentifies the desired product type of the Cloud Server. Changing this resizes the existing server.
 * `backups` - (Optional) Boolean to enable or disable backups. Defaults to false.
 * `use_password` - (Optional) Boolean defining if password should be generated for the server and sent by email. Defaults to true.
-* `ssh_keys` - (Optional) Array of SSH keys IDs to enable in
-   the format `[12345, 8595645]`.
+* `ssh_keys` - (Optional) Array of SSH IDs or fingerprints to enable in
+   the format `[12345, 7e:ac:a8:45:83:e3:58:f5:3a:9f:dd:16:63:dc:fb:1e]`. Fingerprints can be found in the 'SSH keys' section of the panel.
 * `create_public_ip_address` - (Optional) Boolean defining if a new public IP address should be created for the server. This public IP address will become a primary IP address for the Cloud Server. Defaults to true.
 ---
 

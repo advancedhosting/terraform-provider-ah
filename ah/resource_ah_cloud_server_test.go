@@ -65,15 +65,23 @@ func TestAccAHCloudServer_CreateWithSlugs(t *testing.T) {
 func TestAccAHCloudServer_CreateWithSSHKey(t *testing.T) {
 	name := fmt.Sprintf("test-%s", acctest.RandString(10))
 
+	publicKey, _, err := acctest.RandSSHKeyPair("test@ah-test.com")
+	secondPublicKey, _, err := acctest.RandSSHKeyPair("test@ah-test.com")
+	if err != nil {
+		t.Fatalf("RandSSHKeyPair error: %s", err)
+	}
+
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckAHCloudServerDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAHCloudServerConfigWithSSHKey(name),
+				Config: testAccCheckAHCloudServerConfigWithSSHKeys(name, publicKey, secondPublicKey),
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("ah_cloud_server.web", "ssh_keys.0", "232e3378-ff15-4f87-b63a-9ae6b34966a7"),
+					resource.TestCheckResourceAttr("ah_cloud_server.web", "ssh_keys.#", "2"),
+					resource.TestCheckResourceAttrPair("ah_cloud_server.web", "ssh_keys.0", "ah_ssh_key.ssh_key1", "id"),
+					resource.TestCheckResourceAttrPair("ah_cloud_server.web", "ssh_keys.1", "ah_ssh_key.ssh_key2", "fingerprint"),
 				),
 			},
 		},
@@ -145,7 +153,7 @@ func TestAccAHCloudServer_Upgrade(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("ah_cloud_server.web", "product", "3ca84dd3-e439-46f4-8f47-f0fbb810896e"),
 					testAccCheckAHCloudServerExists("ah_cloud_server.web", &afterID),
-					testAccCheckAHCloudServerNoRecreated(t, beforeID, afterID),
+					testAccCheckAHResourceNoRecreated(t, beforeID, afterID),
 				),
 			},
 		},
@@ -202,7 +210,7 @@ func TestAccAHCloudServer_UpdateImage(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("ah_cloud_server.web", "image", "52ed921b-b5ca-4a5f-a3c9-69e283a126bf"),
 					testAccCheckAHCloudServerExists("ah_cloud_server.web", &afterID),
-					testAccCheckAHCloudServerRecreated(t, &beforeID, &afterID),
+					testAccCheckAHResourceRecreated(t, &beforeID, &afterID),
 				),
 			},
 		},
@@ -259,15 +267,23 @@ func testAccCheckAHCloudServerConfigUpgradeWithSlug(name string) string {
 	 }`, name)
 }
 
-func testAccCheckAHCloudServerConfigWithSSHKey(name string) string {
+func testAccCheckAHCloudServerConfigWithSSHKeys(name string, ssh1PublicKey, ssh2PublicKey string) string {
 	return fmt.Sprintf(`
+	 resource "ah_ssh_key" "ssh_key1" {
+	   name = "test"
+	   public_key = "%s"
+	 }
+	 resource "ah_ssh_key" "ssh_key2" {
+	   name = "test"
+	   public_key = "%s"
+	 }
 	 resource "ah_cloud_server" "web" {
 	   name = "%s"
 	   datacenter = "c54e8896-53d8-479a-8ff1-4d7d9d856a50"
 	   image = "f0438a4b-7c4a-4a63-a593-8e619ec63d16"
 	   product = "df42a96b-b381-412c-a605-d66d7bf081af"
-	   ssh_keys = ["232e3378-ff15-4f87-b63a-9ae6b34966a7"]
-	 }`, name)
+	   ssh_keys = [ah_ssh_key.ssh_key1.id, ah_ssh_key.ssh_key2.fingerprint]
+	 }`, ssh1PublicKey, ssh2PublicKey, name)
 }
 
 func testAccCheckAHCloudServerConfigWithoutPublicIP(name string) string {
@@ -317,7 +333,7 @@ func testAccCheckAHCloudServerExists(n string, instanceID *string) resource.Test
 	}
 }
 
-func testAccCheckAHCloudServerNoRecreated(t *testing.T, beforeID, afterID string) resource.TestCheckFunc {
+func testAccCheckAHResourceNoRecreated(t *testing.T, beforeID, afterID string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		if beforeID != afterID {
 			t.Fatalf("Resource has been recreated, old ID: %s, new ID: %s", beforeID, afterID)
@@ -326,7 +342,7 @@ func testAccCheckAHCloudServerNoRecreated(t *testing.T, beforeID, afterID string
 	}
 }
 
-func testAccCheckAHCloudServerRecreated(t *testing.T, beforeID, afterID *string) resource.TestCheckFunc {
+func testAccCheckAHResourceRecreated(t *testing.T, beforeID, afterID *string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		if beforeID == afterID {
 			t.Fatalf("Resource hasn't been recreated, ID: %s", *beforeID)
