@@ -78,7 +78,7 @@ The following attributes are exported:
   * `image` - The Cloud Server Image ID or Snapshot / Auto Backup ID the server was created from.
   * `backups` - Boolean indicating whether backups are enabled for the Cloud Server.
   * `use_password` - Boolean indicating whether the Cloud Server was created with a password generated.
-  * `ssh_keys` - Array of SSH fingerprints the Cloud Server was created with.
+  <!-- * `ssh_keys` - Array of SSH fingerprints the Cloud Server was created with. TODO Not supported by IP-->
   * `ips` - Array of Public and Anycast IP addresses assigned to the the Cloud Server. The structure of the block is documented below.
   * `volumes` - Array of Volume IDs attached to the server.
   * `private_networks` - Array of Private Networks connected to the server. The structure of the block is documented below.

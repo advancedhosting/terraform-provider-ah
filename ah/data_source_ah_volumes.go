@@ -126,7 +126,7 @@ func dataSourceAHVolumesRead(d *schema.ResourceData, meta interface{}) error {
 		return err
 	}
 
-	if err = dataSourceAHVolemesSchema(d, meta, volumes); err != nil {
+	if err = dataSourceAHVolemesSchema(d, meta, volumes); err != nil { // TODO s/VolUmes
 		return err
 	}
 	return nil
