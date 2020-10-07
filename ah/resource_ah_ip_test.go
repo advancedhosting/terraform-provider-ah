@@ -15,7 +15,7 @@ func TestAccAHIP_BasicPublicIP(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAHCloudServerDestroy,
+		CheckDestroy: testAccCheckAHIPDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckAHPublicIPConfigBasic(),
@@ -33,7 +33,7 @@ func TestAccAHIP_BasicPublicIPWithoutDatacenter(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAHCloudServerDestroy,
+		CheckDestroy: testAccCheckAHIPDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config:      testAccCheckAHPublicIPConfigWithoutdDatacenter(),
@@ -47,7 +47,7 @@ func TestAccAHIP_PublicIPWithReserveDNS(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAHCloudServerDestroy,
+		CheckDestroy: testAccCheckAHIPDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckAHPublicIPConfigBasicWithReserveDNS(),
@@ -66,7 +66,7 @@ func TestAccAHIP_BasicAnycastIP(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAHCloudServerDestroy,
+		CheckDestroy: testAccCheckAHIPDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckAHAnycastIPConfigBasic(),
@@ -87,7 +87,7 @@ func TestAccAHIP_UpdateReverseDNS(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAHCloudServerDestroy,
+		CheckDestroy: testAccCheckAHIPDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckAHAnycastIPConfigBasic(),
@@ -99,7 +99,7 @@ func TestAccAHIP_UpdateReverseDNS(t *testing.T) {
 				Config: testAccCheckAHPublicIPConfigBasicWithReserveDNS(),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckAHIPExists("ah_ip.test", &afterID),
-					testAccCheckAHIPNoRecreated(t, beforeID, afterID),
+					testAccCheckAHResourceNoRecreated(t, beforeID, afterID),
 					resource.TestCheckResourceAttr("ah_ip.test", "reverse_dns", "ip-185-189-69-16.ah-server22.com"),
 				),
 			},
@@ -112,7 +112,7 @@ func TestAccAHIP_UpdateDatacenter(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAHCloudServerDestroy,
+		CheckDestroy: testAccCheckAHIPDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckAHAnycastIPConfigBasic(),
@@ -123,8 +123,8 @@ func TestAccAHIP_UpdateDatacenter(t *testing.T) {
 			{
 				Config: testAccCheckAHPublicIPConfigNewDatacenter(),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAHCloudServerExists("ah_ip.test", &afterID),
-					testAccCheckAHIPRecreated(t, &beforeID, &afterID),
+					testAccCheckAHIPExists("ah_ip.test", &afterID),
+					testAccCheckAHResourceRecreated(t, &beforeID, &afterID),
 					resource.TestCheckResourceAttr("ah_ip.test", "datacenter", "1b1ae192-d44e-451b-8d39-a8670c58e97d"),
 				),
 			},
@@ -137,7 +137,7 @@ func TestAccAHIP_UpdateType(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAHCloudServerDestroy,
+		CheckDestroy: testAccCheckAHIPDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckAHAnycastIPConfigBasic(),
@@ -148,8 +148,8 @@ func TestAccAHIP_UpdateType(t *testing.T) {
 			{
 				Config: testAccCheckAHAnycastIPConfigBasic(),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAHCloudServerExists("ah_ip.test", &afterID),
-					testAccCheckAHIPRecreated(t, &beforeID, &afterID),
+					testAccCheckAHIPExists("ah_ip.test", &afterID),
+					testAccCheckAHResourceRecreated(t, &beforeID, &afterID),
 					resource.TestCheckResourceAttr("ah_ip.test", "type", "anycast"),
 				),
 			},
@@ -161,7 +161,7 @@ func testAccCheckAHIPDestroy(s *terraform.State) error {
 	client := testAccProvider.Meta().(*ah.APIClient)
 
 	for _, rs := range s.RootModule().Resources {
-		if rs.Type != "ah_cloud_server" {
+		if rs.Type != "ah_ip" {
 			continue
 		}
 
@@ -226,24 +226,6 @@ func testAccCheckAHIPExists(n string, ipID *string) resource.TestCheckFunc {
 		}
 
 		*ipID = rs.Primary.ID
-		return nil
-	}
-}
-
-func testAccCheckAHIPNoRecreated(t *testing.T, beforeID, afterID string) resource.TestCheckFunc {
-	return func(s *terraform.State) error {
-		if beforeID != afterID {
-			t.Fatalf("Resource has been recreated, old ID: %s, new ID: %s", beforeID, afterID)
-		}
-		return nil
-	}
-}
-
-func testAccCheckAHIPRecreated(t *testing.T, beforeID, afterID *string) resource.TestCheckFunc {
-	return func(s *terraform.State) error {
-		if beforeID == afterID {
-			t.Fatalf("Resource hasn't been recreated, ID: %s", *beforeID)
-		}
 		return nil
 	}
 }
