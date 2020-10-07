@@ -30,6 +30,26 @@ func TestAccAHVolume_Basic(t *testing.T) {
 	})
 }
 
+func TestAccAHVolume_CreateFromOrigin(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckAHVolumeDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccCheckAHVolumeConfigFromOrigin(),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttrSet("ah_volume.test", "id"),
+					resource.TestCheckResourceAttrSet("ah_volume.test", "name"),
+					resource.TestCheckResourceAttrSet("ah_volume.test", "size"),
+					resource.TestCheckResourceAttrSet("ah_volume.test", "file_system"),
+					resource.TestCheckResourceAttrSet("ah_volume.test", "origin_volume_id"),
+				),
+			},
+		},
+	})
+}
+
 func TestAccAHVolume_ChangeName(t *testing.T) {
 	var beforeID, afterID string
 	resource.Test(t, resource.TestCase{
@@ -172,6 +192,24 @@ func testAccCheckAHVolumeConfigBasic() string {
 		product = "ff4ae08e-d510-4e85-8440-9fdfd0f2308a"
 		file_system = "ext4"
 		size = "20"
+	}`)
+}
+
+func testAccCheckAHVolumeConfigFromOrigin() string {
+	return fmt.Sprintf(`
+	resource "ah_volume" "origin" {
+		name = "Origin Volume Name"
+		product = "ff4ae08e-d510-4e85-8440-9fdfd0f2308a"
+		file_system = "ext4"
+		size = "20"
+	}
+
+	resource "ah_volume" "test" {
+		name = "Volume Name"
+		product = "ff4ae08e-d510-4e85-8440-9fdfd0f2308a"
+		file_system = "ext4"
+		size = "20"
+		origin_volume_id = ah_volume.origin.id
 	}`)
 }
 
