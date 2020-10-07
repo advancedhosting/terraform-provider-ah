@@ -24,10 +24,11 @@ func Provider() terraform.ResourceProvider {
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
-			"ah_cloud_servers":    dataSourceAHCloudServers(),
-			"ah_ips":              dataSourceAHIPs(),
-			"ah_private_networks": dataSourceAHPrivateNetworks(),
-			"ah_volumes":          dataSourceAHVolumes(),
+			"ah_cloud_servers":                     dataSourceAHCloudServers(),
+			"ah_ips":                               dataSourceAHIPs(),
+			"ah_private_networks":                  dataSourceAHPrivateNetworks(),
+			"ah_volumes":                           dataSourceAHVolumes(),
+			"ah_cloud_server_snapshot_and_backups": dataSourceAHCloudServerSnapshotsAndBackups(),
 		},
 		ResourcesMap: map[string]*schema.Resource{
 			"ah_cloud_server":               resourceAHCloudServer(),
@@ -37,6 +38,7 @@ func Provider() terraform.ResourceProvider {
 			"ah_private_network_connection": resourceAHPrivateNetworkConnection(),
 			"ah_volume":                     resourceAHVolume(),
 			"ah_volume_attachment":          resourceAHVolumeAttachment(),
+			"ah_cloud_server_snapshot":      resourceAHCloudServerSnapshot(),
 		},
 	}
 
