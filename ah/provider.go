@@ -26,11 +26,14 @@ func Provider() terraform.ResourceProvider {
 		DataSourcesMap: map[string]*schema.Resource{
 			"ah_cloud_servers": dataSourceAHCloudServers(),
 			"ah_ips":           dataSourceAHIPs(),
+			"ah_volumes":       dataSourceAHVolumes(),
 		},
 		ResourcesMap: map[string]*schema.Resource{
-			"ah_cloud_server":  resourceAHCloudServer(),
-			"ah_ip":            resourceAHIP(),
-			"ah_ip_assignment": resourceAHIPAssignment(),
+			"ah_cloud_server":      resourceAHCloudServer(),
+			"ah_ip":                resourceAHIP(),
+			"ah_ip_assignment":     resourceAHIPAssignment(),
+			"ah_volume":            resourceAHVolume(),
+			"ah_volume_attachment": resourceAHVolumeAttachment(),
 		},
 	}
 
