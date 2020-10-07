@@ -45,16 +45,14 @@ func resourceAHIPAssignmentCreate(d *schema.ResourceData, meta interface{}) erro
 		InstanceID: d.Get("cloud_server_id").(string),
 	}
 
-	ipAddressAttr := d.Get("ip_address").(string)
-
-	if _, err := uuid.Parse(ipAddressAttr); err != nil {
-		request.IPAddressID = ipAddressAttr
-	} else {
-		ipAddress, err := ipAddressByIP(ipAddressAttr, meta)
+	if _, err := uuid.Parse(d.Get("ip_address").(string)); err != nil {
+		ipAddress, err := ipAddressByIP(d.Get("ip_address").(string), meta)
 		if err != nil {
 			return err
 		}
 		request.IPAddressID = ipAddress.ID
+	} else {
+		request.IPAddressID = d.Get("ip_address").(string)
 	}
 
 	ipAssignment, err := client.IPAddressAssignments.Create(context.Background(), request)
@@ -244,9 +242,9 @@ func ipAddressByIP(ip string, meta interface{}) (*ah.IPAddress, error) {
 	client := meta.(*ah.APIClient)
 	options := &ah.ListOptions{
 		Filters: []ah.FilterInterface{
-			&ah.ContFilter{
-				Keys:  []string{"address"},
-				Value: ip,
+			&ah.InFilter{
+				Keys:   []string{"address"},
+				Values: []string{ip},
 			},
 		},
 	}
