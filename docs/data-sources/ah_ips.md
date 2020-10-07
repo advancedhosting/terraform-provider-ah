@@ -61,11 +61,11 @@ data "ah_ips" "example" {
 ---
 
 The `filter` block supports:
-* `key` - (Required) Filter the results by specified key. Can be one of: `id`, `reverse_dns`
+* `key` - (Required) Filter the results by specified key. Can be one of: `id`, `ip_address`, `type`,  `datacenter`, `reverse_dns`, `cloud_server_id`.
 * `values` - (Required) A list of values to match against the `key` field.
 
 The `sort` block supports:
-* `key` - (Required) Filter the results by specified key. Can be one of: `id`, `ip_address`, `reverse_dns`, `created_at`
+* `key` - (Required) Filter the results by specified key. Can be one of: `id`, `ip_address`, `type`,  `datacenter`, `reverse_dns`, `cloud_server_id`, `created_at`
 * `direction` - (Optional) Sort direction of the results. Can be one of: `asc`, `desc`. Default option is `desc`.
 
 ---
