@@ -41,21 +41,18 @@ func resourceAHIPAssignment() *schema.Resource {
 func resourceAHIPAssignmentCreate(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*ah.APIClient)
 
-	instanceID := d.Get("cloud_server_id").(string)
+	request := &ah.IPAddressAssignmentCreateRequest{
+		InstanceID: d.Get("cloud_server_id").(string),
+	}
 
-	ipAddressID := d.Get("ip_address").(string)
-
-	if _, err := uuid.Parse(ipAddressID); err != nil {
-		ipAddress, err := ipAddressByIP(ipAddressID, meta)
+	if _, err := uuid.Parse(d.Get("ip_address").(string)); err != nil {
+		ipAddress, err := ipAddressByIP(d.Get("ip_address").(string), meta)
 		if err != nil {
 			return err
 		}
-		ipAddressID = ipAddress.ID
-	}
-
-	request := &ah.IPAddressAssignmentCreateRequest{
-		IPAddressID: ipAddressID,
-		InstanceID:  instanceID,
+		request.IPAddressID = ipAddress.ID
+	} else {
+		request.IPAddressID = d.Get("ip_address").(string)
 	}
 
 	ipAssignment, err := client.IPAddressAssignments.Create(context.Background(), request)
@@ -220,9 +217,9 @@ func ipAddressByIP(ip string, meta interface{}) (*ah.IPAddress, error) {
 	client := meta.(*ah.APIClient)
 	options := &ah.ListOptions{
 		Filters: []ah.FilterInterface{
-			&ah.ContFilter{
-				Keys:  []string{"address"},
-				Value: ip,
+			&ah.InFilter{
+				Keys:   []string{"address"},
+				Values: []string{ip},
 			},
 		},
 	}
