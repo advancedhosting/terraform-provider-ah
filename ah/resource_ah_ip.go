@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/advancedhosting/advancedhosting-api-go/ah"
+	"github.com/google/uuid"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 )
@@ -54,11 +55,15 @@ func resourceAHIPCreate(d *schema.ResourceData, meta interface{}) error {
 
 	if addressType == "public" {
 		attr, ok := d.GetOk("datacenter")
-		datacenter := attr.(string)
-		if !ok || datacenter == "" {
+		datacenterAttr := attr.(string)
+		if !ok || datacenterAttr == "" {
 			return fmt.Errorf("Datacenter is required for public ip")
 		}
-		request.DatacenterID = datacenter
+		if _, err := uuid.Parse(datacenterAttr); err != nil {
+			request.DatacenterSlug = datacenterAttr
+		} else {
+			request.DatacenterID = datacenterAttr
+		}
 	}
 
 	if attr, ok := d.GetOk("reverse_dns"); ok {
@@ -114,6 +119,9 @@ func resourceAHIPUpdate(d *schema.ResourceData, meta interface{}) error {
 func resourceAHIPDelete(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*ah.APIClient)
 	if err := client.IPAddresses.Delete(context.Background(), d.Id()); err != nil {
+		if err == ah.ErrResourceNotFound {
+			return nil
+		}
 		return fmt.Errorf(
 			"Error deleting ip address (%s): %s", d.Id(), err)
 	}

@@ -10,8 +10,8 @@ import (
 )
 
 func dataSourceAHIPs() *schema.Resource {
-	allowedFilterKeys := []string{"id", "reverse_dns"}
-	allowedSortingKeys := []string{"id", "created_at", "reverse_dns", "ip_address"}
+	allowedFilterKeys := []string{"id", "ip_address", "type", "datacenter", "reverse_dns", "cloud_server_id"}
+	allowedSortingKeys := []string{"id", "ip_address", "type", "datacenter", "reverse_dns", "cloud_server_id"}
 	return &schema.Resource{
 		Read: dataSourceAHIPsRead,
 		Schema: map[string]*schema.Schema{
@@ -62,6 +62,38 @@ func dataSourceAHIPs() *schema.Resource {
 	}
 }
 
+func buildAHIPsListFilter(set *schema.Set) []ah.FilterInterface {
+	var filters []ah.FilterInterface
+	for _, v := range set.List() {
+		m := v.(map[string]interface{})
+		var filterValues []string
+		for _, e := range m["values"].([]interface{}) {
+			filterValues = append(filterValues, e.(string))
+		}
+
+		key := m["key"].(string)
+
+		switch key {
+		case "ip_address":
+			key = "address"
+		case "type":
+			key = "address_type"
+		case "cloud_server_id":
+			key = "instances_id"
+		case "datacenter":
+			key = "datacenter_id"
+		}
+
+		filter := &ah.InFilter{
+			Keys:   []string{key},
+			Values: filterValues,
+		}
+
+		filters = append(filters, filter)
+	}
+	return filters
+}
+
 func buildAHIPListSorting(set *schema.Set) []*ah.Sorting {
 	var sortings []*ah.Sorting
 	for _, v := range set.List() {
@@ -72,16 +104,41 @@ func buildAHIPListSorting(set *schema.Set) []*ah.Sorting {
 		switch key {
 		case "ip_address":
 			key = "address"
+		case "type":
+			key = "ip_network_type"
+		case "cloud_server_ids":
+			key = "instances_id"
+		case "datacenter":
+			key = "datacenter_id"
 		}
 
 		sorting := &ah.Sorting{
-			Key:   m["key"].(string),
+			Key:   key,
 			Order: m["direction"].(string),
 		}
 
 		sortings = append(sortings, sorting)
 	}
 	return sortings
+}
+
+func buildAHIPsListFilter(set *schema.Set) []ah.FilterInterface {
+	var filters []ah.FilterInterface
+	for _, v := range set.List() {
+		m := v.(map[string]interface{})
+		var filterValues []string
+		for _, e := range m["values"].([]interface{}) {
+			filterValues = append(filterValues, e.(string))
+		}
+
+		filter := &ah.InFilter{
+			Keys:   []string{m["key"].(string)},
+			Values: filterValues,
+		}
+
+		filters = append(filters, filter)
+	}
+	return filters
 }
 
 func dataSourceAHIPsRead(d *schema.ResourceData, meta interface{}) error {
@@ -113,7 +170,7 @@ func dataSourceAHIPsSchema(d *schema.ResourceData, meta interface{}, ipAddresses
 		ip := map[string]interface{}{
 			"id":               ipAddress.ID,
 			"ip_address":       ipAddress.Address,
-			"datacenter":       ipAddress.DatacenterFullName,
+			"datacenter":       ipAddress.DatacenterFullName, // Replace with Datacenter ID after WCS-3498
 			"type":             ipAddress.Type,
 			"reverse_dns":      ipAddress.ReverseDNS,
 			"cloud_server_ids": ipAddress.InstanceIDs,
