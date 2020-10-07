@@ -16,9 +16,9 @@ func TestAccDataSourceAHPrivateNetworks_Basic(t *testing.T) {
 	
 	resource "ah_cloud_server" "web" {
 	  name = "test"
-	  datacenter = "d207c4b1-320e-45e8-870e-0db2b263d1de"
-	  image = "b62166ec-4271-411e-920a-2d1f98c09567"
-	  product = "87170aed-6689-4d98-b21f-da3519083f3e"
+	  datacenter = "ams1"
+	  image = "centos7-64"
+	  product = "start-xs"
 	}
 	
 	resource "ah_private_network_connection" "example" {

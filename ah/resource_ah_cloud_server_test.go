@@ -182,7 +182,7 @@ func TestAccAHCloudServer_UpgradeWithSlug(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("ah_cloud_server.web", "product", "start-m"),
 					testAccCheckAHCloudServerExists("ah_cloud_server.web", &afterID),
-					testAccCheckAHCloudServerNoRecreated(t, beforeID, afterID),
+					testAccCheckAHResourceNoRecreated(t, beforeID, afterID),
 				),
 			},
 		},

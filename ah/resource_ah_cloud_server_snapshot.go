@@ -72,7 +72,7 @@ func resourceAHCloudServerSnapshotCreate(d *schema.ResourceData, meta interface{
 
 	if err := waitForBackupReady(instanceID, action.ID, d, meta); err != nil {
 		return fmt.Errorf(
-			"Error waiting for backup (%s) to become ready: %s", d.Id(), err)
+			"Error waiting for backup to become ready: %v", err)
 	}
 
 	action, err = client.Instances.ActionInfo(context.Background(), instanceID, action.ID)
