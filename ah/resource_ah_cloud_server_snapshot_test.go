@@ -11,7 +11,7 @@ import (
 )
 
 func TestAccAHCloudServerSnapshot_Basic(t *testing.T) {
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckAHCloudServerSnapshotDestroy,
@@ -33,8 +33,8 @@ func TestAccAHCloudServerSnapshot_Basic(t *testing.T) {
 	})
 }
 
-func TestAccAHCloudServerSnapshot_Emptyname(t *testing.T) {
-	resource.Test(t, resource.TestCase{
+func TestAccAHCloudServerSnapshot_EmptyName(t *testing.T) {
+	resource.ParallelTest(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckAHCloudServerSnapshotDestroy,
@@ -51,7 +51,7 @@ func TestAccAHCloudServerSnapshot_Emptyname(t *testing.T) {
 
 func TestAccAHCloudServerSnapshot_UpdateName(t *testing.T) {
 	var beforeID, afterID string
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckAHCloudServerSnapshotDestroy,
@@ -76,7 +76,7 @@ func TestAccAHCloudServerSnapshot_UpdateName(t *testing.T) {
 
 func TestAccAHCloudServerSnapshot_UpdateCloudServer(t *testing.T) {
 	var beforeID, afterID string
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckAHCloudServerSnapshotDestroy,
@@ -157,9 +157,9 @@ func testAccCheckAHCloudServerSnapshotConfigBasic() string {
 	return fmt.Sprintf(`
 	resource "ah_cloud_server" "web" {
 	  name = "test"
-	  datacenter = "c54e8896-53d8-479a-8ff1-4d7d9d856a50"
-	  image = "f0438a4b-7c4a-4a63-a593-8e619ec63d16"
-	  product = "1a4cdeb2-6ca4-4745-819e-ac2ea99dc0cc"
+	  datacenter = "ams1"
+	  image = "centos7-64"
+	  product = "start-xs"
 	}
 
 	resource "ah_cloud_server_snapshot" "test" {
@@ -172,9 +172,9 @@ func testAccCheckAHCloudServerSnapshotConfigEmptyName() string {
 	return fmt.Sprintf(`
 	resource "ah_cloud_server" "web" {
 	  name = "test"
-	  datacenter = "c54e8896-53d8-479a-8ff1-4d7d9d856a50"
-	  image = "f0438a4b-7c4a-4a63-a593-8e619ec63d16"
-	  product = "1a4cdeb2-6ca4-4745-819e-ac2ea99dc0cc"
+	  datacenter = "ams1"
+	  image = "centos7-64"
+	  product = "start-xs"
 	}
 	
 	resource "ah_cloud_server_snapshot" "test" {
@@ -186,9 +186,9 @@ func testAccCheckAHCloudServerSnapshotConfigUpdateName() string {
 	return fmt.Sprintf(`
 	resource "ah_cloud_server" "web" {
 	  name = "test"
-	  datacenter = "c54e8896-53d8-479a-8ff1-4d7d9d856a50"
-	  image = "f0438a4b-7c4a-4a63-a593-8e619ec63d16"
-	  product = "1a4cdeb2-6ca4-4745-819e-ac2ea99dc0cc"
+	  datacenter = "ams1"
+	  image = "centos7-64"
+	  product = "start-xs"
 	}
 	
 	resource "ah_cloud_server_snapshot" "test" {
@@ -202,9 +202,9 @@ func testAccCheckAHCloudServerSnapshotConfigUpdateCloudServer() string {
 	resource "ah_cloud_server" "web" {
 	  count = 2
 	  name = "test"
-	  datacenter = "c54e8896-53d8-479a-8ff1-4d7d9d856a50"
-	  image = "f0438a4b-7c4a-4a63-a593-8e619ec63d16"
-	  product = "1a4cdeb2-6ca4-4745-819e-ac2ea99dc0cc"
+	  datacenter = "ams1"
+	  image = "centos7-64"
+	  product = "start-xs"
 	}
 	
 	resource "ah_cloud_server_snapshot" "test" {

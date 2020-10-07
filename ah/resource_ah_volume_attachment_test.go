@@ -11,7 +11,7 @@ import (
 )
 
 func TestAccAHVolumeAttachment_Basic(t *testing.T) {
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckAHVolumeAttachmentDestroy,
@@ -31,7 +31,7 @@ func TestAccAHVolumeAttachment_Basic(t *testing.T) {
 
 func TestAccAHVolume_IncreaseSizeAttachedVolume(t *testing.T) {
 	var beforeID, afterID string
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckAHVolumeDestroy,
@@ -57,7 +57,7 @@ func TestAccAHVolume_IncreaseSizeAttachedVolume(t *testing.T) {
 func TestAccAHVolumeAttachment_ChangeCloudServer(t *testing.T) {
 	var beforeID, afterID string
 
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckAHVolumeAttachmentDestroy,
@@ -82,7 +82,7 @@ func TestAccAHVolumeAttachment_ChangeCloudServer(t *testing.T) {
 func TestAccAHVolumeAttachment_ChangeVolume(t *testing.T) {
 	var beforeID, afterID string
 
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckAHVolumeAttachmentDestroy,

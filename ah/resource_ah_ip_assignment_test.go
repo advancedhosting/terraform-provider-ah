@@ -13,7 +13,7 @@ import (
 
 func TestAccAHIPAssignment_Basic(t *testing.T) {
 	name := fmt.Sprintf("test-%s", acctest.RandString(10))
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckAHIPAssignmentDestroy,
@@ -31,7 +31,7 @@ func TestAccAHIPAssignment_Basic(t *testing.T) {
 
 func TestAccAHIPAssignment_BasicByIP(t *testing.T) {
 	name := fmt.Sprintf("test-%s", acctest.RandString(10))
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckAHIPAssignmentDestroy,
@@ -49,7 +49,7 @@ func TestAccAHIPAssignment_BasicByIP(t *testing.T) {
 
 func TestAccAHIPAssignment_Primary(t *testing.T) {
 	name := fmt.Sprintf("test-%s", acctest.RandString(10))
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckAHIPAssignmentDestroy,
@@ -67,7 +67,7 @@ func TestAccAHIPAssignment_Primary(t *testing.T) {
 
 func TestAccAHIPAssignment_UpdateToPrimary(t *testing.T) {
 	name := fmt.Sprintf("test-%s", acctest.RandString(10))
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckAHIPAssignmentDestroy,

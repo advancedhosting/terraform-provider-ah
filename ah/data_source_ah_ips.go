@@ -11,7 +11,7 @@ import (
 
 func dataSourceAHIPs() *schema.Resource {
 	allowedFilterKeys := []string{"id", "ip_address", "type", "datacenter", "reverse_dns", "cloud_server_id"}
-	allowedSortingKeys := []string{"id", "ip_address", "type", "datacenter", "reverse_dns", "cloud_server_id"}
+	allowedSortingKeys := []string{"id", "ip_address", "type", "datacenter", "reverse_dns", "cloud_server_id", "created_at"}
 	return &schema.Resource{
 		Read: dataSourceAHIPsRead,
 		Schema: map[string]*schema.Schema{
@@ -120,25 +120,6 @@ func buildAHIPListSorting(set *schema.Set) []*ah.Sorting {
 		sortings = append(sortings, sorting)
 	}
 	return sortings
-}
-
-func buildAHIPsListFilter(set *schema.Set) []ah.FilterInterface {
-	var filters []ah.FilterInterface
-	for _, v := range set.List() {
-		m := v.(map[string]interface{})
-		var filterValues []string
-		for _, e := range m["values"].([]interface{}) {
-			filterValues = append(filterValues, e.(string))
-		}
-
-		filter := &ah.InFilter{
-			Keys:   []string{m["key"].(string)},
-			Values: filterValues,
-		}
-
-		filters = append(filters, filter)
-	}
-	return filters
 }
 
 func dataSourceAHIPsRead(d *schema.ResourceData, meta interface{}) error {

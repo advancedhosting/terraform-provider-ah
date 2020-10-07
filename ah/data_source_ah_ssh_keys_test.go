@@ -17,9 +17,13 @@ func TestAccDataSourceAHSSHKeys_Basic(t *testing.T) {
 
 	resourcesConfig := testAccCheckAHSSHKeyConfigBasic(name, publicKey)
 
-	// TODO add filter after WCS-3609
 	datasourceConfig := `
-	data "ah_ssh_keys" "test" {}`
+	data "ah_ssh_keys" "test" {
+		filter {
+			key = "name"
+			values = [ah_ssh_key.test.name]
+		}
+	}`
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { testAccPreCheck(t) },

@@ -63,27 +63,20 @@ func resourceAHVolume() *schema.Resource {
 func resourceAHVolumeCreate(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*ah.APIClient)
 
-<<<<<<< HEAD
-	request := &ah.VolumeCreateRequest{
-		Name:       d.Get("name").(string),
-		Size:       d.Get("size").(int),
-		FileSystem: d.Get("file_system").(string),
-	}
-
-	productAttr := d.Get("product").(string)
-	if _, err := uuid.Parse(productAttr); err != nil {
-		request.ProductSlug = productAttr
-	} else {
-		request.ProductID = productAttr
-	}
-
-	volume, err := client.Volumes.Create(context.Background(), request)
-=======
 	name := d.Get("name").(string)
-	productID := d.Get("product").(string)
+	productAttr := d.Get("product").(string)
 	if attr, ok := d.GetOk("origin_volume_id"); ok {
+		request := &ah.VolumeCopyActionRequest{
+			Name: name,
+		}
+		if _, err := uuid.Parse(productAttr); err != nil {
+			request.ProductSlug = productAttr
+		} else {
+			request.ProductID = productAttr
+		}
+
 		originVolumeID := attr.(string)
-		action, err := client.Volumes.Copy(context.Background(), originVolumeID, name, productID)
+		action, err := client.Volumes.Copy(context.Background(), originVolumeID, request)
 		if err != nil {
 			return fmt.Errorf("Error creating volume from origin: %s", err)
 		}
@@ -96,15 +89,20 @@ func resourceAHVolumeCreate(d *schema.ResourceData, meta interface{}) error {
 		}
 		d.SetId(action.ResultParams.CopiedVolumeID)
 	} else {
+
 		request := &ah.VolumeCreateRequest{
 			Name:       name,
 			Size:       d.Get("size").(int),
-			ProductID:  productID,
 			FileSystem: d.Get("file_system").(string),
 		}
 
+		if _, err := uuid.Parse(productAttr); err != nil {
+			request.ProductSlug = productAttr
+		} else {
+			request.ProductID = productAttr
+		}
+
 		volume, err := client.Volumes.Create(context.Background(), request)
->>>>>>> master
 
 		if err != nil {
 			return fmt.Errorf("Error creating volume: %s", err)

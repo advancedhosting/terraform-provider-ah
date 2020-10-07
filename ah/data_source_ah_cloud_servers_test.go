@@ -33,7 +33,7 @@ func TestAccDataSourceAHCloudServers_Basic(t *testing.T) {
 		}
 	}`, name)
 
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		PreCheck:  func() { testAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
