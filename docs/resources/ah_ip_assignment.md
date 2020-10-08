@@ -1,12 +1,4 @@
----
-layout: "ah"
-page_title: "Advahced Hosting: ah_ip_assignment"
-sidebar_current: "docs-resource-ah-ip-assignment"
-description: |-
-  Manages Advanced Hosting Cloud Server IP address assignments.
----
-
-# ah_ip_assignment
+# AH IP Assignment Resource
 
 Provides an Advanced Hosting IP Assignment resource to assign an IP address to a Cloud Server.
 

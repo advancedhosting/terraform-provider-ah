@@ -1,12 +1,4 @@
----
-layout: "ah"
-page_title: "Advahced Hosting: ah_private_network_connection"
-sidebar_current: "docs-resource-ah-private-network-connection"
-description: |-
-  Manages Advanced Hosting Cloud Server Private Network connection.
----
-
-# ah_private_network_connection
+# AH Private Network Connection Resource
 
 Provides an Advanced Hosting Private Network Connection resource to connect a Cloud Server to a Private Netowrk.
 
@@ -15,10 +7,10 @@ Provides an Advanced Hosting Private Network Connection resource to connect a Cl
 
 ```hcl
 resource "ah_cloud_server" "example" {
-  image = "f0438a4b-7c4a-4a63-a593-8e619ec63d16"
   name = "Sample server"
-  datacenter = "c54e8896-53d8-479a-8ff1-4d7d9d856a50"
-  product = "df42a96b-b381-412c-a605-d66d7bf081af"
+  datacenter = "ams1"
+	image = "centos7-64"
+	product = "start-xs"
 }
 
 resource "ah_private_network" "example" {

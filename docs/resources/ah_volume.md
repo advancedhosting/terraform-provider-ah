@@ -1,12 +1,4 @@
----
-layout: "ah"
-page_title: "Advahced Hosting: ah_volume"
-sidebar_current: "docs-resource-ah-volume"
-description: |-
-    Manages Advanced Hosting Volumes.
----
-
-# ah_volume
+# AH Volume Resource
 
 Provides an Advanced Hosting Volume resource.
 

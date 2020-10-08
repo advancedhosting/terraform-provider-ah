@@ -1,23 +1,15 @@
----
-layout: "ah"
-page_title: "Advahced Hosting: ah_cloud_server"
-sidebar_current: "docs-resource-ah-cloud-server"
-description: |-
-    Manages Advanced Hosting Cloud Servers.
----
+# AH Cloud Server Resource
 
-# ah_cloud_server
-
-Provides an Advanced Hosting Cloud Server resource. This can be used to create, modify, delete Cloud Servers, manage IP address assignments, volume attachments, private network connections and firewall rules for the server.
+Provides an Advanced Hosting Cloud Server resource. This can be used to create, modify, delete Cloud Servers, manage IP address assignments, volume attachments, private network connections and firewall rules for the Cloud Server.
 
 ## Example Usage
 
 ```hcl
 resource "ah_cloud_server" "example" {
-  image = "f0438a4b-7c4a-4a63-a593-8e619ec63d16"
   name = "Sample server"
-  datacenter = "c54e8896-53d8-479a-8ff1-4d7d9d856a50"
-  product = "df42a96b-b381-412c-a605-d66d7bf081af"
+  datacenter = "ams1"
+	image = "centos7-64"
+	product = "start-xs"
 }
 ```
 

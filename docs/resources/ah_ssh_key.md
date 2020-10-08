@@ -1,12 +1,4 @@
----
-layout: "ah"
-page_title: "Advahced Hosting: ah_ssh_key"
-sidebar_current: "docs-resource-ah-ssh-key"
-description: |-
-    Manages Advanced Hosting SSH keys.
----
-
-# ah_ssh_key
+# AH SSH Key Resource
 
 Provides an Advanced Hosting SSH key resource.
 

@@ -48,6 +48,14 @@ func resourceAHVolume() *schema.Resource {
 				Optional: true,
 				ForceNew: true,
 			},
+			"state": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"created_at": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 		},
 		CustomizeDiff: customdiff.All(
 			customdiff.ValidateChange("size", func(old, new, meta interface{}) error {
@@ -129,6 +137,8 @@ func resourceAHVolumeRead(d *schema.ResourceData, meta interface{}) error {
 	d.Set("name", volume.Name)
 	d.Set("size", volume.Size)
 	d.Set("file_system", volume.FileSystem)
+	d.Set("state", volume.State)
+	d.Set("created_at", volume.CreatedAt)
 
 	return nil
 }

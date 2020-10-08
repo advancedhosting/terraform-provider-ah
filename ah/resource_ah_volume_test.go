@@ -24,6 +24,8 @@ func TestAccAHVolume_Basic(t *testing.T) {
 					resource.TestCheckResourceAttrSet("ah_volume.test", "name"),
 					resource.TestCheckResourceAttrSet("ah_volume.test", "size"),
 					resource.TestCheckResourceAttrSet("ah_volume.test", "file_system"),
+					resource.TestCheckResourceAttrSet("ah_volume.test", "state"),
+					resource.TestCheckResourceAttrSet("ah_volume.test", "created_at"),
 				),
 			},
 		},

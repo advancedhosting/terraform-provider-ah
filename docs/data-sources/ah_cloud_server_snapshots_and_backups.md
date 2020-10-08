@@ -1,14 +1,6 @@
----
-layout: "ah"
-page_title: "Advahced Hosting: ah_cloud_server_snapshots_and_backups"
-sidebar_current: "docs-data-source-ah-cloud-server-snapshots-and-backups"
-description: |-
-  Get information about Advanced Hosting Cloud Server Snapshots and Automatic Backups.
----
+# AH Cloud Server Snapshots And Backups Data Source
 
-# ah_cloud_server_snapshots_and_backups
-
-Get information about Advanced Hosting Cloud Server Snapshots and Automatic Backups.
+Get information about AdvancedHosting Cloud Server Snapshots and Automatic Backups.
 
 ## Example Usage
 

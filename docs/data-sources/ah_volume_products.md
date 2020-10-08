@@ -1,14 +1,6 @@
----
-layout: "ah"
-page_title: "Advahced Hosting: ah_volume_products"
-sidebar_current: "docs-data-source-ah-volume-products"
-description: |-
-  Get information about Advanced Hosting Volume Products available for volume creation.
----
+# AH Volume Products Data Source
 
-# ah_volume_products
-
-Get information about Advanced Hosting Volume Products available for volume creation.
+Get information about AdvancedHosting Volume Products available for volume creation.
 
 ## Example Usage
 

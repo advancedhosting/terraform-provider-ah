@@ -11,7 +11,7 @@ import (
 
 func dataSourceAHPrivateNetworks() *schema.Resource {
 	allowedFilterKeys := []string{"id", "ip_range", "name", "cloud_server_id"}
-	allowedSortingKeys := []string{"id", "ip_range", "name", "created_at"}
+	allowedSortingKeys := []string{"id", "ip_range", "name", "cloud_server_id", "created_at"}
 	return &schema.Resource{
 		Read: dataSourceAHPrivateNetworksRead,
 		Schema: map[string]*schema.Schema{

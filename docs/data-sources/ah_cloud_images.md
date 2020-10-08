@@ -1,14 +1,6 @@
----
-layout: "ah"
-page_title: "Advahced Hosting: ah_cloud_images"
-sidebar_current: "docs-data-source-ah-cloud-images"
-description: |-
-  Get information about Advanced Hosting Cloud Images available for server creation.
----
+# AH Cloud Images Data Source
 
-# ah_cloud_images
-
-Get information about Advanced Hosting Cloud Images available for server creation.
+Get information about AdvancedHosting Cloud Images available for server creation.
 
 ## Example Usage
 

@@ -1,14 +1,6 @@
----
-layout: "ah"
-page_title: "Advahced Hosting: ah_ips"
-sidebar_current: "docs-data-source-ah-ips"
-description: |-
-  Get information about Advanced Hosting Public and Anycast IP addresses.
----
+# AH IPs Data Source
 
-# ah_ips
-
-Get information about Advanced Hosting Public and Anycast IP addresses.
+Get information about AdvancedHosting Public and Anycast IP addresses.
 
 ## Example Usage
 

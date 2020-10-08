@@ -1,14 +1,6 @@
----
-layout: "ah"
-page_title: "Advahced Hosting: ah_ssh_keys"
-sidebar_current: "docs-data-source-ah-ssh-keys"
-description: |-
-  Get information about Advanced Hosting SSH keys.
----
+# AH SSH Keys Data Source
 
-# ah_ssh_keys
-
-Get information about Advanced Hosting SSH keys.
+Get information about AdvancedHosting SSH keys.
 
 ## Example Usage
 

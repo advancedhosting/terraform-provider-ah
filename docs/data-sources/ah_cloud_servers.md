@@ -1,14 +1,7 @@
----
-layout: "ah"
-page_title: "Advahced Hosting: ah_cloud_servers"
-sidebar_current: "docs-data-source-ah-cloud-servers"
-description: |-
-  Get information about Advanced Hosting Cloud Servers.
----
 
-# ah_cloud_servers
+# AH Cloud Servers Data Source
 
-Get information about Advanced Hosting Cloud Servers.
+Get information about AdvancedHosting Cloud Servers.
 
 ## Example Usage
 
@@ -78,11 +71,9 @@ The following attributes are exported:
   * `image` - The Cloud Server Image ID or Snapshot / Auto Backup ID the server was created from.
   * `backups` - Boolean indicating whether backups are enabled for the Cloud Server.
   * `use_password` - Boolean indicating whether the Cloud Server was created with a password generated.
-  <!-- * `ssh_keys` - Array of SSH fingerprints the Cloud Server was created with. TODO Not supported by IP-->
   * `ips` - Array of Public and Anycast IP addresses assigned to the the Cloud Server. The structure of the block is documented below.
   * `volumes` - Array of Volume IDs attached to the server.
   * `private_networks` - Array of Private Networks connected to the server. The structure of the block is documented below.
-  <!-- * `firewall_rules` - Array of Firewall Rules applied to the server. The structure of the block is documented below. -->
   
 ---
 
@@ -97,12 +88,3 @@ The `private_networks` block contains:
 
 * `id` - Private Network ID.
 * `ip` - Private network IP address of the Cloud Server within the network.
-
-
-<!-- The `firewall_rules` block supports:
-
-* `type` - Type of the rule. Can be either `inbound` or `outbound`.
-* `action`- Type of action for the rule. Can be either `accept` or `drop`.
-* `traffic_type` - Type of the traffic to apply the rule to. Can be one of: `all`, `icmp`, `tcp`, `udp`.
-* `ip_range` - IP address range for the rule in CIDR format (e.g. '10.4.4.4/24').
-* `ports` - List of Ports for the rule. Can be a port number (80) or a port range (1-65535). -->

@@ -1,14 +1,6 @@
----
-layout: "ah"
-page_title: "Advahced Hosting: ah_cloud_server_products"
-sidebar_current: "docs-data-source-ah-cloud-server-products"
-description: |-
-  Get information about Advanced Hosting Cloud Server Products available for server creation.
----
+# AH Cloud Server Products Data Source
 
-# ah_cloud_server_products
-
-Get information about Advanced Hosting Cloud Server Products available for server creation.
+Get information about AdvancedHosting Cloud Server Products available for server creation.
 
 ## Example Usage
 
@@ -52,7 +44,7 @@ The `filter` block supports:
 * `values` - (Required) A list of values to match against the `key` field.
 
 The `sort` block supports:
-* `key` - (Required) Filter the results by specified key. Can be one of: `id`, `name`, `slug`, `price`, `currency`, `vcpu`, `ram`, `disk`, +`available_on_trial`
+* `key` - (Required) Filter the results by specified key. Can be one of: `id`, `name`, `slug`, `price`, `currency`, `vcpu`, `ram`, `disk`, `available_on_trial`
 * `direction` - (Optional) Sort direction of the results. Can be one of: `asc`, `desc`. Default option is `desc`.
 
 ---
