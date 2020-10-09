@@ -1,12 +1,4 @@
----
-layout: "ah"
-page_title: "Advahced Hosting: ah_volume_attachment"
-sidebar_current: "docs-resource-ah-volume-attachment"
-description: |-
-  Manages Advanced Hosting Cloud Server Volume Attachment.
----
-
-# ah_volume_attachment
+# AH Volume Attachment Resource
 
 Provides an Advanced Hosting Volume Attachment resource to connect a Volume to the Cloud Server. Can be done either using this resource or in `volumes` argument of `ah_cloud_server`.
 

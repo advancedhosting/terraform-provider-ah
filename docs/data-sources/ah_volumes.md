@@ -1,14 +1,6 @@
----
-layout: "ah"
-page_title: "Advahced Hosting: ah_volumes"
-sidebar_current: "docs-data-source-ah-volumes"
-description: |-
-  Get information about Advanced Hosting Volumes.
----
+# AH Volumes
 
-# ah_volumes
-
-Get information about Advanced Hosting Volumes.
+Get information about AdvancedHosting Volumes.
 
 ## Example Usage
 

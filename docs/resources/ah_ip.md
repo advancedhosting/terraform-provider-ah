@@ -1,12 +1,4 @@
----
-layout: "ah"
-page_title: "Advahced Hosting: ah_ip"
-sidebar_current: "docs-resource-ah-ip"
-description: |-
-    Manages Advanced Hosting Cloud Server IP addresses.
----
-
-# ah_ip
+# AH IP Resource
 
 Provides an Advanced Hosting IP address resource to represent a publicly-accessible static public and anycast IP addresses that can be mapped to your servers.
 
@@ -17,7 +9,7 @@ Provides an Advanced Hosting IP address resource to represent a publicly-accessi
 
 resource "ah_ip" "example" {
   type = "public"
-  datacenter = "c54e8896-53d8-479a-8ff1-4d7d9d856a50"
+  datacenter = "ams1"
 }
 
 ```

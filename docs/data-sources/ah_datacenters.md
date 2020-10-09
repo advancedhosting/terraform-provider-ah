@@ -1,14 +1,6 @@
----
-layout: "ah"
-page_title: "Advahced Hosting: ah_datacenters"
-sidebar_current: "docs-data-source-ah-datacenters"
-description: |-
-  Get information about Advanced Hosting Datacenters.
----
+# AH Datacenters Data Source
 
-# ah_datacenters
-
-Get information about Advanced Hosting Datacenters.
+Get information about AdvancedHosting Datacenters.
 
 ## Example Usage
 

@@ -1,14 +1,6 @@
----
-layout: "ah"
-page_title: "Advahced Hosting: ah_cloud_server_snapshot"
-sidebar_current: "docs-resource-ah-cloud-server-snapshot"
-description: |-
-    Manages Advanced Hosting Cloud Server Snapshots.
----
+# AH Cloud Server Snapshot Resource
 
-# ah_cloud_server_snapshot
-
-Provides an Advanced Hosting Cloud Server Snapshot resource which can be used to create a Cloud Server Snapshot.
+Provides an AdvancedHosting Cloud Server Snapshot resource which can be used to create a Cloud Server Snapshot.
 
 ## Example Usage
 

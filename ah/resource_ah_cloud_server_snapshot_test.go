@@ -11,6 +11,9 @@ import (
 )
 
 func TestAccAHCloudServerSnapshot_Basic(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping test in short mode.")
+	}
 	resource.ParallelTest(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
@@ -34,6 +37,9 @@ func TestAccAHCloudServerSnapshot_Basic(t *testing.T) {
 }
 
 func TestAccAHCloudServerSnapshot_EmptyName(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping test in short mode.")
+	}
 	resource.ParallelTest(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
@@ -50,6 +56,9 @@ func TestAccAHCloudServerSnapshot_EmptyName(t *testing.T) {
 }
 
 func TestAccAHCloudServerSnapshot_UpdateName(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping test in short mode.")
+	}
 	var beforeID, afterID string
 	resource.ParallelTest(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -75,8 +84,11 @@ func TestAccAHCloudServerSnapshot_UpdateName(t *testing.T) {
 }
 
 func TestAccAHCloudServerSnapshot_UpdateCloudServer(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping test in short mode.")
+	}
 	var beforeID, afterID string
-	resource.ParallelTest(t, resource.TestCase{
+	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckAHCloudServerSnapshotDestroy,

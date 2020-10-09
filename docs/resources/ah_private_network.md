@@ -1,12 +1,4 @@
----
-layout: "ah"
-page_title: "Advahced Hosting: ah_private_network"
-sidebar_current: "docs-resource-ah-private-network"
-description: |-
-    Manages Advanced Hosting Private Networks.
----
-
-# ah_private_network
+# AH Private Network Resource
 
 Provides an Advanced Hosting Private Network resource to represent a Private Network that can be connect to a Cloud Server.
 

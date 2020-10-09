@@ -1,14 +1,6 @@
----
-layout: "ah"
-page_title: "Advahced Hosting: ah_private_networks"
-sidebar_current: "docs-data-source-ah-private-networks"
-description: |-
-  Get information about Advanced Hosting Private Networks.
----
+# AH Private Networks Data Source
 
-# ah_private_networks
-
-Get information about Advanced Hosting Private Networks.
+Get information about AdvancedHosting Private Networks.
 
 ## Example Usage
 

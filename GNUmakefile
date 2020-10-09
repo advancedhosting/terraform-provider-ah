@@ -14,7 +14,7 @@ export CGO_ENABLED:=0
 
 
 testacc: 
-	TF_ACC=1 go test $(TEST) -v $(TESTARGS) -timeout 120m -parallel 20 
+	TF_ACC=1 go test $(TEST) -v $(TESTARGS) -timeout 120m -parallel 10 -short
 
 build:
 	go build -o ${BINARY}

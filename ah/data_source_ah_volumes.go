@@ -11,7 +11,7 @@ import (
 
 func dataSourceAHVolumes() *schema.Resource {
 	allowedFilterKeys := []string{"id", "name", "state", "product_id", "size", "file_system", "cloud_server_id"}
-	allowedSortingKeys := []string{"id", "name", "state", "product_id", "size", "file_system", "cloud_server_id", "created_at"}
+	allowedSortingKeys := []string{"id", "name", "state", "product_id", "size", "file_system", "created_at"}
 	return &schema.Resource{
 		Read: dataSourceAHVolumesRead,
 		Schema: map[string]*schema.Schema{
@@ -66,15 +66,8 @@ func buildAHVolumeListSorting(set *schema.Set) []*ah.Sorting {
 	for _, v := range set.List() {
 		m := v.(map[string]interface{})
 
-		key := m["key"].(string)
-
-		switch key {
-		case "cloud_server_id":
-			key = "instance_id"
-		}
-
 		sorting := &ah.Sorting{
-			Key:   key,
+			Key:   m["key"].(string),
 			Order: m["direction"].(string),
 		}
 
