@@ -18,7 +18,7 @@ Use the navigation to the left to read about the available resources.
 ```hcl
 // Configure the AdvancedHosting provider
 provider "ah" {
-  token = "auth_token_here"
+  access_token = "auth_token_here"
 }
 
 // Create a new instance
