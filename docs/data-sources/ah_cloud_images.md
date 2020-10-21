@@ -25,7 +25,7 @@ data "ah_cloud_images" "example" {
   }
   filter {
     key = "architecture"
-    values = ["x64"]
+    values = ["x86_64"]
   }
   sort {
     key = "version"

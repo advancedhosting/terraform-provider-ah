@@ -24,8 +24,8 @@ data "ah_datacenters" "example" {
     values = ["NL"]
   }
   sort {
-      key = "slug"
-      direction = "asc"
+    key = "slug"
+    direction = "asc"
   }
 }
 ```

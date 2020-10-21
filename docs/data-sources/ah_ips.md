@@ -35,12 +35,12 @@ data "ah_ips" "example" {
     values = ["123"]
   }
   filter {
-      key = "type"
-      values = ["public"]
+    key = "type"
+    values = ["public"]
   }
   sort {
-      key = "created_at"
-      direction = "desc"
+    key = "created_at"
+    direction = "desc"
   }
 }
 ```

@@ -25,11 +25,11 @@ data "ah_volumes" "example" {
   }
   filter {
     key = "product"
-    values = ["hdd-level2-ams1", "hdd-level3-ams1"]
+    values = ["hdd-l2-ash1", "hdd3-ash1"]
   }
   sort {
-      key = "created_at"
-      direction = "desc"
+    key = "created_at"
+    direction = "desc"
   }
 }
 ```

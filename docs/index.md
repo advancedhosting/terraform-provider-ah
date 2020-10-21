@@ -31,6 +31,6 @@ resource "ah_cloud_server" "default" {
 
 The following arguments are supported:
 
-* `token` - (Required) Security token used for authentication in AdvancedHosting. This can also be specified using the environment variable `AH_ACCESS_TOKEN`.
-* `api_endpoint` - (Optional) Specify which API endpoint to use, can be used to override the default API Endpoint. This can also be specified using the environment variable `AH_API_ENDPOINT`. 
+* `access_token` - (Required) Security token used for authentication in AdvancedHosting. This can also be specified using the environment variable `AH_ACCESS_TOKEN`.
+* `endpoint` - (Optional) Specify which API endpoint to use, can be used to override the default API Endpoint. This can also be specified using the environment variable `AH_API_ENDPOINT`. 
 

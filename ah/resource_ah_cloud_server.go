@@ -166,7 +166,10 @@ func resourceAHCloudServerCreate(d *schema.ResourceData, meta interface{}) error
 	}
 
 	if attr, ok := d.GetOk("backups"); ok {
-		request.SnapshotBySchedule = attr.(bool)
+		if attr.(bool) {
+			request.SnapshotBySchedule = true
+			request.SnapshotPeriod = "weekly"
+		}
 	}
 
 	instance, err := client.Instances.Create(context.Background(), request)

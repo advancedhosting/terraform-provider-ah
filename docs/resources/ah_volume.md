@@ -8,7 +8,7 @@ Provides an Advanced Hosting Volume resource.
 
 resource "ah_volume" "example" {
   name = "Volume Name"
-  product = "hdd-level2-ams1"
+  product = "hdd-l2-ash1"
   file_system = "ext4"
   size = "20"
 }

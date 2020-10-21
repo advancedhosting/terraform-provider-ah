@@ -20,18 +20,18 @@ Get a list of active Private Networks connected to a set of Cloud Servers, sorte
 
 ```hcl
 data "ah_private_networks" "example" {
-    filter {
-        key = "cloud_server_id"
-        values = ["123", "456"]
-    }
-    filter {
-        key = "state"
-        values = ["active"]
-    }
-    sort {
-        key = "created_at"
-        direction = "desc"
-    }
+  filter {
+    key = "cloud_server_id"
+    values = ["123", "456"]
+  }
+  filter {
+    key = "state"
+    values = ["active"]
+  }
+  sort {
+    key = "created_at"
+    direction = "desc"
+  }
 }
 ```
 
