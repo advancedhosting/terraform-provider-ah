@@ -62,6 +62,24 @@ func TestAccAHCloudServer_CreateWithSlugs(t *testing.T) {
 	})
 }
 
+func TestAccAHCloudServer_CreateWithAutoBackups(t *testing.T) {
+	name := fmt.Sprintf("test-%s", acctest.RandString(10))
+
+	resource.ParallelTest(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckAHCloudServerDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccCheckAHCloudServerConfigCreateWithAutoBackups(name),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("ah_cloud_server.web", "name", name),
+				),
+			},
+		},
+	})
+}
+
 func TestAccAHCloudServer_CreateWithSSHKey(t *testing.T) {
 	name := fmt.Sprintf("test-%s", acctest.RandString(10))
 
@@ -252,8 +270,19 @@ func testAccCheckAHCloudServerConfigCreateWithSlugs(name string) string {
 	 resource "ah_cloud_server" "web" {
 	   name = "%s"
 	   datacenter = "ams1"
-	   image = "centos7-64"
+	   image = "centos-7-x64"
 	   product = "start-xs"
+	 }`, name)
+}
+
+func testAccCheckAHCloudServerConfigCreateWithAutoBackups(name string) string {
+	return fmt.Sprintf(`
+	 resource "ah_cloud_server" "web" {
+	   name = "%s"
+	   datacenter = "ams1"
+	   image = "centos-7-x64"
+	   product = "start-xs"
+	   backups = true
 	 }`, name)
 }
 
@@ -262,7 +291,7 @@ func testAccCheckAHCloudServerConfigUpgradeWithSlug(name string) string {
 	 resource "ah_cloud_server" "web" {
 	   name = "%s"
 	   datacenter = "ams1"
-	   image = "centos7-64"
+	   image = "centos-7-x64"
 	   product = "start-m"
 	 }`, name)
 }
