@@ -28,8 +28,8 @@ data "ah_volumes" "example" {
     values = ["hdd-level2-ams1", "hdd-level3-ams1"]
   }
   sort {
-      key = "created_at"
-      direction = "desc"
+    key = "created_at"
+    direction = "desc"
   }
 }
 ```

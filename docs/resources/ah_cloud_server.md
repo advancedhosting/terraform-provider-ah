@@ -8,8 +8,8 @@ Provides an Advanced Hosting Cloud Server resource. This can be used to create, 
 resource "ah_cloud_server" "example" {
   name = "Sample server"
   datacenter = "ams1"
-	image = "centos7-64"
-	product = "start-xs"
+  image = "centos7-64"
+  product = "start-xs"
 }
 ```
 
