@@ -41,7 +41,7 @@ func resourceAHVolume() *schema.Resource {
 				Optional:     true,
 				ForceNew:     true,
 				Default:      "ext4",
-				ValidateFunc: validation.StringInSlice([]string{"ext4", "btrfs", "xfs"}, false),
+				ValidateFunc: validation.StringInSlice([]string{"ext4", "btrfs", "xfs", ""}, false),
 			},
 			"origin_volume_id": {
 				Type:     schema.TypeString,
