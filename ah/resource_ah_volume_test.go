@@ -51,6 +51,22 @@ func TestAccAHVolume_CreateWithSlug(t *testing.T) {
 	})
 }
 
+func TestAccAHVolume_CreateWithoutFileSystem(t *testing.T) {
+	resource.ParallelTest(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckAHVolumeDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccCheckAHVolumeConfigCreateWithoutFileSystem(),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("ah_volume.test", "file_system", ""),
+				),
+			},
+		},
+	})
+}
+
 func TestAccAHVolume_CreateFromOrigin(t *testing.T) {
 	resource.ParallelTest(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -222,6 +238,16 @@ func testAccCheckAHVolumeConfigCreateWithSlug() string {
 		name = "Volume Name"
 		product = "hdd-l2-ash1"
 		file_system = "ext4"
+		size = "20"
+	}`)
+}
+
+func testAccCheckAHVolumeConfigCreateWithoutFileSystem() string {
+	return fmt.Sprintf(`
+	resource "ah_volume" "test" {
+		name = "Volume Name"
+		product = "hdd-l2-ash1"
+		file_system = ""
 		size = "20"
 	}`)
 }
