@@ -19,7 +19,7 @@ resource "ah_ip" "example" {
 The following arguments are supported:
 
 * `type` - (Required) IP type. Can be either `public` or `anycast`.
-* `datacenter` - (Optional) Datacenter ID or Slug to create IP addresses. Required if `type="public"`, ignored if `type="anycast"`.
+* `datacenter` - (Optional) Datacenter ID or Slug to create IP addresses. Required if `type="public"`, ignored if `type="anycast"`. See the [list of available datacenters](https://websa.advancedhosting.com/slugs).
 * `reverse_dns` - (Optional) Reverse DNS to be assigned to the IP address. If not specified, will be automatically generated.
 
 ---

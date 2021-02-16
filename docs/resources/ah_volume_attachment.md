@@ -8,15 +8,15 @@ If Volume is not set using `ah_volume_attachment` and not provided in the list o
 
 ```hcl
 resource "ah_cloud_server" "example" {
-  image = "ubuntu-20-04-x64"
+  image = "centos-7-x64"
   name = "Sample server"
   datacenter = "ams1"
-  product = "start-m"
+  product = "start-xs"
 }
 
 resource "ah_volume" "example" {
   name = "Volume Name"
-  product = "hdd-level2-ams1"
+  product = "hdd2-ams1"
   file_system = "ext4"
   size = "20"
 }
@@ -34,6 +34,7 @@ The following arguments are supported:
 
 * `cloud_server_id` - (Required) Cloud Server ID to attach a Volume to.
 * `volume_id` - (Required) Volume ID to attach to a Cloud Server.
+
 ---
 
 ## Attributes Reference
