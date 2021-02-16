@@ -21,7 +21,7 @@ Get a list of Volume available in AMS1 datacenter, sorted by maximum volume size
 data "ah_volume_products" "example" {
   filter {
     key = "datacenter_slug"
-    values = ['ams1']
+    values = ["ams1"]
   }
   sort {
     key = "max_size"

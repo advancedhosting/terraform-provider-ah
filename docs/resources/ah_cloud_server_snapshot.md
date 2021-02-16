@@ -6,10 +6,10 @@ Provides an AdvancedHosting Cloud Server Snapshot resource which can be used to 
 
 ```hcl
 resource "ah_cloud_server" "example" {
-  image = "ubuntu-20-04-x64"
+  image = "centos-7-x64"
   name = "Sample server"
   datacenter = "ams1"
-  product = "start-m"
+  product = "start-xs"
 }
 
 resource "ah_cloud_server_snapshot" "example-snapshot" {
