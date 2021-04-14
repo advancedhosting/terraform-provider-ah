@@ -193,10 +193,31 @@ func resourceAHCloudServerCreate(d *schema.ResourceData, meta interface{}) error
 
 func resourceAHCloudServerImport(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 	client := meta.(*ah.APIClient)
-	_, err := client.Instances.Get(context.Background(), d.Id())
+	instance, err := client.Instances.Get(context.Background(), d.Id())
 	if err != nil {
 		return nil, err
 	}
+	if instance.Image.Slug != "" {
+		d.Set("image", instance.Image.Slug)
+	} else {
+		d.Set("image", instance.Image.ID)
+	}
+
+	if instance.Datacenter.Slug != "" {
+		d.Set("datacenter", instance.Datacenter.Slug)
+	} else {
+		d.Set("datacenter", instance.Datacenter.ID)
+	}
+
+	d.Set("product", instance.ProductID)
+
+	sshKeys := make([]string, len(instance.SSHKeys))
+	for i, sshKey := range instance.SSHKeys {
+		sshKeys[i] = sshKey.ID
+	}
+
+	d.Set("ssh_keys", sshKeys)
+
 	return []*schema.ResourceData{d}, nil
 }
 
@@ -212,7 +233,9 @@ func resourceAHCloudServerRead(d *schema.ResourceData, meta interface{}) error {
 	d.Set("state", instance.State)
 	d.Set("vcpu", instance.Vcpu)
 	d.Set("ram", instance.RAM)
-	d.Set("disk", instance.RAM)
+	d.Set("disk", instance.Disk)
+	d.Set("backups", instance.SnapshotBySchedule)
+	d.Set("use_password", instance.UseSSHPassword)
 
 	var ips []map[string]interface{}
 	for _, instanceIPAddress := range instance.IPAddresses {

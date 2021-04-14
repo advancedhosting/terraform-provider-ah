@@ -13,7 +13,7 @@ func TestAccDataSourceAHCloudServerSnapshotsAndBackups_Basic(t *testing.T) {
 	  count = 3
 	  name = "test_${count.index}"
 	  datacenter = "ams1"
-	  image = "centos7-64"
+	  image = "centos-7-x64"
 	  product = "start-xs"
 	}
 
