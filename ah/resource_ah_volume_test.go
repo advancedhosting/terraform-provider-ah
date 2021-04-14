@@ -236,7 +236,7 @@ func testAccCheckAHVolumeConfigCreateWithSlug() string {
 	return fmt.Sprintf(`
 	resource "ah_volume" "test" {
 		name = "Volume Name"
-		product = "hdd-l2-ash1"
+		product = "hdd2-ash1"
 		file_system = "ext4"
 		size = "20"
 	}`)
@@ -246,7 +246,7 @@ func testAccCheckAHVolumeConfigCreateWithoutFileSystem() string {
 	return fmt.Sprintf(`
 	resource "ah_volume" "test" {
 		name = "Volume Name"
-		product = "hdd-l2-ash1"
+		product = "hdd2-ash1"
 		file_system = ""
 		size = "20"
 	}`)
