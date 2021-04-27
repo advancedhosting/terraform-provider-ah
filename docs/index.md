@@ -32,5 +32,7 @@ resource "ah_cloud_server" "default" {
 The following arguments are supported:
 
 * `access_token` - (Required) Security token used for authentication in AdvancedHosting. This can also be specified using the environment variable `AH_ACCESS_TOKEN`.
+  
+    **Please pay attention to the fact that the authentication method has been changed to OAuth2. If you use a deprecated `x-auth` token you should [generate](https://websa.advancedhosting.com/api) a new token.**
 * `endpoint` - (Optional) Specify which API endpoint to use, can be used to override the default API Endpoint. This can also be specified using the environment variable `AH_API_ENDPOINT`. 
 
