@@ -17,6 +17,9 @@ func resourceAHPrivateNetwork() *schema.Resource {
 		Read:   resourceAHPrivateNetworkRead,
 		Update: resourceAHPrivateNetworkUpdate,
 		Delete: resourceAHPrivateNetworkDelete,
+		Importer: &schema.ResourceImporter{
+			State: schema.ImportStatePassthrough,
+		},
 		Schema: map[string]*schema.Schema{
 			"ip_range": {
 				Type:     schema.TypeString,
