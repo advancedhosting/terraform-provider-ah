@@ -6,15 +6,15 @@ import (
 	"testing"
 
 	"github.com/advancedhosting/advancedhosting-api-go/ah"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAHPrivateNetwork_Basic(t *testing.T) {
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAHPrivateNetworkDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckAHPrivateNetworkDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckAHPrivateNetworkConfigBasic(),
@@ -33,9 +33,9 @@ func TestAccAHPrivateNetwork_Basic(t *testing.T) {
 func TestAccAHPrivateNetwork_UpdateName(t *testing.T) {
 	var beforeID, afterID string
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAHPrivateNetworkDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckAHPrivateNetworkDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckAHPrivateNetworkConfigBasic(),
@@ -74,19 +74,19 @@ func testAccCheckAHPrivateNetworkDestroy(s *terraform.State) error {
 }
 
 func testAccCheckAHPrivateNetworkConfigBasic() string {
-	return fmt.Sprintf(`
+	return `
 	resource "ah_private_network" "test" {
 	  ip_range = "10.0.0.0/24"
 	  name = "Test Private Network"
-	}`)
+	}`
 }
 
 func testAccCheckAHPrivateNetworkConfigUpdateName() string {
-	return fmt.Sprintf(`
+	return `
 	resource "ah_private_network" "test" {
 	  ip_range = "10.0.0.0/24"
 	  name = "New Private Network"
-	}`)
+	}`
 }
 
 func testAccCheckAHPrivateNetworkExists(n string, privateNetworkID *string) resource.TestCheckFunc {

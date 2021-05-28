@@ -5,9 +5,8 @@ import (
 	"fmt"
 
 	"github.com/advancedhosting/advancedhosting-api-go/ah"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func dataSourceAHCloudServers() *schema.Resource {
@@ -142,7 +141,6 @@ func dataSourceAHCloudServers() *schema.Resource {
 						"private_networks": {
 							Type:     schema.TypeList,
 							Computed: true,
-							MinItems: 1,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
 									"id": {
@@ -258,6 +256,7 @@ func allCloudServers(client *ah.APIClient, listFilters []ah.FilterInterface, lis
 func cloudServersSchema(instances []ah.Instance, d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*ah.APIClient)
 	cloudServers := make([]map[string]interface{}, len(instances))
+	var ids string
 	for i, instance := range instances {
 		cloudServer := map[string]interface{}{
 			"id":           instance.ID,
@@ -273,6 +272,7 @@ func cloudServersSchema(instances []ah.Instance, d *schema.ResourceData, meta in
 			"backups":      instance.SnapshotBySchedule,
 			"use_password": instance.UseSSHPassword,
 		}
+		ids += instance.ID
 
 		var privateNetworks []map[string]string
 		for _, instancePrivateNetwork := range instance.PrivateNetworks {
@@ -308,7 +308,6 @@ func cloudServersSchema(instances []ah.Instance, d *schema.ResourceData, meta in
 			item["type"] = ipAddress.Type
 			item["reverse_dns"] = ipAddress.ReverseDNS
 			ips = append(ips, item)
-
 		}
 		if len(ips) > 0 {
 			cloudServer["ips"] = ips
@@ -321,7 +320,7 @@ func cloudServersSchema(instances []ah.Instance, d *schema.ResourceData, meta in
 	if err := d.Set("cloud_servers", cloudServers); err != nil {
 		return fmt.Errorf("unable to set cloud_servers attribute: %s", err)
 	}
-	d.SetId(resource.UniqueId())
+	d.SetId(generateHash(ids))
 
 	return nil
 }

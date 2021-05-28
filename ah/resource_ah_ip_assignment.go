@@ -8,8 +8,8 @@ import (
 
 	"github.com/advancedhosting/advancedhosting-api-go/ah"
 	"github.com/google/uuid"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAHIPAssignment() *schema.Resource {
@@ -93,7 +93,6 @@ func resourceAHIPAssignmentRead(d *schema.ResourceData, meta interface{}) error 
 }
 
 func resourceAHIPAssignmentUpdate(d *schema.ResourceData, meta interface{}) error {
-	d.Partial(true)
 
 	if d.HasChange("primary") {
 		if d.Get("primary").(bool) {
@@ -101,7 +100,7 @@ func resourceAHIPAssignmentUpdate(d *schema.ResourceData, meta interface{}) erro
 				return nil
 			}
 		}
-		d.SetPartial("primary")
+
 	}
 
 	return resourceAHIPAssignmentRead(d, meta)

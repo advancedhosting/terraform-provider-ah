@@ -5,8 +5,7 @@ import (
 	"fmt"
 
 	"github.com/advancedhosting/advancedhosting-api-go/ah"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAHDatacenters() *schema.Resource {
@@ -130,6 +129,7 @@ func dataSourceAHDatacentersRead(d *schema.ResourceData, meta interface{}) error
 
 func dataSourceAHDatacentersSchema(d *schema.ResourceData, meta interface{}, datacenters []ah.Datacenter) error {
 	allDatacenters := make([]map[string]interface{}, len(datacenters))
+	var ids string
 	for i, datacenter := range datacenters {
 		datacenterInfo := map[string]interface{}{
 			"id":                  datacenter.ID,
@@ -142,11 +142,12 @@ func dataSourceAHDatacentersSchema(d *schema.ResourceData, meta interface{}, dat
 		}
 
 		allDatacenters[i] = datacenterInfo
+		ids += datacenter.ID
 	}
 	if err := d.Set("datacenters", allDatacenters); err != nil {
 		return fmt.Errorf("unable to set datacenters attribute: %s", err)
 	}
-	d.SetId(resource.UniqueId())
+	d.SetId(generateHash(ids))
 
 	return nil
 }

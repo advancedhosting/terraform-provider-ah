@@ -3,7 +3,7 @@ package ah
 import (
 	"testing"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 )
 
 func TestAccDataSourceAHDatacenters_Basic(t *testing.T) {
@@ -11,10 +11,9 @@ func TestAccDataSourceAHDatacenters_Basic(t *testing.T) {
 	datasourceConfig := `
 	data "ah_datacenters" "test" {
 	}`
-
 	resource.Test(t, resource.TestCase{
-		PreCheck:  func() { testAccPreCheck(t) },
-		Providers: testAccProviders,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
 		Steps: []resource.TestStep{
 			{
 				Config: datasourceConfig,

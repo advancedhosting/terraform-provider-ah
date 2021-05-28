@@ -6,18 +6,18 @@ import (
 	"testing"
 
 	"github.com/advancedhosting/advancedhosting-api-go/ah"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/acctest"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAHCloudServer_Basic(t *testing.T) {
 	name := fmt.Sprintf("test-%s", acctest.RandString(10))
 
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAHCloudServerDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckAHCloudServerDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckAHCloudServerConfigBasic(name),
@@ -48,9 +48,9 @@ func TestAccAHCloudServer_CreateWithSlugs(t *testing.T) {
 	name := fmt.Sprintf("test-%s", acctest.RandString(10))
 
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAHCloudServerDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckAHCloudServerDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckAHCloudServerConfigCreateWithSlugs(name),
@@ -66,9 +66,9 @@ func TestAccAHCloudServer_CreateWithAutoBackups(t *testing.T) {
 	name := fmt.Sprintf("test-%s", acctest.RandString(10))
 
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAHCloudServerDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckAHCloudServerDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckAHCloudServerConfigCreateWithAutoBackups(name),
@@ -83,16 +83,16 @@ func TestAccAHCloudServer_CreateWithAutoBackups(t *testing.T) {
 func TestAccAHCloudServer_CreateWithSSHKey(t *testing.T) {
 	name := fmt.Sprintf("test-%s", acctest.RandString(10))
 
-	publicKey, _, err := acctest.RandSSHKeyPair("test@ah-test.com")
+	publicKey, _, _ := acctest.RandSSHKeyPair("test@ah-test.com")
 	secondPublicKey, _, err := acctest.RandSSHKeyPair("test@ah-test.com")
 	if err != nil {
 		t.Fatalf("RandSSHKeyPair error: %s", err)
 	}
 
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAHCloudServerDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckAHCloudServerDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckAHCloudServerConfigWithSSHKeys(name, publicKey, secondPublicKey),
@@ -110,9 +110,9 @@ func TestAccAHCloudServer_CreateWithoutPublicIP(t *testing.T) {
 	name := fmt.Sprintf("test-%s", acctest.RandString(10))
 
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAHCloudServerDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckAHCloudServerDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckAHCloudServerConfigWithoutPublicIP(name),
@@ -129,9 +129,9 @@ func TestAccAHCloudServer_Rename(t *testing.T) {
 	newName := fmt.Sprintf("test-%s", acctest.RandString(10))
 
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAHCloudServerDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckAHCloudServerDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckAHCloudServerConfigBasic(name),
@@ -154,9 +154,9 @@ func TestAccAHCloudServer_Upgrade(t *testing.T) {
 	name := fmt.Sprintf("test-%s", acctest.RandString(10))
 
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAHCloudServerDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckAHCloudServerDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckAHCloudServerConfigBasic(name),
@@ -183,9 +183,9 @@ func TestAccAHCloudServer_UpgradeWithSlug(t *testing.T) {
 	name := fmt.Sprintf("test-%s", acctest.RandString(10))
 
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAHCloudServerDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckAHCloudServerDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckAHCloudServerConfigCreateWithSlugs(name),
@@ -212,9 +212,9 @@ func TestAccAHCloudServer_UpdateImage(t *testing.T) {
 	name := fmt.Sprintf("test-%s", acctest.RandString(10))
 
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAHCloudServerDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckAHCloudServerDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckAHCloudServerConfigBasic(name),

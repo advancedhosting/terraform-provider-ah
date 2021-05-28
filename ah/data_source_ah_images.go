@@ -5,8 +5,7 @@ import (
 	"fmt"
 
 	"github.com/advancedhosting/advancedhosting-api-go/ah"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAHImages() *schema.Resource {
@@ -95,11 +94,11 @@ func dataSourceAHImagesRead(d *schema.ResourceData, meta interface{}) error {
 	options := &ah.ListOptions{}
 
 	if v, ok := d.GetOk("filter"); ok {
-		options.Filters = buildAHVolumesListFilter(v.(*schema.Set))
+		options.Filters = buildAHImagesListFilter(v.(*schema.Set))
 	}
 
 	if v, ok := d.GetOk("sort"); ok {
-		options.Sortings = buildAHVolumeListSorting(v.(*schema.Set))
+		options.Sortings = buildAHImagesListSorting(v.(*schema.Set))
 	}
 
 	images, err := allImages(client, options)
@@ -115,6 +114,7 @@ func dataSourceAHImagesRead(d *schema.ResourceData, meta interface{}) error {
 
 func dataSourceAHImagesSchema(d *schema.ResourceData, meta interface{}, images []ah.Image) error {
 	allImages := make([]map[string]interface{}, len(images))
+	var ids string
 	for i, image := range images {
 		imageInfo := map[string]interface{}{
 			"id":           image.ID,
@@ -124,13 +124,13 @@ func dataSourceAHImagesSchema(d *schema.ResourceData, meta interface{}, images [
 			"architecture": image.Architecture,
 			"slug":         image.Slug,
 		}
-
 		allImages[i] = imageInfo
+		ids += image.ID
 	}
 	if err := d.Set("images", allImages); err != nil {
 		return fmt.Errorf("unable to set images attribute: %s", err)
 	}
-	d.SetId(resource.UniqueId())
+	d.SetId(generateHash(ids))
 
 	return nil
 }

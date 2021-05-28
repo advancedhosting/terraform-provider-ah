@@ -5,8 +5,7 @@ import (
 	"fmt"
 
 	"github.com/advancedhosting/advancedhosting-api-go/ah"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAHCloudServerSnapshotsAndBackups() *schema.Resource {
@@ -146,6 +145,7 @@ func dataSourceAHCloudServerSnapshotsAndBackupsRead(d *schema.ResourceData, meta
 
 func dataSourceAHCloudServerSnapshotsAndBackupsSchema(d *schema.ResourceData, meta interface{}, instancesBackups []ah.InstanceBackups) error {
 	var allBackups []map[string]interface{}
+	var ids string
 	for _, instanceBackup := range instancesBackups {
 		for _, backup := range instanceBackup.Backups {
 			backupInfo := map[string]interface{}{
@@ -160,12 +160,13 @@ func dataSourceAHCloudServerSnapshotsAndBackupsSchema(d *schema.ResourceData, me
 				"created_at":           backup.CreatedAt,
 			}
 			allBackups = append(allBackups, backupInfo)
+			ids += backup.ID
 		}
 	}
 	if err := d.Set("snapshots_and_backups", allBackups); err != nil {
 		return fmt.Errorf("unable to set snapshots_and_backups attribute: %s", err)
 	}
-	d.SetId(resource.UniqueId())
+	d.SetId(generateHash(ids))
 
 	return nil
 }

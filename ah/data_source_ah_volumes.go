@@ -5,8 +5,7 @@ import (
 	"fmt"
 
 	"github.com/advancedhosting/advancedhosting-api-go/ah"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAHVolumes() *schema.Resource {
@@ -127,6 +126,7 @@ func dataSourceAHVolumesRead(d *schema.ResourceData, meta interface{}) error {
 
 func dataSourceAHVolumesSchema(d *schema.ResourceData, meta interface{}, volumes []ah.Volume) error {
 	allVolumes := make([]map[string]interface{}, len(volumes))
+	var ids string
 	for i, volume := range volumes {
 		volumeInfo := map[string]interface{}{
 			"id":          volume.ID,
@@ -141,11 +141,12 @@ func dataSourceAHVolumesSchema(d *schema.ResourceData, meta interface{}, volumes
 			volumeInfo["cloud_server_id"] = volume.Instance.ID
 		}
 		allVolumes[i] = volumeInfo
+		ids += volume.ID
 	}
 	if err := d.Set("volumes", allVolumes); err != nil {
 		return fmt.Errorf("unable to set volumes attribute: %s", err)
 	}
-	d.SetId(resource.UniqueId())
+	d.SetId(generateHash(ids))
 
 	return nil
 }

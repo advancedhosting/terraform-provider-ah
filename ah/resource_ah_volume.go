@@ -8,10 +8,10 @@ import (
 
 	"github.com/advancedhosting/advancedhosting-api-go/ah"
 	"github.com/google/uuid"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/customdiff"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/customdiff"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAHVolume() *schema.Resource {
@@ -58,7 +58,7 @@ func resourceAHVolume() *schema.Resource {
 			},
 		},
 		CustomizeDiff: customdiff.All(
-			customdiff.ValidateChange("size", func(old, new, meta interface{}) error {
+			customdiff.ValidateChange("size", func(ctx context.Context, old, new, meta interface{}) error {
 				if new.(int) < old.(int) {
 					return fmt.Errorf("New size value must be greater than old value %d", old.(int))
 				}
@@ -145,7 +145,6 @@ func resourceAHVolumeRead(d *schema.ResourceData, meta interface{}) error {
 
 func resourceAHVolumeUpdate(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*ah.APIClient)
-	d.Partial(true)
 
 	if d.HasChange("name") {
 
@@ -157,7 +156,7 @@ func resourceAHVolumeUpdate(d *schema.ResourceData, meta interface{}) error {
 			return fmt.Errorf(
 				"Error changing volume name (%s): %s", d.Id(), err)
 		}
-		d.SetPartial("name")
+
 	}
 
 	if d.HasChange("size") {
@@ -169,7 +168,7 @@ func resourceAHVolumeUpdate(d *schema.ResourceData, meta interface{}) error {
 			return fmt.Errorf(
 				"Error waiting for volume (%s) to become ready: %s", d.Id(), err)
 		}
-		d.SetPartial("size")
+
 	}
 
 	return resourceAHVolumeRead(d, meta)

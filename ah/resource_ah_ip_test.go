@@ -7,15 +7,15 @@ import (
 	"testing"
 
 	"github.com/advancedhosting/advancedhosting-api-go/ah"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAHIP_BasicPublicIP(t *testing.T) {
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAHIPDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckAHIPDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckAHPublicIPConfigBasic(),
@@ -32,9 +32,9 @@ func TestAccAHIP_BasicPublicIP(t *testing.T) {
 
 func TestAccAHIP_BasicPublicIPWithSlug(t *testing.T) {
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAHCloudServerDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckAHCloudServerDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckAHPublicIPConfigWithSlug(),
@@ -47,9 +47,9 @@ func TestAccAHIP_BasicPublicIPWithSlug(t *testing.T) {
 }
 func TestAccAHIP_BasicPublicIPWithoutDatacenter(t *testing.T) {
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAHIPDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckAHIPDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config:      testAccCheckAHPublicIPConfigWithoutdDatacenter(),
@@ -61,9 +61,9 @@ func TestAccAHIP_BasicPublicIPWithoutDatacenter(t *testing.T) {
 
 func TestAccAHIP_PublicIPWithReserveDNS(t *testing.T) {
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAHIPDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckAHIPDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckAHPublicIPConfigBasicWithReserveDNS(),
@@ -80,9 +80,9 @@ func TestAccAHIP_PublicIPWithReserveDNS(t *testing.T) {
 
 func TestAccAHIP_BasicAnycastIP(t *testing.T) {
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAHIPDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckAHIPDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckAHAnycastIPConfigBasic(),
@@ -101,9 +101,9 @@ func TestAccAHIP_BasicAnycastIP(t *testing.T) {
 func TestAccAHIP_UpdateReverseDNS(t *testing.T) {
 	var beforeID, afterID string
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAHIPDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckAHIPDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckAHAnycastIPConfigBasic(),
@@ -126,9 +126,9 @@ func TestAccAHIP_UpdateReverseDNS(t *testing.T) {
 func TestAccAHIP_UpdateDatacenter(t *testing.T) {
 	var beforeID, afterID string
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAHIPDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckAHIPDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckAHAnycastIPConfigBasic(),
@@ -151,9 +151,9 @@ func TestAccAHIP_UpdateDatacenter(t *testing.T) {
 func TestAccAHIP_UpdateType(t *testing.T) {
 	var beforeID, afterID string
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAHIPDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckAHIPDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckAHAnycastIPConfigBasic(),
@@ -192,50 +192,50 @@ func testAccCheckAHIPDestroy(s *terraform.State) error {
 }
 
 func testAccCheckAHPublicIPConfigBasic() string {
-	return fmt.Sprintf(`
+	return `
 	 resource "ah_ip" "test" {
 	   type = "public"
 	   datacenter = "c54e8896-53d8-479a-8ff1-4d7d9d856a50"
-	 }`)
+	 }`
 }
 
 func testAccCheckAHPublicIPConfigWithSlug() string {
-	return fmt.Sprintf(`
+	return `
 	 resource "ah_ip" "test" {
 	   type = "public"
 	   datacenter = "ams1"
-	 }`)
+	 }`
 }
 
 func testAccCheckAHPublicIPConfigNewDatacenter() string {
-	return fmt.Sprintf(`
+	return `
 	 resource "ah_ip" "test" {
 	   type = "public"
 	   datacenter = "1b1ae192-d44e-451b-8d39-a8670c58e97d"
-	 }`)
+	 }`
 }
 
 func testAccCheckAHPublicIPConfigWithoutdDatacenter() string {
-	return fmt.Sprintf(`
+	return `
 	 resource "ah_ip" "test" {
 	   type = "public"
-	 }`)
+	 }`
 }
 
 func testAccCheckAHPublicIPConfigBasicWithReserveDNS() string {
-	return fmt.Sprintf(`
+	return `
 	 resource "ah_ip" "test" {
 	   type = "public"
 	   datacenter = "c54e8896-53d8-479a-8ff1-4d7d9d856a50"
 	   reverse_dns = "ip-185-189-69-16.ah-server22.com"
-	 }`)
+	 }`
 }
 
 func testAccCheckAHAnycastIPConfigBasic() string {
-	return fmt.Sprintf(`
+	return `
 	 resource "ah_ip" "test" {
 	   type = "anycast"
-	 }`)
+	 }`
 }
 
 func testAccCheckAHIPExists(n string, ipID *string) resource.TestCheckFunc {
