@@ -44,6 +44,7 @@ func Provider() *schema.Provider {
 			"ah_volume_attachment":          resourceAHVolumeAttachment(),
 			"ah_cloud_server_snapshot":      resourceAHCloudServerSnapshot(),
 			"ah_ssh_key":                    resourceAHSSHKey(),
+			"ah_load_balancer":              resourceAHLoadBalancer(),
 		},
 	}
 

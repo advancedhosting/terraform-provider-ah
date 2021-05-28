@@ -44,6 +44,10 @@ github.com/Microsoft/go-winio v0.4.16 h1:FtSW/jqD+l4ba5iPBj9CODVtgfYAD8w2wS923g/
 github.com/Microsoft/go-winio v0.4.16/go.mod h1:XB6nPKklQyQ7GC9LdcBEcBl8PF76WugXOPRXwdLnMv0=
 github.com/advancedhosting/advancedhosting-api-go v0.6.0 h1:gT94RG7Q0z3YJb3JFerM6C5rcKa8TZB8idGlbpyfzbw=
 github.com/advancedhosting/advancedhosting-api-go v0.6.0/go.mod h1:uvyxN/w0Qhp0b7DB+Jw22882fLcYsOD+qiJHnkQWp2I=
+github.com/advancedhosting/advancedhosting-api-go v0.7.0 h1:ulYCRmprix9eSaObYFzpZBnBxhQtvVtC6W71p4u+prM=
+github.com/advancedhosting/advancedhosting-api-go v0.7.0/go.mod h1:uvyxN/w0Qhp0b7DB+Jw22882fLcYsOD+qiJHnkQWp2I=
+github.com/advancedhosting/advancedhosting-api-go v0.7.1 h1:rN+UIwl3T9hUz+NS+UYVrL+OC78hXSo17kHqLaUOKmI=
+github.com/advancedhosting/advancedhosting-api-go v0.7.1/go.mod h1:uvyxN/w0Qhp0b7DB+Jw22882fLcYsOD+qiJHnkQWp2I=
 github.com/agext/levenshtein v1.2.1/go.mod h1:JEDfjyjHDjOF/1e4FlBE/PkbqA9OfWu2ki2W0IB5558=
 github.com/agext/levenshtein v1.2.2 h1:0S/Yg6LYmFJ5stwQeRp6EeOcCbj7xiqQSdNelsXvaqE=
 github.com/agext/levenshtein v1.2.2/go.mod h1:JEDfjyjHDjOF/1e4FlBE/PkbqA9OfWu2ki2W0IB5558=
