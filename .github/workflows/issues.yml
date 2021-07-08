@@ -1,0 +1,30 @@
+name: create jira issue when gh issue created
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  jira-create-issue-api:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: create Jira issue if gh issue appears
+        run: |
+          curl -o /dev/null --silent --request POST --url '${{ secrets.JIRA_URL }}/rest/api/2/issue' -H "Authorization: Basic ${{ secrets.JIRA_TOKEN }}" \
+          --header 'Accept: application/json' \
+          --header 'Content-Type: application/json' --data '{
+                "fields": {
+                   "project":
+                    {
+                        "key": "SUP"
+                    },
+                    "summary": "New GH issue ${{ github.event.issue.number }} ${{ github.event.issue.title }}",
+                    "description": "${{ github.event.issue.title }} , check here ${{ github.event.issue.html_url }}",
+                    "assignee":{"name":"${{ secrets.ASSIGNEE }}"},
+                    "issuetype": {
+                        "name": "Task"
+                    }
+                }
+              }'
