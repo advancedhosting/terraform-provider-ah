@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/advancedhosting/advancedhosting-api-go/ah"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAHCloudServerSnapshot() *schema.Resource {
@@ -128,7 +128,6 @@ func snapshotInfo(d *schema.ResourceData, meta interface{}) (*ah.Backup, string,
 
 func resourceAHCloudServerSnapshotUpdate(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*ah.APIClient)
-	d.Partial(true)
 
 	if d.HasChange("name") {
 
@@ -140,7 +139,6 @@ func resourceAHCloudServerSnapshotUpdate(d *schema.ResourceData, meta interface{
 			return fmt.Errorf(
 				"Error changing backup name (%s): %s", d.Id(), err)
 		}
-		d.SetPartial("name")
 	}
 
 	return resourceAHCloudServerSnapshotRead(d, meta)

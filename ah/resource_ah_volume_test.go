@@ -7,15 +7,15 @@ import (
 	"testing"
 
 	"github.com/advancedhosting/advancedhosting-api-go/ah"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAHVolume_Basic(t *testing.T) {
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAHVolumeDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckAHVolumeDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckAHVolumeConfigBasic(),
@@ -34,9 +34,9 @@ func TestAccAHVolume_Basic(t *testing.T) {
 
 func TestAccAHVolume_CreateWithSlug(t *testing.T) {
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAHVolumeDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckAHVolumeDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckAHVolumeConfigCreateWithSlug(),
@@ -53,9 +53,9 @@ func TestAccAHVolume_CreateWithSlug(t *testing.T) {
 
 func TestAccAHVolume_CreateWithoutFileSystem(t *testing.T) {
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAHVolumeDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckAHVolumeDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckAHVolumeConfigCreateWithoutFileSystem(),
@@ -69,9 +69,9 @@ func TestAccAHVolume_CreateWithoutFileSystem(t *testing.T) {
 
 func TestAccAHVolume_CreateFromOrigin(t *testing.T) {
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAHVolumeDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckAHVolumeDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckAHVolumeConfigFromOrigin(),
@@ -90,9 +90,9 @@ func TestAccAHVolume_CreateFromOrigin(t *testing.T) {
 func TestAccAHVolume_ChangeName(t *testing.T) {
 	var beforeID, afterID string
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAHVolumeDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckAHVolumeDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckAHVolumeConfigBasic(),
@@ -115,9 +115,9 @@ func TestAccAHVolume_ChangeName(t *testing.T) {
 func TestAccAHVolume_IncreaseSize(t *testing.T) {
 	var beforeID, afterID string
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAHVolumeDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckAHVolumeDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckAHVolumeConfigBasic(),
@@ -139,9 +139,9 @@ func TestAccAHVolume_IncreaseSize(t *testing.T) {
 
 func TestAccAHVolume_DowngradeSize(t *testing.T) {
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAHVolumeDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckAHVolumeDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckAHVolumeConfigBasic(),
@@ -157,9 +157,9 @@ func TestAccAHVolume_DowngradeSize(t *testing.T) {
 func TestAccAHVolume_ChangeFileSystem(t *testing.T) {
 	var beforeID, afterID string
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAHVolumeDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckAHVolumeDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckAHVolumeConfigBasic(),
@@ -182,9 +182,9 @@ func TestAccAHVolume_ChangeFileSystem(t *testing.T) {
 func TestAccAHVolume_ChangeProduct(t *testing.T) {
 	var beforeID, afterID string
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAHVolumeDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckAHVolumeDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckAHVolumeConfigBasic(),
@@ -223,37 +223,37 @@ func testAccCheckAHVolumeDestroy(s *terraform.State) error {
 }
 
 func testAccCheckAHVolumeConfigBasic() string {
-	return fmt.Sprintf(`
+	return `
 	resource "ah_volume" "test" {
 		name = "Volume Name"
 		product = "ff4ae08e-d510-4e85-8440-9fdfd0f2308a"
 		file_system = "ext4"
 		size = "20"
-	}`)
+	}`
 }
 
 func testAccCheckAHVolumeConfigCreateWithSlug() string {
-	return fmt.Sprintf(`
+	return `
 	resource "ah_volume" "test" {
 		name = "Volume Name"
 		product = "hdd2-ash1"
 		file_system = "ext4"
 		size = "20"
-	}`)
+	}`
 }
 
 func testAccCheckAHVolumeConfigCreateWithoutFileSystem() string {
-	return fmt.Sprintf(`
+	return `
 	resource "ah_volume" "test" {
 		name = "Volume Name"
 		product = "hdd2-ash1"
 		file_system = ""
 		size = "20"
-	}`)
+	}`
 }
 
 func testAccCheckAHVolumeConfigFromOrigin() string {
-	return fmt.Sprintf(`
+	return `
 	resource "ah_volume" "origin" {
 		name = "Origin Volume Name"
 		product = "ff4ae08e-d510-4e85-8440-9fdfd0f2308a"
@@ -267,17 +267,17 @@ func testAccCheckAHVolumeConfigFromOrigin() string {
 		file_system = "ext4"
 		size = "20"
 		origin_volume_id = ah_volume.origin.id
-	}`)
+	}`
 }
 
 func testAccCheckAHVolumeConfigChangeName() string {
-	return fmt.Sprintf(`
+	return `
 	resource "ah_volume" "test" {
 		name = "New Volume Name"
 		product = "ff4ae08e-d510-4e85-8440-9fdfd0f2308a"
 		file_system = "ext4"
 		size = "20"
-	}`)
+	}`
 }
 
 func testAccCheckAHVolumeConfigChangeSize(newSize int) string {
@@ -291,23 +291,23 @@ func testAccCheckAHVolumeConfigChangeSize(newSize int) string {
 }
 
 func testAccCheckAHVolumeConfigChangeFileSystem() string {
-	return fmt.Sprintf(`
+	return `
 	resource "ah_volume" "test" {
 		name = "Volume Name"
 		product = "ff4ae08e-d510-4e85-8440-9fdfd0f2308a"
 		file_system = "xfs"
 		size = "20"
-	}`)
+	}`
 }
 
 func testAccCheckAHVolumeConfigChangeProduct() string {
-	return fmt.Sprintf(`
+	return `
 	resource "ah_volume" "test" {
 		name = "Volume Name"
 		product = "03bebb65-22d8-43c6-819b-5b85b5e49c82"
 		file_system = "ext4"
 		size = "20"
-	}`)
+	}`
 }
 
 func testAccCheckAHVolumeExists(n string, volumeID *string) resource.TestCheckFunc {

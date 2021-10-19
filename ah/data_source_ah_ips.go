@@ -5,8 +5,7 @@ import (
 	"fmt"
 
 	"github.com/advancedhosting/advancedhosting-api-go/ah"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAHIPs() *schema.Resource {
@@ -147,6 +146,7 @@ func dataSourceAHIPsRead(d *schema.ResourceData, meta interface{}) error {
 
 func dataSourceAHIPsSchema(d *schema.ResourceData, meta interface{}, ipAddresses []ah.IPAddress) error {
 	ips := make([]map[string]interface{}, len(ipAddresses))
+	var ids string
 	for i, ipAddress := range ipAddresses {
 		ip := map[string]interface{}{
 			"id":               ipAddress.ID,
@@ -161,11 +161,12 @@ func dataSourceAHIPsSchema(d *schema.ResourceData, meta interface{}, ipAddresses
 			ip["primary"] = primary
 		}
 		ips[i] = ip
+		ids += ipAddress.ID
 	}
 	if err := d.Set("ips", ips); err != nil {
 		return fmt.Errorf("unable to set ips attribute: %s", err)
 	}
-	d.SetId(resource.UniqueId())
+	d.SetId(generateHash(ids))
 
 	return nil
 }

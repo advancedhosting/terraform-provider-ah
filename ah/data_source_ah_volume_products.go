@@ -5,8 +5,7 @@ import (
 	"fmt"
 
 	"github.com/advancedhosting/advancedhosting-api-go/ah"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAHVolumeProducts() *schema.Resource {
@@ -170,6 +169,7 @@ func dataSourceAHVolumeProductsRead(d *schema.ResourceData, meta interface{}) er
 
 func dataSourceAHVolumeProductsSchema(d *schema.ResourceData, meta interface{}, volumeProducts []ah.VolumeProduct) error {
 	volumeProductsData := make([]map[string]interface{}, len(volumeProducts))
+	var ids string
 	for i, volumeProduct := range volumeProducts {
 		volumeProductInfo := map[string]interface{}{
 			"id":       volumeProduct.ID,
@@ -198,11 +198,12 @@ func dataSourceAHVolumeProductsSchema(d *schema.ResourceData, meta interface{}, 
 			volumeProductInfo["datacenters"] = datacenters
 		}
 		volumeProductsData[i] = volumeProductInfo
+		ids += volumeProduct.ID
 	}
 	if err := d.Set("products", volumeProductsData); err != nil {
 		return fmt.Errorf("unable to set products attribute: %s", err)
 	}
-	d.SetId(resource.UniqueId())
+	d.SetId(generateHash(ids))
 
 	return nil
 }

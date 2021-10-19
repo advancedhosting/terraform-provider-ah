@@ -6,15 +6,15 @@ import (
 	"testing"
 
 	"github.com/advancedhosting/advancedhosting-api-go/ah"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAHVolumeAttachment_Basic(t *testing.T) {
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAHVolumeAttachmentDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckAHVolumeAttachmentDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckAHVolumeAttachmentConfigBasic(20),
@@ -32,9 +32,9 @@ func TestAccAHVolumeAttachment_Basic(t *testing.T) {
 func TestAccAHVolume_IncreaseSizeAttachedVolume(t *testing.T) {
 	var beforeID, afterID string
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAHVolumeDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckAHVolumeDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckAHVolumeAttachmentConfigBasic(20),
@@ -58,9 +58,9 @@ func TestAccAHVolumeAttachment_ChangeCloudServer(t *testing.T) {
 	var beforeID, afterID string
 
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAHVolumeAttachmentDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckAHVolumeAttachmentDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckAHVolumeAttachmentConfigBasic(20),
@@ -83,9 +83,9 @@ func TestAccAHVolumeAttachment_ChangeVolume(t *testing.T) {
 	var beforeID, afterID string
 
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAHVolumeAttachmentDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckAHVolumeAttachmentDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckAHVolumeAttachmentConfigBasic(20),

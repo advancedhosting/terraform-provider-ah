@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/advancedhosting/advancedhosting-api-go/ah"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAHPrivateNetworkConnection() *schema.Resource {
@@ -84,7 +84,6 @@ func resourceAHPrivateNetworkConnectionRead(d *schema.ResourceData, meta interfa
 
 func resourceAHPrivateNetworkConnectionUpdate(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*ah.APIClient)
-	d.Partial(true)
 
 	if d.HasChange("ip_address") {
 		updateRequest := &ah.InstancePrivateNetworkUpdateRequest{
@@ -97,7 +96,7 @@ func resourceAHPrivateNetworkConnectionUpdate(d *schema.ResourceData, meta inter
 		if err := waitForInstanceConnectionToPrivateNetwork(d, meta); err != nil {
 			return err
 		}
-		d.SetPartial("ip_address")
+
 	}
 
 	return resourceAHPrivateNetworkConnectionRead(d, meta)

@@ -5,8 +5,7 @@ import (
 	"fmt"
 
 	"github.com/advancedhosting/advancedhosting-api-go/ah"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAHPrivateNetworks() *schema.Resource {
@@ -143,6 +142,7 @@ func dataSourceAHPrivateNetworksRead(d *schema.ResourceData, meta interface{}) e
 func dataSourceAHPrivateNetworksSchema(d *schema.ResourceData, meta interface{}, privateNetworks []ah.PrivateNetwork) error {
 	client := meta.(*ah.APIClient)
 	pns := make([]map[string]interface{}, len(privateNetworks))
+	var ids string
 	for i, privateNetwork := range privateNetworks {
 		pn := map[string]interface{}{
 			"id":         privateNetwork.ID,
@@ -168,12 +168,13 @@ func dataSourceAHPrivateNetworksSchema(d *schema.ResourceData, meta interface{},
 		}
 
 		pns[i] = pn
+		ids += privateNetwork.ID
 	}
 
 	if err := d.Set("private_networks", pns); err != nil {
 		return fmt.Errorf("unable to set private_networks attribute: %s", err)
 	}
-	d.SetId(resource.UniqueId())
+	d.SetId(generateHash(ids))
 
 	return nil
 }

@@ -4,19 +4,20 @@ import (
 	"os"
 	"testing"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 var (
-	testAccProviders map[string]terraform.ResourceProvider
-	testAccProvider  *schema.Provider
+	testAccProviderFactories map[string]func() (*schema.Provider, error)
+	testAccProvider          *schema.Provider
 )
 
 func init() {
-	testAccProvider = Provider().(*schema.Provider)
-	testAccProviders = map[string]terraform.ResourceProvider{
-		"ah": testAccProvider,
+	testAccProvider = Provider()
+	testAccProviderFactories = map[string]func() (*schema.Provider, error){
+		"ah": func() (*schema.Provider, error) {
+			return testAccProvider, nil
+		},
 	}
 }
 

@@ -1,9 +1,8 @@
 package ah
 
 import (
-	"github.com/advancedhosting/advancedhosting-api-go/ah"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func dataSourceFilterSchema(allowedFilterKeys []string) *schema.Schema {
@@ -47,18 +46,4 @@ func dataSourceSortingSchema(allowedSortingKeys []string) *schema.Schema {
 			},
 		},
 	}
-}
-
-func buildAHListSorting(set *schema.Set) []*ah.Sorting {
-	var sortings []*ah.Sorting
-	for _, v := range set.List() {
-		m := v.(map[string]interface{})
-		sorting := &ah.Sorting{
-			Key:   m["key"].(string),
-			Order: m["direction"].(string),
-		}
-
-		sortings = append(sortings, sorting)
-	}
-	return sortings
 }

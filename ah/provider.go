@@ -1,12 +1,11 @@
 package ah
 
 import (
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 // Provider returns a terraform.ResourceProvider.
-func Provider() terraform.ResourceProvider {
+func Provider() *schema.Provider {
 	provider := &schema.Provider{
 
 		Schema: map[string]*schema.Schema{
@@ -45,6 +44,7 @@ func Provider() terraform.ResourceProvider {
 			"ah_volume_attachment":          resourceAHVolumeAttachment(),
 			"ah_cloud_server_snapshot":      resourceAHCloudServerSnapshot(),
 			"ah_ssh_key":                    resourceAHSSHKey(),
+			"ah_load_balancer":              resourceAHLoadBalancer(),
 		},
 	}
 

@@ -6,8 +6,8 @@ import (
 	"testing"
 
 	"github.com/advancedhosting/advancedhosting-api-go/ah"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAHCloudServerSnapshot_Basic(t *testing.T) {
@@ -15,9 +15,9 @@ func TestAccAHCloudServerSnapshot_Basic(t *testing.T) {
 		t.Skip("skipping test in short mode.")
 	}
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAHCloudServerSnapshotDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckAHCloudServerSnapshotDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckAHCloudServerSnapshotConfigBasic(),
@@ -41,9 +41,9 @@ func TestAccAHCloudServerSnapshot_EmptyName(t *testing.T) {
 		t.Skip("skipping test in short mode.")
 	}
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAHCloudServerSnapshotDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckAHCloudServerSnapshotDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckAHCloudServerSnapshotConfigEmptyName(),
@@ -61,9 +61,9 @@ func TestAccAHCloudServerSnapshot_UpdateName(t *testing.T) {
 	}
 	var beforeID, afterID string
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAHCloudServerSnapshotDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckAHCloudServerSnapshotDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckAHCloudServerSnapshotConfigBasic(),
@@ -89,9 +89,9 @@ func TestAccAHCloudServerSnapshot_UpdateCloudServer(t *testing.T) {
 	}
 	var beforeID, afterID string
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAHCloudServerSnapshotDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckAHCloudServerSnapshotDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckAHCloudServerSnapshotConfigBasic(),
@@ -166,7 +166,7 @@ func testAccCheckAHCloudServerSnapshotDestroy(s *terraform.State) error {
 }
 
 func testAccCheckAHCloudServerSnapshotConfigBasic() string {
-	return fmt.Sprintf(`
+	return `
 	resource "ah_cloud_server" "web" {
 	  name = "test"
 	  datacenter = "ams1"
@@ -177,11 +177,11 @@ func testAccCheckAHCloudServerSnapshotConfigBasic() string {
 	resource "ah_cloud_server_snapshot" "test" {
 	  cloud_server_id = ah_cloud_server.web.id
 	  name = "example-snapshot-1"
-	}`)
+	}`
 }
 
 func testAccCheckAHCloudServerSnapshotConfigEmptyName() string {
-	return fmt.Sprintf(`
+	return `
 	resource "ah_cloud_server" "web" {
 	  name = "test"
 	  datacenter = "ams1"
@@ -191,11 +191,11 @@ func testAccCheckAHCloudServerSnapshotConfigEmptyName() string {
 	
 	resource "ah_cloud_server_snapshot" "test" {
 	  cloud_server_id = ah_cloud_server.web.id
-	}`)
+	}`
 }
 
 func testAccCheckAHCloudServerSnapshotConfigUpdateName() string {
-	return fmt.Sprintf(`
+	return `
 	resource "ah_cloud_server" "web" {
 	  name = "test"
 	  datacenter = "ams1"
@@ -206,11 +206,11 @@ func testAccCheckAHCloudServerSnapshotConfigUpdateName() string {
 	resource "ah_cloud_server_snapshot" "test" {
 	  cloud_server_id = ah_cloud_server.web.id
 	  name = "New Name"
-	}`)
+	}`
 }
 
 func testAccCheckAHCloudServerSnapshotConfigUpdateCloudServer() string {
-	return fmt.Sprintf(`
+	return `
 	resource "ah_cloud_server" "web" {
 	  count = 2
 	  name = "test"
@@ -222,5 +222,5 @@ func testAccCheckAHCloudServerSnapshotConfigUpdateCloudServer() string {
 	resource "ah_cloud_server_snapshot" "test" {
 	  cloud_server_id = ah_cloud_server.web.1.id
 	  name = "example-snapshot-1"
-	}`)
+	}`
 }

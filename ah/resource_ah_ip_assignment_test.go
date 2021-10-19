@@ -6,17 +6,17 @@ import (
 	"testing"
 
 	"github.com/advancedhosting/advancedhosting-api-go/ah"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
-	"github.com/hashicorp/terraform/helper/acctest"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAHIPAssignment_Basic(t *testing.T) {
 	name := fmt.Sprintf("test-%s", acctest.RandString(10))
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAHIPAssignmentDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckAHIPAssignmentDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckAHIPAssignmentConfigBasic(name),
@@ -32,9 +32,9 @@ func TestAccAHIPAssignment_Basic(t *testing.T) {
 func TestAccAHIPAssignment_BasicByIP(t *testing.T) {
 	name := fmt.Sprintf("test-%s", acctest.RandString(10))
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAHIPAssignmentDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckAHIPAssignmentDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckAHIPAssignmentConfigBasicIP(name),
@@ -50,9 +50,9 @@ func TestAccAHIPAssignment_BasicByIP(t *testing.T) {
 func TestAccAHIPAssignment_Primary(t *testing.T) {
 	name := fmt.Sprintf("test-%s", acctest.RandString(10))
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAHIPAssignmentDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckAHIPAssignmentDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckAHIPAssignmentConfigPrimaryIP(name),
@@ -68,9 +68,9 @@ func TestAccAHIPAssignment_Primary(t *testing.T) {
 func TestAccAHIPAssignment_UpdateToPrimary(t *testing.T) {
 	name := fmt.Sprintf("test-%s", acctest.RandString(10))
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAHIPAssignmentDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckAHIPAssignmentDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckAHIPAssignmentConfigBasic(name),

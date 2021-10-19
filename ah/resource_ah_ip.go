@@ -6,8 +6,8 @@ import (
 
 	"github.com/advancedhosting/advancedhosting-api-go/ah"
 	"github.com/google/uuid"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAHIP() *schema.Resource {
@@ -97,7 +97,6 @@ func resourceAHIPRead(d *schema.ResourceData, meta interface{}) error {
 
 func resourceAHIPUpdate(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*ah.APIClient)
-	d.Partial(true)
 
 	if d.HasChange("reverse_dns") {
 		reverseDNS := d.Get("reverse_dns").(string)
@@ -110,7 +109,6 @@ func resourceAHIPUpdate(d *schema.ResourceData, meta interface{}) error {
 			return fmt.Errorf(
 				"Error changing reverse_dns (%s): %s", d.Id(), err)
 		}
-		d.SetPartial("reverse_dns")
 	}
 
 	return resourceAHIPRead(d, meta)

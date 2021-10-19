@@ -3,24 +3,25 @@ package ah
 import (
 	"context"
 	"fmt"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"log"
 	"time"
 
 	"github.com/advancedhosting/advancedhosting-api-go/ah"
 	"github.com/google/uuid"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAHCloudServer() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAHCloudServerCreate,
-		Read:   resourceAHCloudServerRead,
-		Update: resourceAHCloudServerUpdate,
-		Delete: resourceAHCloudServerDelete,
+		CreateContext: resourceAHCloudServerCreate,
+		ReadContext:   resourceAHCloudServerRead,
+		UpdateContext: resourceAHCloudServerUpdate,
+		DeleteContext: resourceAHCloudServerDelete,
 		Importer: &schema.ResourceImporter{
-			State: resourceAHCloudServerImport,
+			StateContext: resourceAHCloudServerImport,
 		},
 
 		Schema: map[string]*schema.Schema{
@@ -118,7 +119,7 @@ func resourceAHCloudServer() *schema.Resource {
 	}
 }
 
-func resourceAHCloudServerCreate(d *schema.ResourceData, meta interface{}) error {
+func resourceAHCloudServerCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*ah.APIClient)
 	request := &ah.InstanceCreateRequest{
 		Name:                  d.Get("name").(string),
@@ -155,7 +156,7 @@ func resourceAHCloudServerCreate(d *schema.ResourceData, meta interface{}) error
 			} else {
 				sshKey, err := sshKeyByFingerprint(v.(string), meta)
 				if err != nil {
-					return fmt.Errorf("Error searching ssh key by fingerprint %s: %v", v.(string), err)
+					return diag.Errorf("Error searching ssh key by fingerprint %s: %v", v.(string), err)
 				}
 				sshKeyIDs = append(sshKeyIDs, sshKey.ID)
 
@@ -172,28 +173,28 @@ func resourceAHCloudServerCreate(d *schema.ResourceData, meta interface{}) error
 		}
 	}
 
-	instance, err := client.Instances.Create(context.Background(), request)
+	instance, err := client.Instances.Create(ctx, request)
 
 	if err != nil {
-		return fmt.Errorf("Error creating instance: %s", err)
+		return diag.Errorf("Error creating instance: %s", err)
 	}
 
 	d.SetId(instance.ID)
 	if err = waitForStatus([]string{"creating", "stopped"}, []string{"running"}, d, meta); err != nil {
-		return fmt.Errorf(
+		return diag.Errorf(
 			"Error waiting for cloud server (%s) to become ready: %s", d.Id(), err)
 	}
 
 	//Wait for instance to completely load
 	time.Sleep(20 * time.Second)
 
-	return resourceAHCloudServerRead(d, meta)
+	return resourceAHCloudServerRead(ctx, d, meta)
 
 }
 
-func resourceAHCloudServerImport(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+func resourceAHCloudServerImport(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 	client := meta.(*ah.APIClient)
-	instance, err := client.Instances.Get(context.Background(), d.Id())
+	instance, err := client.Instances.Get(ctx, d.Id())
 	if err != nil {
 		return nil, err
 	}
@@ -221,11 +222,11 @@ func resourceAHCloudServerImport(d *schema.ResourceData, meta interface{}) ([]*s
 	return []*schema.ResourceData{d}, nil
 }
 
-func resourceAHCloudServerRead(d *schema.ResourceData, meta interface{}) error {
+func resourceAHCloudServerRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*ah.APIClient)
 	instance, err := client.Instances.Get(context.Background(), d.Id())
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	d.Set("name", instance.Name)
@@ -245,7 +246,7 @@ func resourceAHCloudServerRead(d *schema.ResourceData, meta interface{}) error {
 		item["primary"] = instance.PrimaryInstanceIPAddressID == instanceIPAddress.ID
 		ipAddress, err := client.IPAddresses.Get(context.Background(), instanceIPAddress.IPAddressID)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		item["type"] = ipAddress.Type
 		item["reverse_dns"] = ipAddress.ReverseDNS
@@ -258,21 +259,18 @@ func resourceAHCloudServerRead(d *schema.ResourceData, meta interface{}) error {
 
 }
 
-func resourceAHCloudServerUpdate(d *schema.ResourceData, meta interface{}) error {
-
-	d.Partial(true)
+func resourceAHCloudServerUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 
 	if d.HasChange("name") {
 		newName := d.Get("name").(string)
 		client := meta.(*ah.APIClient)
 
-		_, err := client.Instances.Rename(context.Background(), d.Id(), newName)
+		_, err := client.Instances.Rename(ctx, d.Id(), newName)
 
 		if err != nil {
-			return fmt.Errorf(
+			return diag.Errorf(
 				"Error renaming cloud server (%s): %s", d.Id(), err)
 		}
-		d.SetPartial("name")
 	}
 
 	if d.HasChange("product") {
@@ -287,39 +285,38 @@ func resourceAHCloudServerUpdate(d *schema.ResourceData, meta interface{}) error
 			request.ProductID = newProductAttr
 		}
 
-		if err := client.Instances.Upgrade(context.Background(), d.Id(), request); err != nil {
-			return fmt.Errorf(
+		if err := client.Instances.Upgrade(ctx, d.Id(), request); err != nil {
+			return diag.Errorf(
 				"Error upgrade instance (%s): %s", d.Id(), err)
 		}
 		if err := waitForStatus([]string{"updating"}, []string{"running"}, d, meta); err != nil {
-			return fmt.Errorf(
+			return diag.Errorf(
 				"Error waiting for instance (%s) to become stopped: %s", d.Id(), err)
 		}
-		d.SetPartial("product")
 	}
 
-	return resourceAHCloudServerRead(d, meta)
+	return resourceAHCloudServerRead(ctx, d, meta)
 }
 
-func resourceAHCloudServerDelete(d *schema.ResourceData, meta interface{}) error {
+func resourceAHCloudServerDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*ah.APIClient)
-	if err := client.Instances.PowerOff(context.Background(), d.Id()); err != nil {
-		return fmt.Errorf(
+	if err := client.Instances.PowerOff(ctx, d.Id()); err != nil {
+		return diag.Errorf(
 			"Error power_off instance (%s): %s", d.Id(), err)
 	}
 
 	if err := waitForStatus([]string{"running"}, []string{"stopped"}, d, meta); err != nil {
-		return fmt.Errorf(
+		return diag.Errorf(
 			"Error waiting for instance (%s) to become stopped: %s", d.Id(), err)
 	}
 
-	if err := client.Instances.Destroy(context.Background(), d.Id()); err != nil {
-		return fmt.Errorf(
+	if err := client.Instances.Destroy(ctx, d.Id()); err != nil {
+		return diag.Errorf(
 			"Error destroy instance (%s): %s", d.Id(), err)
 	}
 
 	if err := waitForDestroy(d, meta); err != nil {
-		return fmt.Errorf(
+		return diag.Errorf(
 			"Error waiting for instance (%s) to become deleted: %s", d.Id(), err)
 	}
 
@@ -346,7 +343,7 @@ func waitForStatus(pendingStatuses, targetStatuses []string, d *schema.ResourceD
 		Timeout:    d.Timeout(schema.TimeoutUpdate),
 		MinTimeout: 5 * time.Second,
 	}
-	_, err := stateChangeConf.WaitForState()
+	_, err := stateChangeConf.WaitForStateContext(context.Background())
 
 	if err != nil {
 		return fmt.Errorf(

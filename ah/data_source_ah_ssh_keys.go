@@ -5,8 +5,7 @@ import (
 	"fmt"
 
 	"github.com/advancedhosting/advancedhosting-api-go/ah"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAHSSHKeys() *schema.Resource {
@@ -108,6 +107,7 @@ func dataSourceAHSSHKeysRead(d *schema.ResourceData, meta interface{}) error {
 
 func dataSourceAHSSHKeysSchema(d *schema.ResourceData, meta interface{}, sshKeys []ah.SSHKey) error {
 	allSSHKeys := make([]map[string]interface{}, len(sshKeys))
+	var ids string
 	for i, sshKey := range sshKeys {
 		sshKeyInfo := map[string]interface{}{
 			"id":          sshKey.ID,
@@ -116,13 +116,13 @@ func dataSourceAHSSHKeysSchema(d *schema.ResourceData, meta interface{}, sshKeys
 			"fingerprint": sshKey.Fingerprint,
 			"created_at":  sshKey.CreatedAt,
 		}
-
+		ids += sshKey.ID
 		allSSHKeys[i] = sshKeyInfo
 	}
 	if err := d.Set("ssh_keys", allSSHKeys); err != nil {
 		return fmt.Errorf("unable to set ssh_keys attribute: %s", err)
 	}
-	d.SetId(resource.UniqueId())
+	d.SetId(generateHash(ids))
 
 	return nil
 }
