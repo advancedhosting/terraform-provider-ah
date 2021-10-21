@@ -2,12 +2,13 @@ package ah
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
+	"strconv"
 	"time"
 
 	"github.com/advancedhosting/advancedhosting-api-go/ah"
-	"github.com/google/uuid"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/customdiff"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -27,9 +28,15 @@ func resourceAHVolume() *schema.Resource {
 				Default:  "New volume",
 			},
 			"product": {
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
+				Type:       schema.TypeString,
+				Optional:   true,
+				Deprecated: "use plan instead",
+			},
+			"plan": {
+				Type:          schema.TypeString,
+				Optional:      true,
+				ForceNew:      true,
+				ConflictsWith: []string{"product"},
 			},
 			"size": {
 				Type:     schema.TypeInt,
@@ -70,23 +77,37 @@ func resourceAHVolume() *schema.Resource {
 
 func resourceAHVolumeCreate(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*ah.APIClient)
-
 	name := d.Get("name").(string)
-	productAttr := d.Get("product").(string)
+
+	var planAttr string
+
+	plan, planOk := d.GetOk("plan")
+	product, productOk := d.GetOk("product")
+	if !planOk && !productOk {
+		return errors.New("one of plan or product must be configured")
+	}
+
+	if planOk {
+		planAttr = plan.(string)
+	} else {
+		planAttr = product.(string)
+	}
+
 	if attr, ok := d.GetOk("origin_volume_id"); ok {
 		request := &ah.VolumeCopyActionRequest{
 			Name: name,
 		}
-		if _, err := uuid.Parse(productAttr); err != nil {
-			request.ProductSlug = productAttr
+
+		if planID, err := strconv.Atoi(planAttr); err != nil {
+			request.PlanSlug = planAttr
 		} else {
-			request.ProductID = productAttr
+			request.PlanID = planID
 		}
 
 		originVolumeID := attr.(string)
 		action, err := client.Volumes.Copy(context.Background(), originVolumeID, request)
 		if err != nil {
-			return fmt.Errorf("Error creating volume from origin: %s", err)
+			return fmt.Errorf("error creating volume from origin: %s", err)
 		}
 		if err := waitForActionCopyReady(originVolumeID, action.ID, d, meta); err != nil {
 			return err
@@ -104,10 +125,10 @@ func resourceAHVolumeCreate(d *schema.ResourceData, meta interface{}) error {
 			FileSystem: d.Get("file_system").(string),
 		}
 
-		if _, err := uuid.Parse(productAttr); err != nil {
-			request.ProductSlug = productAttr
+		if planID, err := strconv.Atoi(planAttr); err != nil {
+			request.PlanSlug = planAttr
 		} else {
-			request.ProductID = productAttr
+			request.PlanID = planID
 		}
 
 		volume, err := client.Volumes.Create(context.Background(), request)
@@ -154,7 +175,7 @@ func resourceAHVolumeUpdate(d *schema.ResourceData, meta interface{}) error {
 
 		if _, err := client.Volumes.Update(context.Background(), d.Id(), updateRequest); err != nil {
 			return fmt.Errorf(
-				"Error changing volume name (%s): %s", d.Id(), err)
+				"error changing volume name (%s): %s", d.Id(), err)
 		}
 
 	}
@@ -211,7 +232,7 @@ func waitForVolumeState(volumeID string, pending, target []string, d *schema.Res
 
 	if err != nil {
 		return fmt.Errorf(
-			"Error waiting for volume status %v: %v", target, err)
+			"error waiting for volume status %v: %v", target, err)
 	}
 
 	return nil
