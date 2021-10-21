@@ -1,13 +1,13 @@
-# AH Cloud Server Products Data Source
+# AH Cloud Server Plans Data Source
 
-Get information about AdvancedHosting Cloud Server Products available for server creation.
+Get information about AdvancedHosting Cloud Server Plans available for server creation.
 
 ## Example Usage
 
-Get the Cloud Server Product by ID:
+Get the Cloud Server Plan by ID:
 
 ```hcl
-data "ah_cloud_server_products" "example" {
+data "ah_cloud_server_plans" "example" {
   filter {
     key = "id"
     values = ["123"]
@@ -15,10 +15,10 @@ data "ah_cloud_server_products" "example" {
 }
 ```
 
-Get a list of Products that have 2 or 3 vCPUs, sorted by RAM, desc:
+Get a list of Plans that have 2 or 3 vCPUs, sorted by RAM, desc:
 
 ```hcl
-data "ah_cloud_server_products" "example" {
+data "ah_cloud_server_plans" "example" {
   filter {
     key = "vcpu"
     values = [2, 3]
@@ -53,13 +53,13 @@ The `sort` block supports:
 
 The following attributes are exported:
 
-* `products` - A list of Products that satisfy the search criteria.
-  * `id` - ID of the Product.
-  * `name` - Name of the Product.
-  * `slug` - Slug of the Product.
-  * `price` - Monthly price of the Product.
+* `plans` - A list of Plans that satisfy the search criteria.
+  * `id` - ID of the Plan.
+  * `name` - Name of the Plan.
+  * `slug` - Slug of the Plan.
+  * `price` - Monthly price of the Plan.
   * `currency` - Currency for the price.
   * `vcpu` - Number of vCPUs.
   * `ram` - RAM in GiB.
   * `disk` - Disk size in GB.
-  * `available_on_trial` - Boolean flag indicating whether the Product is available on trial.
+  * `available_on_trial` - Boolean flag indicating whether the Plan is available on trial.
