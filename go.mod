@@ -1,6 +1,6 @@
 module github.com/advancedhosting/terraform-provider-ah
 
-go 1.14
+go 1.16
 
 require (
 	github.com/advancedhosting/advancedhosting-api-go v0.8.3
