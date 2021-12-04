@@ -62,6 +62,24 @@ func TestAccAHCloudServer_CreateWithSlugs(t *testing.T) {
 	})
 }
 
+func TestAccAHCloudServer_CreateWithPlan(t *testing.T) {
+	name := fmt.Sprintf("test-%s", acctest.RandString(10))
+
+	resource.ParallelTest(t, resource.TestCase{
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckAHCloudServerDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccCheckAHCloudServerConfigCreateWithPlan(name),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("ah_cloud_server.web", "name", name),
+				),
+			},
+		},
+	})
+}
+
 func TestAccAHCloudServer_CreateWithAutoBackups(t *testing.T) {
 	name := fmt.Sprintf("test-%s", acctest.RandString(10))
 
@@ -261,7 +279,7 @@ func testAccCheckAHCloudServerConfigBasic(name string) string {
 	   name = "%s"
 	   datacenter = "c54e8896-53d8-479a-8ff1-4d7d9d856a50"
 	   image = "f0438a4b-7c4a-4a63-a593-8e619ec63d16"
-	   product = "df42a96b-b381-412c-a605-d66d7bf081af"
+	   product = "start-xs"
 	 }`, name)
 }
 
@@ -272,6 +290,16 @@ func testAccCheckAHCloudServerConfigCreateWithSlugs(name string) string {
 	   datacenter = "ams1"
 	   image = "centos-7-x64"
 	   product = "start-xs"
+	 }`, name)
+}
+
+func testAccCheckAHCloudServerConfigCreateWithPlan(name string) string {
+	return fmt.Sprintf(`
+	 resource "ah_cloud_server" "web" {
+	   name = "%s"
+	   datacenter = "ams1"
+	   image = "centos-7-x64"
+	   plan = "start-xs"
 	 }`, name)
 }
 
@@ -310,7 +338,7 @@ func testAccCheckAHCloudServerConfigWithSSHKeys(name string, ssh1PublicKey, ssh2
 	   name = "%s"
 	   datacenter = "c54e8896-53d8-479a-8ff1-4d7d9d856a50"
 	   image = "f0438a4b-7c4a-4a63-a593-8e619ec63d16"
-	   product = "df42a96b-b381-412c-a605-d66d7bf081af"
+	   product = "start-xs"
 	   ssh_keys = [ah_ssh_key.ssh_key1.id, ah_ssh_key.ssh_key2.fingerprint]
 	 }`, ssh1PublicKey, ssh2PublicKey, name)
 }
@@ -321,7 +349,7 @@ func testAccCheckAHCloudServerConfigWithoutPublicIP(name string) string {
 	   name = "%s"
 	   datacenter = "c54e8896-53d8-479a-8ff1-4d7d9d856a50"
 	   image = "f0438a4b-7c4a-4a63-a593-8e619ec63d16"
-	   product = "df42a96b-b381-412c-a605-d66d7bf081af"
+	   product = "start-xs"
 	   create_public_ip_address = false
 	 }`, name)
 }
@@ -332,7 +360,7 @@ func testAccCheckAHCloudServerConfigUpgrade(name string) string {
 	   name = "%s"
 	   datacenter = "c54e8896-53d8-479a-8ff1-4d7d9d856a50"
 	   image = "f0438a4b-7c4a-4a63-a593-8e619ec63d16"
-	   product = "3ca84dd3-e439-46f4-8f47-f0fbb810896e"
+	   product = "start-xs"
 	 }`, name)
 }
 
@@ -342,7 +370,7 @@ func testAccCheckAHCloudServerConfigUpdateImageID(name string) string {
 	   name = "%s"
 	   datacenter = "c54e8896-53d8-479a-8ff1-4d7d9d856a50"
 	   image = "52ed921b-b5ca-4a5f-a3c9-69e283a126bf"
-	   product = "df42a96b-b381-412c-a605-d66d7bf081af"
+	   product = "start-xs"
 	 }`, name)
 }
 

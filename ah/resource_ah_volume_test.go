@@ -32,14 +32,14 @@ func TestAccAHVolume_Basic(t *testing.T) {
 	})
 }
 
-func TestAccAHVolume_CreateWithSlug(t *testing.T) {
+func TestAccAHVolume_CreateWithPlanSlug(t *testing.T) {
 	resource.ParallelTest(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
 		ProviderFactories: testAccProviderFactories,
 		CheckDestroy:      testAccCheckAHVolumeDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAHVolumeConfigCreateWithSlug(),
+				Config: testAccCheckAHVolumeConfigCreateWithPlanSlug(),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttrSet("ah_volume.test", "id"),
 					resource.TestCheckResourceAttrSet("ah_volume.test", "name"),
@@ -179,31 +179,6 @@ func TestAccAHVolume_ChangeFileSystem(t *testing.T) {
 	})
 }
 
-func TestAccAHVolume_ChangeProduct(t *testing.T) {
-	var beforeID, afterID string
-	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckAHVolumeDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckAHVolumeConfigBasic(),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAHVolumeExists("ah_volume.test", &beforeID),
-				),
-			},
-			{
-				Config: testAccCheckAHVolumeConfigChangeProduct(),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAHVolumeExists("ah_volume.test", &afterID),
-					resource.TestCheckResourceAttr("ah_volume.test", "product", "03bebb65-22d8-43c6-819b-5b85b5e49c82"),
-					testAccCheckAHVolumeRecreated(t, &beforeID, &afterID),
-				),
-			},
-		},
-	})
-}
-
 func testAccCheckAHVolumeDestroy(s *terraform.State) error {
 	client := testAccProvider.Meta().(*ah.APIClient)
 
@@ -242,6 +217,16 @@ func testAccCheckAHVolumeConfigCreateWithSlug() string {
 	}`
 }
 
+func testAccCheckAHVolumeConfigCreateWithPlanSlug() string {
+	return `
+	resource "ah_volume" "test" {
+		name = "Volume Name"
+		plan = "hdd2-ash1"
+		file_system = "ext4"
+		size = "20"
+	}`
+}
+
 func testAccCheckAHVolumeConfigCreateWithoutFileSystem() string {
 	return `
 	resource "ah_volume" "test" {
@@ -256,14 +241,14 @@ func testAccCheckAHVolumeConfigFromOrigin() string {
 	return `
 	resource "ah_volume" "origin" {
 		name = "Origin Volume Name"
-		product = "ff4ae08e-d510-4e85-8440-9fdfd0f2308a"
+		product = "hdd2-ash1"
 		file_system = "ext4"
 		size = "20"
 	}
 
 	resource "ah_volume" "test" {
 		name = "Volume Name"
-		product = "ff4ae08e-d510-4e85-8440-9fdfd0f2308a"
+		product = "hdd2-ash1"
 		file_system = "ext4"
 		size = "20"
 		origin_volume_id = ah_volume.origin.id
@@ -274,7 +259,7 @@ func testAccCheckAHVolumeConfigChangeName() string {
 	return `
 	resource "ah_volume" "test" {
 		name = "New Volume Name"
-		product = "ff4ae08e-d510-4e85-8440-9fdfd0f2308a"
+		product = "hdd2-ash1"
 		file_system = "ext4"
 		size = "20"
 	}`
@@ -294,18 +279,8 @@ func testAccCheckAHVolumeConfigChangeFileSystem() string {
 	return `
 	resource "ah_volume" "test" {
 		name = "Volume Name"
-		product = "ff4ae08e-d510-4e85-8440-9fdfd0f2308a"
+		product = "hdd2-ash1"
 		file_system = "xfs"
-		size = "20"
-	}`
-}
-
-func testAccCheckAHVolumeConfigChangeProduct() string {
-	return `
-	resource "ah_volume" "test" {
-		name = "Volume Name"
-		product = "03bebb65-22d8-43c6-819b-5b85b5e49c82"
-		file_system = "ext4"
 		size = "20"
 	}`
 }

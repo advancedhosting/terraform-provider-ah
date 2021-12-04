@@ -1,13 +1,13 @@
-# AH Volume Products Data Source
+# AH Volume Plans Data Source
 
-Get information about AdvancedHosting Volume Products available for volume creation.
+Get information about AdvancedHosting Volume Plans available for volume creation.
 
 ## Example Usage
 
-Get the Volume Product by ID:
+Get the Volume Plan by ID:
 
 ```hcl
-data "ah_volume_products" "example" {
+data "ah_volume_plans" "example" {
   filter {
     key = "id"
     values = ["123"]
@@ -15,10 +15,10 @@ data "ah_volume_products" "example" {
 }
 ```
 
-Get a list of Volume available in AMS1 datacenter, sorted by maximum volume size, desc:
+Get a list of Volume Plans available in AMS1 datacenter, sorted by maximum volume size, desc:
 
 ```hcl
-data "ah_volume_products" "example" {
+data "ah_volume_plans" "example" {
   filter {
     key = "datacenter_slug"
     values = ["ams1"]
@@ -53,20 +53,13 @@ The `sort` block supports:
 
 The following attributes are exported:
 
-* `products` - A list of Products that satisfy the search criteria.
-  * `id` - ID of the Product.
-  * `name` - Name of the Product.
-  * `slug` - Slug of the Product.
-  * `price` - Price of the Product (per GB/month).
+* `plans` - A list of Products that satisfy the search criteria.
+  * `id` - ID of the Plan.
+  * `name` - Name of the Plan.
+  * `slug` - Slug of the Plan.
+  * `price` - Price of the Plan (per GB/month).
   * `currency` - Currency for the price.
   * `min_size` - Minimum size available for Volume creation in GB.
   * `max_size` - Maximum size available for Volume creation in GB.
-  * `datacenters`- List of Cloud Server Datacenters the Volume can be attached to. The structure of the block is documented below.
-
----
-
-The `datacenters` block contains:
-* `id` - ID of the Datacenter.
-* `name` - Datacenter name.
-* `slug` - Datacenter slug.
-* `full_name` - Datacenter full name.
+  * `datacenter_id`- ID of the Datacenter. 
+  * `datacenter_slig`- Slug of the Datacenter. 

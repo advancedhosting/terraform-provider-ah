@@ -9,7 +9,7 @@ resource "ah_cloud_server" "example" {
   name = "Sample server"
   datacenter = "ams1"
   image = "centos-7-x64"
-  product = "start-xs"
+  plan = "start-xs"
 }
 ```
 
@@ -20,7 +20,8 @@ The following arguments are supported:
 * `image` - (Required) The Cloud Server image ID or Slug of the desired image for the server OR a Cloud Server Snapshot / Auto Backup ID. Changing this creates a new server. See the [list of available images](https://websa.advancedhosting.com/slugs).
 * `name` - (Required) Name for the Cloud Server.
 * `datacenter` - (Required) Datacenter ID or Slug to start the Cloud Server in. See the [list of available datacenters](https://websa.advancedhosting.com/slugs).
-* `product` - (Required) Cloud Server Product ID or Slug that indentifies the desired product type of the Cloud Server. Changing this resizes the existing server. See the [list of available products](https://websa.advancedhosting.com/slugs).
+* `product` - (**Deprecated**) Cloud Server Product ID or Slug that indentifies the desired product type of the Cloud Server. See the [list of available products](https://websa.advancedhosting.com/slugs).
+* `plan` - (Optional) Cloud Server Plan ID or Slug that indentifies the desired plan type of the Cloud Server. Changing this resizes the existing server. See the [list of available products](https://websa.advancedhosting.com/slugs).
 * `backups` - (Optional) Boolean to enable or disable backups. Defaults to false.
 * `use_password` - (Optional) Boolean defining if password should be generated for the server and sent by email. Defaults to true.
 * `ssh_keys` - (Optional) Array of SSH IDs or fingerprints to enable in

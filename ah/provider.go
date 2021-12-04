@@ -33,6 +33,8 @@ func Provider() *schema.Provider {
 			"ah_datacenters":                       dataSourceAHDatacenters(),
 			"ah_cloud_images":                      dataSourceAHImages(),
 			"ah_cloud_server_products":             dataSourceAHCloudServerProducts(),
+			"ah_cloud_server_plans":                dataSourceAHCloudServerPlans(),
+			"ah_volume_plans":                      dataSourceAHVolumePlans(),
 		},
 		ResourcesMap: map[string]*schema.Resource{
 			"ah_cloud_server":               resourceAHCloudServer(),

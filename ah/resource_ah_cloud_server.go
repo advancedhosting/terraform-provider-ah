@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"log"
+	"strconv"
 	"time"
 
 	"github.com/advancedhosting/advancedhosting-api-go/ah"
@@ -43,9 +44,15 @@ func resourceAHCloudServer() *schema.Resource {
 				ValidateFunc: validation.NoZeroValues,
 			},
 			"product": {
-				Type:         schema.TypeString,
-				Required:     true,
-				ValidateFunc: validation.NoZeroValues,
+				Type:       schema.TypeString,
+				Optional:   true,
+				Deprecated: "use plan instead",
+			},
+			"plan": {
+				Type:          schema.TypeString,
+				Optional:      true,
+				ForceNew:      true,
+				ConflictsWith: []string{"product"},
 			},
 			"use_password": {
 				Type:     schema.TypeBool,
@@ -141,11 +148,23 @@ func resourceAHCloudServerCreate(ctx context.Context, d *schema.ResourceData, me
 		request.ImageID = imageAttr
 	}
 
-	productAttr := d.Get("product").(string)
-	if _, err := uuid.Parse(productAttr); err != nil {
-		request.ProductSlug = productAttr
+	var planAttr string
+	plan, planOk := d.GetOk("plan")
+	product, productOk := d.GetOk("product")
+	if !planOk && !productOk {
+		return diag.Errorf("one of plan or product must be configured")
+	}
+
+	if planOk {
+		planAttr = plan.(string)
 	} else {
-		request.ProductID = productAttr
+		planAttr = product.(string)
+	}
+
+	if planID, err := strconv.Atoi(planAttr); err != nil {
+		request.PlanSlug = planAttr
+	} else {
+		request.PlanID = planID
 	}
 
 	if attr, ok := d.GetOk("ssh_keys"); ok {
@@ -273,16 +292,16 @@ func resourceAHCloudServerUpdate(ctx context.Context, d *schema.ResourceData, me
 		}
 	}
 
-	if d.HasChange("product") {
+	if d.HasChange("plan") {
 		client := meta.(*ah.APIClient)
 
 		request := &ah.InstanceUpgradeRequest{}
 
-		newProductAttr := d.Get("product").(string)
-		if _, err := uuid.Parse(newProductAttr); err != nil {
-			request.ProductSlug = newProductAttr
+		planAttr := d.Get("plan").(string)
+		if planID, err := strconv.Atoi(planAttr); err != nil {
+			request.PlanSlug = planAttr
 		} else {
-			request.ProductID = newProductAttr
+			request.PlanID = planID
 		}
 
 		if err := client.Instances.Upgrade(ctx, d.Id(), request); err != nil {
