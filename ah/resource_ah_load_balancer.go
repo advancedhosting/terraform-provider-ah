@@ -187,19 +187,6 @@ func resourceAHLoadBalancer() *schema.Resource {
 	}
 }
 
-func datacenterIDBySlug(ctx context.Context, client *ah.APIClient, datacenterSlug string) (string, error) {
-	datacenters, err := client.Datacenters.List(ctx, nil)
-	if err != nil {
-		return "", err
-	}
-	for _, datacenter := range datacenters {
-		if datacenter.Slug == datacenterSlug {
-			return datacenter.ID, nil
-		}
-	}
-	return "", fmt.Errorf("datacenter slug %s not found", datacenterSlug)
-}
-
 func resourceAHLoadBalancerCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*ah.APIClient)
 
