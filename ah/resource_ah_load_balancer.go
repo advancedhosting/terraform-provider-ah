@@ -253,7 +253,7 @@ func resourceAHLoadBalancerCreate(ctx context.Context, d *schema.ResourceData, m
 			hcRequest := makeHCCreateRequest(hc)
 			hcsRequest = append(hcsRequest, hcRequest)
 		}
-		request.HealthChecks = hcsRequest
+		request.HealthCheck = &hcsRequest[0]
 	}
 
 	lb, err := client.LoadBalancers.Create(ctx, request)
@@ -324,25 +324,7 @@ func resourceAHLoadBalancerRead(ctx context.Context, d *schema.ResourceData, met
 
 	}
 	d.Set("forwarding_rule", forwardingRules)
-
-	healthChecks := make([]map[string]interface{}, len(loadBalancer.HealthChecks))
-	for i, hc := range loadBalancer.HealthChecks {
-		item := make(map[string]interface{})
-		item["id"] = hc.ID
-		item["type"] = hc.Type
-		if hc.URL != "" {
-			item["url"] = hc.URL
-		}
-		item["interval"] = hc.Interval
-		item["timeout"] = hc.Timeout
-		item["unhealthy_threshold"] = hc.UnhealthyThreshold
-		item["healthy_threshold"] = hc.HealthyThreshold
-		item["port"] = hc.Port
-
-		healthChecks[i] = item
-
-	}
-	d.Set("health_check", healthChecks)
+	d.Set("health_check", loadBalancer.HealthCheck)
 
 	return nil
 
