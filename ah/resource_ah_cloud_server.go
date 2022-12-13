@@ -106,20 +106,38 @@ func resourceAHCloudServer() *schema.Resource {
 				Optional: true,
 				Default:  false,
 			},
+			"private_cloud": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				Default:  false,
+			},
+			"node_id": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Default:  false,
+			},
+			"cluster_id": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Default:  false,
+			},
 			"state": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
 			"vcpu": {
 				Type:     schema.TypeInt,
+				Optional: true,
 				Computed: true,
 			},
 			"ram": {
 				Type:     schema.TypeInt,
+				Optional: true,
 				Computed: true,
 			},
 			"disk": {
 				Type:     schema.TypeInt,
+				Optional: true,
 				Computed: true,
 			},
 		},
@@ -148,23 +166,37 @@ func resourceAHCloudServerCreate(ctx context.Context, d *schema.ResourceData, me
 		request.ImageID = imageAttr
 	}
 
-	var planAttr string
-	plan, planOk := d.GetOk("plan")
-	product, productOk := d.GetOk("product")
-	if !planOk && !productOk {
-		return diag.Errorf("one of plan or product must be configured")
-	}
-
-	if planOk {
-		planAttr = plan.(string)
+	privateCloud, privateCloudOk := d.GetOk("private_cloud")
+	if privateCloudOk {
+		request.PrivateCloud = privateCloud.(bool)
+		request.ClusterID = d.Get("cluster_id").(string)
+		request.NodeID = d.Get("node_id").(string)
+		networkID, networkIDOk := d.GetOk("network_id")
+		if networkIDOk {
+			request.IPNetworkID = networkID.(string)
+		}
+		request.Vcpu = d.Get("vcpu").(int)
+		request.Ram = d.Get("ram").(int)
+		request.Disk = d.Get("disk").(int)
 	} else {
-		planAttr = product.(string)
-	}
+		var planAttr string
+		plan, planOk := d.GetOk("plan")
+		product, productOk := d.GetOk("product")
+		if !planOk && !productOk {
+			return diag.Errorf("one of plan or product must be configured")
+		}
 
-	if planID, err := strconv.Atoi(planAttr); err != nil {
-		request.PlanSlug = planAttr
-	} else {
-		request.PlanID = planID
+		if planOk {
+			planAttr = plan.(string)
+		} else {
+			planAttr = product.(string)
+		}
+
+		if planID, err := strconv.Atoi(planAttr); err != nil {
+			request.PlanSlug = planAttr
+		} else {
+			request.PlanID = planID
+		}
 	}
 
 	if attr, ok := d.GetOk("ssh_keys"); ok {

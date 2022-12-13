@@ -253,7 +253,7 @@ func resourceAHLoadBalancerCreate(ctx context.Context, d *schema.ResourceData, m
 			hcRequest := makeHCCreateRequest(hc)
 			hcsRequest = append(hcsRequest, hcRequest)
 		}
-		request.HealthCheck = &hcsRequest[0]
+		request.HealthCheck = hcsRequest[0]
 	}
 
 	lb, err := client.LoadBalancers.Create(ctx, request)
@@ -267,7 +267,6 @@ func resourceAHLoadBalancerCreate(ctx context.Context, d *schema.ResourceData, m
 			"Error waiting for load balancer (%s) to become ready: %s", d.Id(), err)
 	}
 	return resourceAHLoadBalancerRead(ctx, d, meta)
-
 }
 
 func resourceAHLoadBalancerRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {

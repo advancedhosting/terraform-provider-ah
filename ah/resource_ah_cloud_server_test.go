@@ -142,6 +142,27 @@ func TestAccAHCloudServer_CreateWithoutPublicIP(t *testing.T) {
 	})
 }
 
+func TestAccAHCloudServer_CreateInPrivateCloud(t *testing.T) {
+	name := fmt.Sprintf("test-%s", acctest.RandString(10))
+
+	resource.ParallelTest(t, resource.TestCase{
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckAHCloudServerDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccCheckAHCloudServerConfigCreateInPrivateCloud(name),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("ah_cloud_server.web", "name", name),
+					resource.TestCheckResourceAttr("ah_cloud_server.web", "vcpu", "1"),
+					resource.TestCheckResourceAttr("ah_cloud_server.web", "ram", "64"),
+					resource.TestCheckResourceAttr("ah_cloud_server.web", "disk", "10"),
+				),
+			},
+		},
+	})
+}
+
 func TestAccAHCloudServer_Rename(t *testing.T) {
 	name := fmt.Sprintf("test-%s", acctest.RandString(10))
 	newName := fmt.Sprintf("test-%s", acctest.RandString(10))
@@ -181,13 +202,13 @@ func TestAccAHCloudServer_Upgrade(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("ah_cloud_server.web", "name", name),
 					testAccCheckAHCloudServerExists("ah_cloud_server.web", &beforeID),
-					resource.TestCheckResourceAttr("ah_cloud_server.web", "product", "df42a96b-b381-412c-a605-d66d7bf081af"),
+					resource.TestCheckResourceAttr("ah_cloud_server.web", "product", "start-xs"),
 				),
 			},
 			{
 				Config: testAccCheckAHCloudServerConfigUpgrade(name),
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("ah_cloud_server.web", "product", "3ca84dd3-e439-46f4-8f47-f0fbb810896e"),
+					resource.TestCheckResourceAttr("ah_cloud_server.web", "product", "start-xs"),
 					testAccCheckAHCloudServerExists("ah_cloud_server.web", &afterID),
 					testAccCheckAHResourceNoRecreated(t, beforeID, afterID),
 				),
@@ -244,7 +265,7 @@ func TestAccAHCloudServer_UpdateImage(t *testing.T) {
 			{
 				Config: testAccCheckAHCloudServerConfigUpdateImageID(name),
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("ah_cloud_server.web", "image", "52ed921b-b5ca-4a5f-a3c9-69e283a126bf"),
+					resource.TestCheckResourceAttr("ah_cloud_server.web", "image", "8ed8bea7-69f0-40de-ab07-6a6b5a13581d"),
 					testAccCheckAHCloudServerExists("ah_cloud_server.web", &afterID),
 					testAccCheckAHResourceRecreated(t, &beforeID, &afterID),
 				),
@@ -278,7 +299,7 @@ func testAccCheckAHCloudServerConfigBasic(name string) string {
 	 resource "ah_cloud_server" "web" {
 	   name = "%s"
 	   datacenter = "c54e8896-53d8-479a-8ff1-4d7d9d856a50"
-	   image = "f0438a4b-7c4a-4a63-a593-8e619ec63d16"
+	   image = "8ed8bea7-69f0-40de-ab07-6a6b5a13581d"
 	   product = "start-xs"
 	 }`, name)
 }
@@ -288,7 +309,7 @@ func testAccCheckAHCloudServerConfigCreateWithSlugs(name string) string {
 	 resource "ah_cloud_server" "web" {
 	   name = "%s"
 	   datacenter = "ams1"
-	   image = "centos-7-x64"
+	   image = "ubuntu-20_04-x64"
 	   product = "start-xs"
 	 }`, name)
 }
@@ -298,7 +319,7 @@ func testAccCheckAHCloudServerConfigCreateWithPlan(name string) string {
 	 resource "ah_cloud_server" "web" {
 	   name = "%s"
 	   datacenter = "ams1"
-	   image = "centos-7-x64"
+	   image = "ubuntu-20_04-x64"
 	   plan = "start-xs"
 	 }`, name)
 }
@@ -308,9 +329,24 @@ func testAccCheckAHCloudServerConfigCreateWithAutoBackups(name string) string {
 	 resource "ah_cloud_server" "web" {
 	   name = "%s"
 	   datacenter = "ams1"
-	   image = "centos-7-x64"
+	   image = "ubuntu-20_04-x64"
 	   product = "start-xs"
 	   backups = true
+	 }`, name)
+}
+
+func testAccCheckAHCloudServerConfigCreateInPrivateCloud(name string) string {
+	return fmt.Sprintf(`
+	 resource "ah_cloud_server" "web" {
+	   name = "%s"
+	   datacenter = "ams1"
+	   image = "ubuntu-20_04-x64"
+       private_cloud = true
+	   node_id = "2486b2f8-f7a6-4207-979b-9b94d93c174e"
+       cluster_id = "6770e666-7a7b-4e9f-816d-cfc98a52c84d"
+       vcpu = 1
+	   ram = 64
+	   disk = 10
 	 }`, name)
 }
 
@@ -319,7 +355,7 @@ func testAccCheckAHCloudServerConfigUpgradeWithSlug(name string) string {
 	 resource "ah_cloud_server" "web" {
 	   name = "%s"
 	   datacenter = "ams1"
-	   image = "centos-7-x64"
+	   image = "ubuntu-20_04-x64"
 	   product = "start-m"
 	 }`, name)
 }
@@ -337,7 +373,7 @@ func testAccCheckAHCloudServerConfigWithSSHKeys(name string, ssh1PublicKey, ssh2
 	 resource "ah_cloud_server" "web" {
 	   name = "%s"
 	   datacenter = "c54e8896-53d8-479a-8ff1-4d7d9d856a50"
-	   image = "f0438a4b-7c4a-4a63-a593-8e619ec63d16"
+	   image = "8ed8bea7-69f0-40de-ab07-6a6b5a13581d"
 	   product = "start-xs"
 	   ssh_keys = [ah_ssh_key.ssh_key1.id, ah_ssh_key.ssh_key2.fingerprint]
 	 }`, ssh1PublicKey, ssh2PublicKey, name)
@@ -348,7 +384,7 @@ func testAccCheckAHCloudServerConfigWithoutPublicIP(name string) string {
 	 resource "ah_cloud_server" "web" {
 	   name = "%s"
 	   datacenter = "c54e8896-53d8-479a-8ff1-4d7d9d856a50"
-	   image = "f0438a4b-7c4a-4a63-a593-8e619ec63d16"
+	   image = "8ed8bea7-69f0-40de-ab07-6a6b5a13581d"
 	   product = "start-xs"
 	   create_public_ip_address = false
 	 }`, name)
@@ -359,7 +395,7 @@ func testAccCheckAHCloudServerConfigUpgrade(name string) string {
 	 resource "ah_cloud_server" "web" {
 	   name = "%s"
 	   datacenter = "c54e8896-53d8-479a-8ff1-4d7d9d856a50"
-	   image = "f0438a4b-7c4a-4a63-a593-8e619ec63d16"
+	   image = "8ed8bea7-69f0-40de-ab07-6a6b5a13581d"
 	   product = "start-xs"
 	 }`, name)
 }
@@ -369,7 +405,7 @@ func testAccCheckAHCloudServerConfigUpdateImageID(name string) string {
 	 resource "ah_cloud_server" "web" {
 	   name = "%s"
 	   datacenter = "c54e8896-53d8-479a-8ff1-4d7d9d856a50"
-	   image = "52ed921b-b5ca-4a5f-a3c9-69e283a126bf"
+	   image = "8ed8bea7-69f0-40de-ab07-6a6b5a13581d"
 	   product = "start-xs"
 	 }`, name)
 }
