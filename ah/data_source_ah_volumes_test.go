@@ -62,7 +62,7 @@ func TestAccDataSourceAHVolumes_FilterByCloudServerID(t *testing.T) {
 	resource "ah_cloud_server" "web" {
 	  name = "test"
 	  datacenter = "c54e8896-53d8-479a-8ff1-4d7d9d856a50"
-	  image = "f0438a4b-7c4a-4a63-a593-8e619ec63d16"
+	  image = "8ed8bea7-69f0-40de-ab07-6a6b5a13581d"
 	  product = "1a4cdeb2-6ca4-4745-819e-ac2ea99dc0cc"
 	}
 	

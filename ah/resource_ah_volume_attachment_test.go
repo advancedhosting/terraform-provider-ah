@@ -163,7 +163,7 @@ func testAccCheckAHVolumeAttachmentConfigBasic(volumeSize int) string {
 	return fmt.Sprintf(`
 	resource "ah_volume" "test" {
 		name = "Volume Name"
-		product = "03bebb65-22d8-43c6-819b-5b85b5e49c82"
+		product = "381347560"
 		file_system = "ext4"
 		size = "%d"
 	}
@@ -171,8 +171,8 @@ func testAccCheckAHVolumeAttachmentConfigBasic(volumeSize int) string {
 	resource "ah_cloud_server" "web" {
 	  name = "test"
 	  datacenter = "c54e8896-53d8-479a-8ff1-4d7d9d856a50"
-	  image = "f0438a4b-7c4a-4a63-a593-8e619ec63d16"
-	  product = "1a4cdeb2-6ca4-4745-819e-ac2ea99dc0cc"
+	  image = "8ed8bea7-69f0-40de-ab07-6a6b5a13581d"
+	  product = "381347597"
 	}
 	
 	resource "ah_volume_attachment" "test" {
@@ -194,7 +194,7 @@ func testAccCheckAHVolumeAttachmentConfigChangeCloudServer(volumeSize int) strin
 	  count = 2
 	  name = "test"
 	  datacenter = "c54e8896-53d8-479a-8ff1-4d7d9d856a50"
-	  image = "f0438a4b-7c4a-4a63-a593-8e619ec63d16"
+	  image = "8ed8bea7-69f0-40de-ab07-6a6b5a13581d"
 	  product = "1a4cdeb2-6ca4-4745-819e-ac2ea99dc0cc"
 	}
 	
@@ -217,7 +217,7 @@ func testAccCheckAHVolumeAttachmentConfigChangeVolume(volumeSize int) string {
 	resource "ah_cloud_server" "web" {
 	  name = "test"
 	  datacenter = "c54e8896-53d8-479a-8ff1-4d7d9d856a50"
-	  image = "f0438a4b-7c4a-4a63-a593-8e619ec63d16"
+	  image = "8ed8bea7-69f0-40de-ab07-6a6b5a13581d"
 	  product = "1a4cdeb2-6ca4-4745-819e-ac2ea99dc0cc"
 	}
 	
