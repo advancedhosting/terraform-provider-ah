@@ -6,7 +6,7 @@ Provides an Advanced Hosting IP Assignment resource to assign an IP address to a
 
 ```hcl
 resource "ah_cloud_server" "example" {
-  image = "centos-7-x64"
+  image = "ubuntu-20_04-x64"
   name = "Sample server"
   datacenter = "ams1"
   product = "start-xs"

@@ -170,7 +170,7 @@ func testAccCheckAHCloudServerSnapshotConfigBasic() string {
 	resource "ah_cloud_server" "web" {
 	  name = "test"
 	  datacenter = "ams1"
-	  image = "centos7-64"
+	  image = "ubuntu-20_04-x64"
 	  product = "start-xs"
 	}
 
@@ -185,7 +185,7 @@ func testAccCheckAHCloudServerSnapshotConfigEmptyName() string {
 	resource "ah_cloud_server" "web" {
 	  name = "test"
 	  datacenter = "ams1"
-	  image = "centos7-64"
+	  image = "ubuntu-20_04-x64"
 	  product = "start-xs"
 	}
 	
@@ -199,7 +199,7 @@ func testAccCheckAHCloudServerSnapshotConfigUpdateName() string {
 	resource "ah_cloud_server" "web" {
 	  name = "test"
 	  datacenter = "ams1"
-	  image = "centos7-64"
+	  image = "ubuntu-20_04-x64"
 	  product = "start-xs"
 	}
 	
@@ -215,7 +215,7 @@ func testAccCheckAHCloudServerSnapshotConfigUpdateCloudServer() string {
 	  count = 2
 	  name = "test"
 	  datacenter = "ams1"
-	  image = "centos7-64"
+	  image = "ubuntu-20_04-x64"
 	  product = "start-xs"
 	}
 	
