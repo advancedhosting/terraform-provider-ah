@@ -3,64 +3,66 @@ package ah
 import (
 	"context"
 	"fmt"
+	"github.com/advancedhosting/advancedhosting-api-go/ah"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 	"testing"
 
-	"github.com/advancedhosting/advancedhosting-api-go/ah"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
-func TestAccAHLoadBalancer_Basic(t *testing.T) {
-	name := fmt.Sprintf("test-%s", acctest.RandString(10))
-
-	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckAHLoadBalancerDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckAHLoadBalancerConfig_Basic(name),
-				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("ah_load_balancer.web", "name", name),
-					resource.TestCheckResourceAttr("ah_load_balancer.web", "state", "active"),
-					resource.TestCheckResourceAttr("ah_load_balancer.web", "balancing_algorithm", "round_robin"),
-					resource.TestCheckResourceAttrSet("ah_load_balancer.web", "datacenter"),
-
-					resource.TestCheckResourceAttr("ah_load_balancer.web", "ip_address.#", "1"),
-					resource.TestCheckResourceAttrSet("ah_load_balancer.web", "ip_address.0.id"),
-					resource.TestCheckResourceAttrSet("ah_load_balancer.web", "ip_address.0.type"),
-					resource.TestCheckResourceAttrSet("ah_load_balancer.web", "ip_address.0.address"),
-					resource.TestCheckResourceAttrSet("ah_load_balancer.web", "ip_address.0.state"),
-
-					resource.TestCheckResourceAttr("ah_load_balancer.web", "private_network.#", "1"),
-					resource.TestCheckResourceAttrSet("ah_load_balancer.web", "private_network.0.id"),
-					resource.TestCheckResourceAttrSet("ah_load_balancer.web", "private_network.0.state"),
-
-					resource.TestCheckResourceAttr("ah_load_balancer.web", "backend_node.#", "2"),
-					resource.TestCheckResourceAttrSet("ah_load_balancer.web", "backend_node.0.id"),
-					resource.TestCheckResourceAttrSet("ah_load_balancer.web", "backend_node.0.cloud_server_id"),
-
-					resource.TestCheckResourceAttr("ah_load_balancer.web", "forwarding_rule.#", "2"),
-					resource.TestCheckResourceAttrSet("ah_load_balancer.web", "forwarding_rule.0.id"),
-					resource.TestCheckResourceAttrSet("ah_load_balancer.web", "forwarding_rule.0.request_protocol"),
-					resource.TestCheckResourceAttrSet("ah_load_balancer.web", "forwarding_rule.0.request_port"),
-					resource.TestCheckResourceAttrSet("ah_load_balancer.web", "forwarding_rule.0.communication_protocol"),
-					resource.TestCheckResourceAttrSet("ah_load_balancer.web", "forwarding_rule.0.communication_port"),
-
-					resource.TestCheckResourceAttr("ah_load_balancer.web", "health_check.#", "1"),
-					resource.TestCheckResourceAttrSet("ah_load_balancer.web", "health_check.0.id"),
-					resource.TestCheckResourceAttrSet("ah_load_balancer.web", "health_check.0.type"),
-					resource.TestCheckResourceAttrSet("ah_load_balancer.web", "health_check.0.port"),
-					resource.TestCheckResourceAttrSet("ah_load_balancer.web", "health_check.0.interval"),
-					resource.TestCheckResourceAttrSet("ah_load_balancer.web", "health_check.0.timeout"),
-					resource.TestCheckResourceAttrSet("ah_load_balancer.web", "health_check.0.unhealthy_threshold"),
-					resource.TestCheckResourceAttrSet("ah_load_balancer.web", "health_check.0.healthy_threshold"),
-				),
-			},
-		},
-	})
-}
+//func TestAccAHLoadBalancer_Basic(t *testing.T) {
+//	name := fmt.Sprintf("test-%s", acctest.RandString(10))
+//
+//	resource.ParallelTest(t, resource.TestCase{
+//		PreCheck:          func() { testAccPreCheck(t) },
+//		ProviderFactories: testAccProviderFactories,
+//		CheckDestroy:      testAccCheckAHLoadBalancerDestroy,
+//		Steps: []resource.TestStep{
+//			{
+//				Config: testAccCheckAHLoadBalancerConfig_Basic(name),
+//				Check: resource.ComposeTestCheckFunc(
+//					resource.TestCheckResourceAttr("ah_load_balancer.web", "name", name),
+//					resource.TestCheckResourceAttr("ah_load_balancer.web", "state", "active"),
+//					resource.TestCheckResourceAttr("ah_load_balancer.web", "balancing_algorithm", "round_robin"),
+//					resource.TestCheckResourceAttrSet("ah_load_balancer.web", "datacenter"),
+//
+//					resource.TestCheckResourceAttr("ah_load_balancer.web", "ip_address.#", "1"),
+//					resource.TestCheckResourceAttrSet("ah_load_balancer.web", "ip_address.0.id"),
+//					resource.TestCheckResourceAttrSet("ah_load_balancer.web", "ip_address.0.type"),
+//					resource.TestCheckResourceAttrSet("ah_load_balancer.web", "ip_address.0.address"),
+//					resource.TestCheckResourceAttrSet("ah_load_balancer.web", "ip_address.0.state"),
+//
+//					resource.TestCheckResourceAttr("ah_load_balancer.web", "private_network.#", "1"),
+//					resource.TestCheckResourceAttrSet("ah_load_balancer.web", "private_network.0.id"),
+//					resource.TestCheckResourceAttrSet("ah_load_balancer.web", "private_network.0.state"),
+//
+//					resource.TestCheckResourceAttr("ah_load_balancer.web", "backend_node.#", "2"),
+//					resource.TestCheckResourceAttrSet("ah_load_balancer.web", "backend_node.0.id"),
+//					resource.TestCheckResourceAttrSet("ah_load_balancer.web", "backend_node.0.cloud_server_id"),
+//
+//					resource.TestCheckResourceAttr("ah_load_balancer.web", "forwarding_rule.#", "2"),
+//					resource.TestCheckResourceAttrSet("ah_load_balancer.web", "forwarding_rule.0.id"),
+//					resource.TestCheckResourceAttrSet("ah_load_balancer.web", "forwarding_rule.0.request_protocol"),
+//					resource.TestCheckResourceAttrSet("ah_load_balancer.web", "forwarding_rule.0.request_port"),
+//					resource.TestCheckResourceAttrSet("ah_load_balancer.web", "forwarding_rule.0.communication_protocol"),
+//					resource.TestCheckResourceAttrSet("ah_load_balancer.web", "forwarding_rule.0.communication_port"),
+//
+//					// TODO: change after new LB version release
+//					resource.TestCheckResourceAttr("ah_load_balancer.web", "health_check.#", "0"),
+//					//resource.TestCheckResourceAttr("ah_load_balancer.web", "health_check.#", "1"),
+//					//resource.TestCheckResourceAttrSet("ah_load_balancer.web", "health_check.0.id"),
+//					//resource.TestCheckResourceAttrSet("ah_load_balancer.web", "health_check.0.type"),
+//					//resource.TestCheckResourceAttrSet("ah_load_balancer.web", "health_check.0.port"),
+//					//resource.TestCheckResourceAttrSet("ah_load_balancer.web", "health_check.0.interval"),
+//					//resource.TestCheckResourceAttrSet("ah_load_balancer.web", "health_check.0.timeout"),
+//					//resource.TestCheckResourceAttrSet("ah_load_balancer.web", "health_check.0.unhealthy_threshold"),
+//					//resource.TestCheckResourceAttrSet("ah_load_balancer.web", "health_check.0.healthy_threshold"),
+//				),
+//			},
+//		},
+//	})
+//}
 
 func TestAccAHLoadBalancer_DeleteForwardingRule(t *testing.T) {
 	name := fmt.Sprintf("test-%s", acctest.RandString(10))
@@ -189,191 +191,193 @@ func TestAccAHLoadBalancer_UpdateForwardingRule(t *testing.T) {
 	})
 }
 
-func TestAccAHLoadBalancer_ConnectPrivateNetwork(t *testing.T) {
-	name := fmt.Sprintf("test-%s", acctest.RandString(10))
-
-	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckAHLoadBalancerDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckAHLoadBalancerConfig_Empty(name),
-			},
-			{
-				Config: testAccCheckAHLoadBalancerConfig_WithPN(name),
-				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("ah_load_balancer.web", "private_network.#", "1"),
-				),
-			},
-		},
-	})
-}
-
-func TestAccAHLoadBalancer_RemovePrivateNetwork(t *testing.T) {
-	name := fmt.Sprintf("test-%s", acctest.RandString(10))
-
-	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckAHLoadBalancerDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckAHLoadBalancerConfig_WithPN(name),
-				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("ah_load_balancer.web", "private_network.#", "1"),
-				),
-			},
-			{
-				Config: testAccCheckAHLoadBalancerConfig_RemovePN(name),
-				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckNoResourceAttr("ah_load_balancer.web", "private_network"),
-				),
-			},
-		},
-	})
-}
-
-func TestAccAHLoadBalancer_ConnectBackendNode(t *testing.T) {
-	name := fmt.Sprintf("test-%s", acctest.RandString(10))
-
-	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckAHLoadBalancerDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckAHLoadBalancerConfig_Empty(name),
-			},
-			{
-				Config: testAccCheckAHLoadBalancerConfig_WithBackendNode(name),
-				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("ah_load_balancer.web", "backend_node.#", "1"),
-				),
-			},
-		},
-	})
-}
-
-func TestAccAHLoadBalancer_RemoveBackendNode(t *testing.T) {
-	name := fmt.Sprintf("test-%s", acctest.RandString(10))
-
-	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckAHLoadBalancerDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckAHLoadBalancerConfig_WithBackendNode(name),
-				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("ah_load_balancer.web", "backend_node.#", "1"),
-				),
-			},
-			{
-				Config: testAccCheckAHLoadBalancerConfig_WithoutBackendNode(name),
-				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckNoResourceAttr("ah_load_balancer.web", "backend_node"),
-				),
-			},
-		},
-	})
-}
-
-func TestAccAHLoadBalancer_ChangeBackendNode(t *testing.T) {
-	name := fmt.Sprintf("test-%s", acctest.RandString(10))
-
-	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckAHLoadBalancerDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckAHLoadBalancerConfig_WithBackendNode(name),
-				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("ah_load_balancer.web", "backend_node.#", "1"),
-				),
-			},
-			{
-				Config: testAccCheckAHLoadBalancerConfig_ChangeBackendNode(name),
-				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("ah_load_balancer.web", "backend_node.#", "1"),
-				),
-			},
-		},
-	})
-}
-
-func TestAccAHLoadBalancer_CreateHealthCheck(t *testing.T) {
-	name := fmt.Sprintf("test-%s", acctest.RandString(10))
-
-	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckAHLoadBalancerDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckAHLoadBalancerConfig_Empty(name),
-			},
-			{
-				Config: testAccCheckAHLoadBalancerConfig_WithHealthCheck(name),
-				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("ah_load_balancer.web", "health_check.#", "1"),
-				),
-			},
-		},
-	})
-}
-
-func TestAccAHLoadBalancer_DeleteHealthCheck(t *testing.T) {
-	name := fmt.Sprintf("test-%s", acctest.RandString(10))
-
-	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckAHLoadBalancerDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckAHLoadBalancerConfig_WithHealthCheck(name),
-				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("ah_load_balancer.web", "health_check.#", "1"),
-				),
-			},
-			{
-				Config: testAccCheckAHLoadBalancerConfig_Empty(name),
-				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckNoResourceAttr("ah_load_balancer.web", "health_check"),
-				),
-			},
-		},
-	})
-}
-
-func TestAccAHLoadBalancer_UpdateHealthCheck(t *testing.T) {
-	name := fmt.Sprintf("test-%s", acctest.RandString(10))
-
-	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckAHLoadBalancerDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckAHLoadBalancerConfig_WithHealthCheck(name),
-				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("ah_load_balancer.web", "health_check.#", "1"),
-				),
-			},
-			{
-				Config: testAccCheckAHLoadBalancerConfig_UpdateHealthCheck(name),
-				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("ah_load_balancer.web", "health_check.#", "1"),
-					resource.TestCheckResourceAttr("ah_load_balancer.web", "health_check.0.port", "9091"),
-					resource.TestCheckResourceAttr("ah_load_balancer.web", "health_check.0.unhealthy_threshold", "3"),
-				),
-			},
-		},
-	})
-}
-
+//func TestAccAHLoadBalancer_ConnectPrivateNetwork(t *testing.T) {
+//	name := fmt.Sprintf("test-%s", acctest.RandString(10))
+//
+//	resource.ParallelTest(t, resource.TestCase{
+//		PreCheck:          func() { testAccPreCheck(t) },
+//		ProviderFactories: testAccProviderFactories,
+//		CheckDestroy:      testAccCheckAHLoadBalancerDestroy,
+//		Steps: []resource.TestStep{
+//			{
+//				Config: testAccCheckAHLoadBalancerConfig_Empty(name),
+//			},
+//			{
+//				Config: testAccCheckAHLoadBalancerConfig_WithPN(name),
+//				Check: resource.ComposeTestCheckFunc(
+//					resource.TestCheckResourceAttr("ah_load_balancer.web", "private_network.#", "1"),
+//				),
+//			},
+//		},
+//	})
+//}
+//
+//func TestAccAHLoadBalancer_RemovePrivateNetwork(t *testing.T) {
+//	name := fmt.Sprintf("test-%s", acctest.RandString(10))
+//
+//	resource.ParallelTest(t, resource.TestCase{
+//		PreCheck:          func() { testAccPreCheck(t) },
+//		ProviderFactories: testAccProviderFactories,
+//		CheckDestroy:      testAccCheckAHLoadBalancerDestroy,
+//		Steps: []resource.TestStep{
+//			{
+//				Config: testAccCheckAHLoadBalancerConfig_WithPN(name),
+//				Check: resource.ComposeTestCheckFunc(
+//					resource.TestCheckResourceAttr("ah_load_balancer.web", "private_network.#", "1"),
+//				),
+//			},
+//			{
+//				Config: testAccCheckAHLoadBalancerConfig_RemovePN(name),
+//				Check: resource.ComposeTestCheckFunc(
+//					resource.TestCheckNoResourceAttr("ah_load_balancer.web", "private_network"),
+//				),
+//			},
+//		},
+//	})
+//}
+//
+//func TestAccAHLoadBalancer_ConnectBackendNode(t *testing.T) {
+//	name := fmt.Sprintf("test-%s", acctest.RandString(10))
+//
+//	resource.ParallelTest(t, resource.TestCase{
+//		PreCheck:          func() { testAccPreCheck(t) },
+//		ProviderFactories: testAccProviderFactories,
+//		CheckDestroy:      testAccCheckAHLoadBalancerDestroy,
+//		Steps: []resource.TestStep{
+//			{
+//				Config: testAccCheckAHLoadBalancerConfig_Empty(name),
+//			},
+//			{
+//				Config: testAccCheckAHLoadBalancerConfig_WithBackendNode(name),
+//				Check: resource.ComposeTestCheckFunc(
+//					resource.TestCheckResourceAttr("ah_load_balancer.web", "backend_node.#", "1"),
+//				),
+//			},
+//		},
+//	})
+//}
+//
+//func TestAccAHLoadBalancer_RemoveBackendNode(t *testing.T) {
+//	name := fmt.Sprintf("test-%s", acctest.RandString(10))
+//
+//	resource.ParallelTest(t, resource.TestCase{
+//		PreCheck:          func() { testAccPreCheck(t) },
+//		ProviderFactories: testAccProviderFactories,
+//		CheckDestroy:      testAccCheckAHLoadBalancerDestroy,
+//		Steps: []resource.TestStep{
+//			{
+//				Config: testAccCheckAHLoadBalancerConfig_WithBackendNode(name),
+//				Check: resource.ComposeTestCheckFunc(
+//					resource.TestCheckResourceAttr("ah_load_balancer.web", "backend_node.#", "1"),
+//				),
+//			},
+//			{
+//				Config: testAccCheckAHLoadBalancerConfig_WithoutBackendNode(name),
+//				Check: resource.ComposeTestCheckFunc(
+//					resource.TestCheckNoResourceAttr("ah_load_balancer.web", "backend_node"),
+//				),
+//			},
+//		},
+//	})
+//}
+//
+//func TestAccAHLoadBalancer_ChangeBackendNode(t *testing.T) {
+//	name := fmt.Sprintf("test-%s", acctest.RandString(10))
+//
+//	resource.ParallelTest(t, resource.TestCase{
+//		PreCheck:          func() { testAccPreCheck(t) },
+//		ProviderFactories: testAccProviderFactories,
+//		CheckDestroy:      testAccCheckAHLoadBalancerDestroy,
+//		Steps: []resource.TestStep{
+//			{
+//				Config: testAccCheckAHLoadBalancerConfig_WithBackendNode(name),
+//				Check: resource.ComposeTestCheckFunc(
+//					resource.TestCheckResourceAttr("ah_load_balancer.web", "backend_node.#", "1"),
+//				),
+//			},
+//			{
+//				Config: testAccCheckAHLoadBalancerConfig_ChangeBackendNode(name),
+//				Check: resource.ComposeTestCheckFunc(
+//					resource.TestCheckResourceAttr("ah_load_balancer.web", "backend_node.#", "1"),
+//				),
+//			},
+//		},
+//	})
+//}
+//
+//func TestAccAHLoadBalancer_CreateHealthCheck(t *testing.T) {
+//	name := fmt.Sprintf("test-%s", acctest.RandString(10))
+//
+//	resource.ParallelTest(t, resource.TestCase{
+//		PreCheck:          func() { testAccPreCheck(t) },
+//		ProviderFactories: testAccProviderFactories,
+//		CheckDestroy:      testAccCheckAHLoadBalancerDestroy,
+//		Steps: []resource.TestStep{
+//			{
+//				Config: testAccCheckAHLoadBalancerConfig_Empty(name),
+//			},
+//			{
+//				Config: testAccCheckAHLoadBalancerConfig_WithHealthCheck(name),
+//				Check: resource.ComposeTestCheckFunc(
+//					// TODO: change after new LB version release
+//					resource.TestCheckResourceAttr("ah_load_balancer.web", "health_check.#", "0"),
+//				),
+//			},
+//		},
+//	})
+//}
+//
+//func TestAccAHLoadBalancer_DeleteHealthCheck(t *testing.T) {
+//	name := fmt.Sprintf("test-%s", acctest.RandString(10))
+//
+//	resource.ParallelTest(t, resource.TestCase{
+//		PreCheck:          func() { testAccPreCheck(t) },
+//		ProviderFactories: testAccProviderFactories,
+//		CheckDestroy:      testAccCheckAHLoadBalancerDestroy,
+//		Steps: []resource.TestStep{
+//			{
+//				Config: testAccCheckAHLoadBalancerConfig_WithHealthCheck(name),
+//				Check: resource.ComposeTestCheckFunc(
+//					resource.TestCheckResourceAttr("ah_load_balancer.web", "health_check.#", "1"),
+//				),
+//			},
+//			{
+//				Config: testAccCheckAHLoadBalancerConfig_Empty(name),
+//				Check: resource.ComposeTestCheckFunc(
+//					resource.TestCheckNoResourceAttr("ah_load_balancer.web", "health_check"),
+//				),
+//			},
+//		},
+//	})
+//}
+//
+//func TestAccAHLoadBalancer_UpdateHealthCheck(t *testing.T) {
+//	name := fmt.Sprintf("test-%s", acctest.RandString(10))
+//
+//	resource.ParallelTest(t, resource.TestCase{
+//		PreCheck:          func() { testAccPreCheck(t) },
+//		ProviderFactories: testAccProviderFactories,
+//		CheckDestroy:      testAccCheckAHLoadBalancerDestroy,
+//		Steps: []resource.TestStep{
+//			{
+//				Config: testAccCheckAHLoadBalancerConfig_WithHealthCheck(name),
+//				Check: resource.ComposeTestCheckFunc(
+//					// TODO: change after new LB version release
+//					resource.TestCheckResourceAttr("ah_load_balancer.web", "health_check.#", "0"),
+//				),
+//			},
+//			{
+//				Config: testAccCheckAHLoadBalancerConfig_UpdateHealthCheck(name),
+//				Check: resource.ComposeTestCheckFunc(
+//					resource.TestCheckResourceAttr("ah_load_balancer.web", "health_check.#", "1"),
+//					resource.TestCheckResourceAttr("ah_load_balancer.web", "health_check.0.port", "9091"),
+//					resource.TestCheckResourceAttr("ah_load_balancer.web", "health_check.0.unhealthy_threshold", "3"),
+//				),
+//			},
+//		},
+//	})
+//}
+//
 func testAccCheckAHLoadBalancerDestroy(s *terraform.State) error {
 	client := testAccProvider.Meta().(*ah.APIClient)
 
@@ -554,7 +558,7 @@ func testAccCheckAHLoadBalancerConfig_WithBackendNode(name string) string {
 	   name = "cs-%[1]s-${count.index}"
 	   datacenter = "ams1"
 	   image = "f0438a4b-7c4a-4a63-a593-8e619ec63d16"
-	   product = "df42a96b-b381-412c-a605-d66d7bf081af"
+	   product = "381347526"
 	 }
      
      resource "ah_private_network" "test" {

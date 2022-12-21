@@ -8,7 +8,7 @@ If Volume is not set using `ah_volume_attachment` and not provided in the list o
 
 ```hcl
 resource "ah_cloud_server" "example" {
-  image = "centos-7-x64"
+  image = "ubuntu-20_04-x64"
   name = "Sample server"
   datacenter = "ams1"
   product = "start-xs"

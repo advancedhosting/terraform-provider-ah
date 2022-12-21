@@ -201,17 +201,7 @@ func testAccCheckAHVolumeConfigBasic() string {
 	return `
 	resource "ah_volume" "test" {
 		name = "Volume Name"
-		product = "ff4ae08e-d510-4e85-8440-9fdfd0f2308a"
-		file_system = "ext4"
-		size = "20"
-	}`
-}
-
-func testAccCheckAHVolumeConfigCreateWithSlug() string {
-	return `
-	resource "ah_volume" "test" {
-		name = "Volume Name"
-		product = "hdd2-ash1"
+		product = "381347560"
 		file_system = "ext4"
 		size = "20"
 	}`
@@ -269,7 +259,7 @@ func testAccCheckAHVolumeConfigChangeSize(newSize int) string {
 	return fmt.Sprintf(`
 	resource "ah_volume" "test" {
 		name = "Volume Name"
-		product = "ff4ae08e-d510-4e85-8440-9fdfd0f2308a"
+		product = "381347678"
 		file_system = "ext4"
 		size = "%d"
 	}`, newSize)

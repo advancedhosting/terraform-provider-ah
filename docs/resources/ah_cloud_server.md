@@ -8,7 +8,7 @@ Provides an Advanced Hosting Cloud Server resource. This can be used to create, 
 resource "ah_cloud_server" "example" {
   name = "Sample server"
   datacenter = "ams1"
-  image = "centos-7-x64"
+  image = "ubuntu-20_04-x64"
   plan = "start-xs"
 }
 ```

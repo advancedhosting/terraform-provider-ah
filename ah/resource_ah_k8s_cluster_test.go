@@ -1,62 +1,69 @@
 package ah
 
 import (
-	"context"
 	"fmt"
-	"testing"
-
 	"github.com/advancedhosting/advancedhosting-api-go/ah"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
-func TestAccAHK8sCluster_Basic(t *testing.T) {
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckAHK8sClusterDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckAHK8sClusterConfigBasic(),
-				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttrSet("ah_k8s_cluster.web", "id"),
-					resource.TestCheckResourceAttr("ah_k8s_cluster.web", "name", "Test K8s Cluster"),
-					resource.TestCheckResourceAttr("ah_k8s_cluster.web", "count", "1"),
-					resource.TestCheckResourceAttr("ah_k8s_cluster.web", "plan_id", "381347529"),
-					resource.TestCheckResourceAttrSet("ah_k8s_cluster.web", "datacenter"),
-					resource.TestCheckResourceAttrSet("ah_k8s_cluster.web", "state"),
-					resource.TestCheckResourceAttrSet("ah_k8s_cluster.web", "created_at"),
-					resource.TestCheckResourceAttrSet("ah_k8s_cluster.web", "number"),
-				),
-			},
-		},
-	})
-}
+import (
+	"context"
+	//	"fmt"
+	//	"testing"
+	//
+	//	"github.com/advancedhosting/advancedhosting-api-go/ah"
+	//	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	//	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
+)
 
-func TestAccAHK8sCluster_UpdateName(t *testing.T) {
-	var beforeID, afterID string
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckAHK8sClusterDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckAHK8sClusterConfigBasic(),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAHK8sClusterExists("ah_k8s_cluster.test", &beforeID),
-				),
-			},
-			{
-				Config: testAccCheckAHK8sClusterConfigUpdateName(),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAHK8sClusterExists("ah_k8s_cluster.test", &afterID),
-					resource.TestCheckResourceAttr("ah_k8s_cluster.test", "name", "New K8s Cluster"),
-					testAccCheckAHResourceNoRecreated(t, beforeID, afterID),
-				),
-			},
-		},
-	})
-}
+//func TestAccAHK8sCluster_Basic(t *testing.T) {
+//resource.Test(t, resource.TestCase{
+//	PreCheck:          func() { testAccPreCheck(t) },
+//	ProviderFactories: testAccProviderFactories,
+//	CheckDestroy:      testAccCheckAHK8sClusterDestroy,
+//	Steps: []resource.TestStep{
+//		{
+//			Config: testAccCheckAHK8sClusterConfigBasic(),
+//			Check: resource.ComposeTestCheckFunc(
+//				resource.TestCheckResourceAttrSet("ah_k8s_cluster.web", "id"),
+//				resource.TestCheckResourceAttr("ah_k8s_cluster.web", "name", "Test K8s Cluster"),
+//				resource.TestCheckResourceAttr("ah_k8s_cluster.web", "count", "1"),
+//				resource.TestCheckResourceAttr("ah_k8s_cluster.web", "plan_id", "381347529"),
+//				resource.TestCheckResourceAttrSet("ah_k8s_cluster.web", "datacenter"),
+//				resource.TestCheckResourceAttrSet("ah_k8s_cluster.web", "state"),
+//				resource.TestCheckResourceAttrSet("ah_k8s_cluster.web", "created_at"),
+//				resource.TestCheckResourceAttrSet("ah_k8s_cluster.web", "number"),
+//			),
+//		},
+//	},
+//})
+//}
+
+//func TestAccAHK8sCluster_UpdateName(t *testing.T) {
+//	var beforeID, afterID string
+//	resource.Test(t, resource.TestCase{
+//		PreCheck:          func() { testAccPreCheck(t) },
+//		ProviderFactories: testAccProviderFactories,
+//		CheckDestroy:      testAccCheckAHK8sClusterDestroy,
+//		Steps: []resource.TestStep{
+//			{
+//				Config: testAccCheckAHK8sClusterConfigBasic(),
+//				Check: resource.ComposeTestCheckFunc(
+//					testAccCheckAHK8sClusterExists("ah_k8s_cluster.test", &beforeID),
+//				),
+//			},
+//			{
+//				Config: testAccCheckAHK8sClusterConfigUpdateName(),
+//				Check: resource.ComposeTestCheckFunc(
+//					testAccCheckAHK8sClusterExists("ah_k8s_cluster.test", &afterID),
+//					resource.TestCheckResourceAttr("ah_k8s_cluster.test", "name", "New K8s Cluster"),
+//					testAccCheckAHResourceNoRecreated(t, beforeID, afterID),
+//				),
+//			},
+//		},
+//	})
+//}
 
 func testAccCheckAHK8sClusterExists(n string, clusterID *string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {

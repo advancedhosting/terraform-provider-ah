@@ -17,8 +17,8 @@ func TestAccDataSourceAHCloudServers_Basic(t *testing.T) {
 	  count = 3
 	  name = "%s_${count.index}"
 	  datacenter = "c54e8896-53d8-479a-8ff1-4d7d9d856a50"
-	  image = "f0438a4b-7c4a-4a63-a593-8e619ec63d16"
-	  product = "df42a96b-b381-412c-a605-d66d7bf081af"
+	  image = "8ed8bea7-69f0-40de-ab07-6a6b5a13581d"
+	  product = "start-xs"
 	}`, name)
 
 	datasourceConfig := fmt.Sprintf(`

@@ -9,7 +9,7 @@ Provides an Advanced Hosting Private Network Connection resource to connect a Cl
 resource "ah_cloud_server" "example" {
   name = "Sample server"
   datacenter = "ams1"
-  image = "centos-7-x64"
+  image = "ubuntu-20_04-x64"
   product = "start-xs"
 }
 
