@@ -29,7 +29,7 @@ The following arguments are supported:
 * `create_public_ip_address` - (Optional) Boolean defining if a new public IP address should be created for the server. This public IP address will become a primary IP address for the Cloud Server. Defaults to true.
 * `private_cloud` (Optional) Boolean defining if instance should be created in private cloud
 * `cluster_id` - (Optional, Required in case of `private_cloud=true`) The Cloud Server cluster ID
-* `node_id` - (Optional, Required in case of `private_cloud=true`) The Cloud Server node ID
+* `node_id` - (Optional) The Cloud Server node ID. If not set, system will choose respective one automatically.
 * `vcpu` - (Optional, Required in case of `private_cloud=true`) Required number of VCPUs for the Cloud Server  
 * `ram` - (Optional, Required in case of `private_cloud=true`) Required RAM value for the Cloud Server 
 * `disk` - (Optional, Required in case of `private_cloud=true`) Required disk size for the Cloud Server 
