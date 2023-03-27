@@ -198,91 +198,91 @@ func testAccCheckAHVolumeDestroy(s *terraform.State) error {
 }
 
 func testAccCheckAHVolumeConfigBasic() string {
-	return `
+	return fmt.Sprintf(`
 	resource "ah_volume" "test" {
 		name = "Volume Name"
-		product = "ff4ae08e-d510-4e85-8440-9fdfd0f2308a"
+		product = "%s"
 		file_system = "ext4"
 		size = "20"
-	}`
+	}`, VolumePlanID)
 }
 
 func testAccCheckAHVolumeConfigCreateWithSlug() string {
-	return `
+	return fmt.Sprintf(`
 	resource "ah_volume" "test" {
 		name = "Volume Name"
-		product = "hdd2-ash1"
+		product = "%s"
 		file_system = "ext4"
 		size = "20"
-	}`
+	}`, VolumePlanName)
 }
 
 func testAccCheckAHVolumeConfigCreateWithPlanSlug() string {
-	return `
+	return fmt.Sprintf(`
 	resource "ah_volume" "test" {
 		name = "Volume Name"
-		plan = "hdd2-ash1"
+		plan = "%s"
 		file_system = "ext4"
 		size = "20"
-	}`
+	}`, VolumePlanName)
 }
 
 func testAccCheckAHVolumeConfigCreateWithoutFileSystem() string {
-	return `
+	return fmt.Sprintf(`
 	resource "ah_volume" "test" {
 		name = "Volume Name"
-		product = "hdd2-ash1"
+		product = "%s"
 		file_system = ""
 		size = "20"
-	}`
+	}`, VolumePlanName)
 }
 
 func testAccCheckAHVolumeConfigFromOrigin() string {
-	return `
+	return fmt.Sprintf(`
 	resource "ah_volume" "origin" {
 		name = "Origin Volume Name"
-		product = "hdd2-ash1"
+		product = "%s"
 		file_system = "ext4"
 		size = "20"
 	}
 
 	resource "ah_volume" "test" {
 		name = "Volume Name"
-		product = "hdd2-ash1"
+		product = "%s"
 		file_system = "ext4"
 		size = "20"
 		origin_volume_id = ah_volume.origin.id
-	}`
+	}`, VolumePlanName, VolumePlanName)
 }
 
 func testAccCheckAHVolumeConfigChangeName() string {
-	return `
+	return fmt.Sprintf(`
 	resource "ah_volume" "test" {
 		name = "New Volume Name"
-		product = "hdd2-ash1"
+		product = "%s"
 		file_system = "ext4"
 		size = "20"
-	}`
+	}`, VolumePlanName)
 }
 
 func testAccCheckAHVolumeConfigChangeSize(newSize int) string {
 	return fmt.Sprintf(`
 	resource "ah_volume" "test" {
 		name = "Volume Name"
-		product = "ff4ae08e-d510-4e85-8440-9fdfd0f2308a"
+		product = "%s"
 		file_system = "ext4"
 		size = "%d"
-	}`, newSize)
+	}`, VolumePlanID, newSize)
 }
 
 func testAccCheckAHVolumeConfigChangeFileSystem() string {
-	return `
+	return fmt.Sprintf(`
 	resource "ah_volume" "test" {
 		name = "Volume Name"
-		product = "hdd2-ash1"
+		product = "%s"
 		file_system = "xfs"
 		size = "20"
-	}`
+	}`, VolumePlanName)
 }
 
 func testAccCheckAHVolumeExists(n string, volumeID *string) resource.TestCheckFunc {

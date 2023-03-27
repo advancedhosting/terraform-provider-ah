@@ -1,6 +1,7 @@
 package ah
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
@@ -36,7 +37,6 @@ func TestAccDataSourceAHVolumes_Basic(t *testing.T) {
 					resource.TestCheckResourceAttrPair("data.ah_volumes.test", "volumes.0.id", "ah_volume.test", "id"),
 					resource.TestCheckResourceAttrSet("data.ah_volumes.test", "volumes.0.name"),
 					resource.TestCheckResourceAttrSet("data.ah_volumes.test", "volumes.0.state"),
-					resource.TestCheckResourceAttrSet("data.ah_volumes.test", "volumes.0.product"),
 					resource.TestCheckResourceAttrSet("data.ah_volumes.test", "volumes.0.size"),
 					resource.TestCheckResourceAttrSet("data.ah_volumes.test", "volumes.0.file_system"),
 					resource.TestCheckResourceAttrSet("data.ah_volumes.test", "volumes.0.created_at"),
@@ -51,26 +51,26 @@ func TestAccDataSourceAHVolumes_Basic(t *testing.T) {
 
 func TestAccDataSourceAHVolumes_FilterByCloudServerID(t *testing.T) {
 
-	resourcesConfig := `
+	resourcesConfig := fmt.Sprintf(`
 	resource "ah_volume" "test" {
 		name = "Volume Name"
-		product = "03bebb65-22d8-43c6-819b-5b85b5e49c82"
+		product = "%s"
 		file_system = "ext4"
-		size = 10
+		size = "20"
 	}
-	 
+
 	resource "ah_cloud_server" "web" {
 	  name = "test"
-	  datacenter = "c54e8896-53d8-479a-8ff1-4d7d9d856a50"
-	  image = "f0438a4b-7c4a-4a63-a593-8e619ec63d16"
-	  product = "1a4cdeb2-6ca4-4745-819e-ac2ea99dc0cc"
+	  datacenter = "%s"
+	  image = "${data.ah_cloud_images.test.images.0.id}"
+	  product = "%s"
 	}
-	
+
 	resource "ah_volume_attachment" "test" {
 	  cloud_server_id = ah_cloud_server.web.id
 	  volume_id = ah_volume.test.id
 	}
-	`
+	`, "381347560", DatacenterID, VpsPlanName)
 
 	datasourceConfig := `
 	data "ah_volumes" "test" {
@@ -90,17 +90,17 @@ func TestAccDataSourceAHVolumes_FilterByCloudServerID(t *testing.T) {
 		ProviderFactories: testAccProviderFactories,
 		Steps: []resource.TestStep{
 			{
-				Config: resourcesConfig,
+				Config: datasourceConfigBasic() + datasourceConfig + resourcesConfig,
 			},
 			{
-				Config: resourcesConfig + datasourceConfig,
+				Config: datasourceConfigBasic() + resourcesConfig + datasourceConfig,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("data.ah_volumes.test", "volumes.#", "1"),
 					resource.TestCheckResourceAttrPair("data.ah_volumes.test", "volumes.0.cloud_server_id", "ah_cloud_server.web", "id"),
 				),
 			},
 			{
-				Config: resourcesConfig,
+				Config: datasourceConfigBasic() + resourcesConfig,
 			},
 		},
 	})

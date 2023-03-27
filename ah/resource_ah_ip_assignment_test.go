@@ -19,7 +19,7 @@ func TestAccAHIPAssignment_Basic(t *testing.T) {
 		CheckDestroy:      testAccCheckAHIPAssignmentDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAHIPAssignmentConfigBasic(name),
+				Config: datasourceConfigBasic() + testAccCheckAHIPAssignmentConfigBasic(name),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttrSet("ah_ip_assignment.example", "id"),
 					resource.TestCheckResourceAttr("ah_ip_assignment.example", "primary", "false"),
@@ -37,7 +37,7 @@ func TestAccAHIPAssignment_BasicByIP(t *testing.T) {
 		CheckDestroy:      testAccCheckAHIPAssignmentDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAHIPAssignmentConfigBasicIP(name),
+				Config: datasourceConfigBasic() + testAccCheckAHIPAssignmentConfigBasicIP(name),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttrSet("ah_ip_assignment.example", "id"),
 					resource.TestCheckResourceAttr("ah_ip_assignment.example", "primary", "false"),
@@ -55,7 +55,7 @@ func TestAccAHIPAssignment_Primary(t *testing.T) {
 		CheckDestroy:      testAccCheckAHIPAssignmentDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAHIPAssignmentConfigPrimaryIP(name),
+				Config: datasourceConfigBasic() + testAccCheckAHIPAssignmentConfigPrimaryIP(name),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttrSet("ah_ip_assignment.example", "id"),
 					resource.TestCheckResourceAttr("ah_ip_assignment.example", "primary", "true"),
@@ -73,21 +73,21 @@ func TestAccAHIPAssignment_UpdateToPrimary(t *testing.T) {
 		CheckDestroy:      testAccCheckAHIPAssignmentDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAHIPAssignmentConfigBasic(name),
+				Config: datasourceConfigBasic() + testAccCheckAHIPAssignmentConfigBasic(name),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttrSet("ah_ip_assignment.example", "id"),
 					resource.TestCheckResourceAttr("ah_ip_assignment.example", "primary", "false"),
 				),
 			},
 			{
-				Config: testAccCheckAHIPAssignmentConfigPrimaryIP(name),
+				Config: datasourceConfigBasic() + testAccCheckAHIPAssignmentConfigPrimaryIP(name),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttrSet("ah_ip_assignment.example", "id"),
 					resource.TestCheckResourceAttr("ah_ip_assignment.example", "primary", "true"),
 				),
 			},
 			{
-				Config: testAccCheckAHIPAssignmentConfigDeleteAssignment(name),
+				Config: datasourceConfigBasic() + testAccCheckAHIPAssignmentConfigDeleteAssignment(name),
 			},
 		},
 	})
@@ -115,74 +115,84 @@ func testAccCheckAHIPAssignmentConfigBasic(cloudServerName string) string {
 	return fmt.Sprintf(`
 	 resource "ah_ip" "test" {
 	   type = "public"
-	   datacenter = "c54e8896-53d8-479a-8ff1-4d7d9d856a50"
+	   datacenter = "%s"
 	 }
 	 
 	resource "ah_cloud_server" "web" {
 	  name = "%s"
-	  datacenter = "c54e8896-53d8-479a-8ff1-4d7d9d856a50"
-	  image = "f0438a4b-7c4a-4a63-a593-8e619ec63d16"
-	  product = "df42a96b-b381-412c-a605-d66d7bf081af"
+	  datacenter = "%s"
+	  image = "${data.ah_cloud_images.test.images.0.id}"
+	  product = "%s"
 	}
 	
 	resource "ah_ip_assignment" "example" {
 	  cloud_server_id = ah_cloud_server.web.id
 	  ip_address = ah_ip.test.id
-	}`, cloudServerName)
+	}`, DatacenterID, cloudServerName, DatacenterID, VpsPlanID)
 }
 
 func testAccCheckAHIPAssignmentConfigBasicIP(cloudServerName string) string {
 	return fmt.Sprintf(`
 	 resource "ah_ip" "test" {
 	   type = "public"
-	   datacenter = "c54e8896-53d8-479a-8ff1-4d7d9d856a50"
+	   datacenter = "%s"
 	 }
 	 
 	resource "ah_cloud_server" "web" {
 	  name = "%s"
-	  datacenter = "c54e8896-53d8-479a-8ff1-4d7d9d856a50"
-	  image = "f0438a4b-7c4a-4a63-a593-8e619ec63d16"
-	  product = "df42a96b-b381-412c-a605-d66d7bf081af"
+	  datacenter = "%s"
+	  image = "${data.ah_cloud_images.test.images.0.id}"
+	  product = "%s"
 	}
 	
 	resource "ah_ip_assignment" "example" {
 	  cloud_server_id = ah_cloud_server.web.id
 	  ip_address = ah_ip.test.ip_address
-	}`, cloudServerName)
+	}`, DatacenterID, cloudServerName, DatacenterID, VpsPlanID)
 }
 
 func testAccCheckAHIPAssignmentConfigPrimaryIP(cloudServerName string) string {
 	return fmt.Sprintf(`
 	 resource "ah_ip" "test" {
 	   type = "public"
-	   datacenter = "c54e8896-53d8-479a-8ff1-4d7d9d856a50"
+	   datacenter = "%s"
 	 }
 	 
 	resource "ah_cloud_server" "web" {
 	  name = "%s"
-	  datacenter = "c54e8896-53d8-479a-8ff1-4d7d9d856a50"
-	  image = "f0438a4b-7c4a-4a63-a593-8e619ec63d16"
-	  product = "df42a96b-b381-412c-a605-d66d7bf081af"
+	  datacenter = "%s"
+	  image = "${data.ah_cloud_images.test.images.0.id}"
+	  product = "%s"
 	}
 	
 	resource "ah_ip_assignment" "example" {
 	  cloud_server_id = ah_cloud_server.web.id
 	  ip_address = ah_ip.test.id
 	  primary = true
-	}`, cloudServerName)
+	}`, DatacenterID, cloudServerName, DatacenterID, VpsPlanID)
 }
 
 func testAccCheckAHIPAssignmentConfigDeleteAssignment(cloudServerName string) string {
 	return fmt.Sprintf(`
 	 resource "ah_ip" "test" {
 	   type = "public"
-	   datacenter = "c54e8896-53d8-479a-8ff1-4d7d9d856a50"
+	   datacenter = "%s"
 	 }
 	 
 	resource "ah_cloud_server" "web" {
 	  name = "%s"
-	  datacenter = "c54e8896-53d8-479a-8ff1-4d7d9d856a50"
-	  image = "f0438a4b-7c4a-4a63-a593-8e619ec63d16"
-	  product = "df42a96b-b381-412c-a605-d66d7bf081af"
-	}`, cloudServerName)
+	  datacenter = "%s"
+	  image = "${data.ah_cloud_images.test.images.0.id}"
+	  product = "%s"
+	}`, DatacenterID, cloudServerName, DatacenterID, VpsPlanID)
+}
+
+func datasourceConfigBasic() string {
+	return fmt.Sprintf(`
+	data "ah_cloud_images" "test" {
+		filter {
+			key = "slug"
+			values = ["%s"]
+		  }
+	}`, ImageName)
 }

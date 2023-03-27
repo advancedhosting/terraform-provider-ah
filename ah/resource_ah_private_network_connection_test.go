@@ -19,7 +19,7 @@ func TestAccAHPrivateNetworkConnection_Basic(t *testing.T) {
 		CheckDestroy:      testAccCheckAHPrivateNetworkConnectionDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAHPrivateNetworkConnectionConfigBasic(name),
+				Config: datasourceConfigBasic() + testAccCheckAHPrivateNetworkConnectionConfigBasic(name),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttrSet("ah_private_network_connection.example", "id"),
 					resource.TestCheckResourceAttrPair("ah_private_network_connection.example", "cloud_server_id", "ah_cloud_server.web", "id"),
@@ -40,13 +40,13 @@ func TestAccAHPrivateNetworkConnection_UpdateIP(t *testing.T) {
 		CheckDestroy:      testAccCheckAHPrivateNetworkConnectionDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAHPrivateNetworkConnectionConfigBasic(name),
+				Config: datasourceConfigBasic() + testAccCheckAHPrivateNetworkConnectionConfigBasic(name),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckAHPrivateNetworkConnectionExists("ah_private_network_connection.example", &beforeID),
 				),
 			},
 			{
-				Config: testAccCheckAHPrivateNetworkConnectionConfigUpdateIP(name),
+				Config: datasourceConfigBasic() + testAccCheckAHPrivateNetworkConnectionConfigUpdateIP(name),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("ah_private_network_connection.example", "ip_address", "10.0.0.2"),
 					testAccCheckAHPrivateNetworkConnectionExists("ah_private_network_connection.example", &afterID),
@@ -66,13 +66,13 @@ func TestAccAHPrivateNetworkConnection_ChangeCloudServer(t *testing.T) {
 		CheckDestroy:      testAccCheckAHPrivateNetworkConnectionDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAHPrivateNetworkConnectionConfigBasic(name),
+				Config: datasourceConfigBasic() + testAccCheckAHPrivateNetworkConnectionConfigBasic(name),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckAHPrivateNetworkConnectionExists("ah_private_network_connection.example", &beforeID),
 				),
 			},
 			{
-				Config: testAccCheckAHPrivateNetworkConnectionConfigUpdateCloudServer(name),
+				Config: datasourceConfigBasic() + testAccCheckAHPrivateNetworkConnectionConfigUpdateCloudServer(name),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttrPair("ah_private_network_connection.example", "cloud_server_id", "ah_cloud_server.web.1", "id"),
 					testAccCheckAHPrivateNetworkConnectionExists("ah_private_network_connection.example", &afterID),
@@ -92,13 +92,13 @@ func TestAccAHPrivateNetworkConnection_ChangePrivateNetwork(t *testing.T) {
 		CheckDestroy:      testAccCheckAHPrivateNetworkConnectionDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAHPrivateNetworkConnectionConfigBasic(name),
+				Config: datasourceConfigBasic() + testAccCheckAHPrivateNetworkConnectionConfigBasic(name),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckAHPrivateNetworkConnectionExists("ah_private_network_connection.example", &beforeID),
 				),
 			},
 			{
-				Config: testAccCheckAHPrivateNetworkConnectionConfigUpdatePrivateNetwork(name),
+				Config: datasourceConfigBasic() + testAccCheckAHPrivateNetworkConnectionConfigUpdatePrivateNetwork(name),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttrPair("ah_private_network_connection.example", "private_network_id", "ah_private_network.test.1", "id"),
 					testAccCheckAHPrivateNetworkConnectionExists("ah_private_network_connection.example", &afterID),
@@ -120,7 +120,7 @@ func testAccCheckAHPrivateNetworkConnectionDestroy(s *terraform.State) error {
 		_, err := client.IPAddresses.Get(context.Background(), rs.Primary.ID)
 
 		if err != ah.ErrResourceNotFound {
-			return fmt.Errorf("Error removing private network connection (%s): %s", rs.Primary.ID, err)
+			return fmt.Errorf("error removing private network connection (%s): %s", rs.Primary.ID, err)
 		}
 	}
 
@@ -136,15 +136,15 @@ func testAccCheckAHPrivateNetworkConnectionConfigBasic(cloudServerName string) s
 	 
 	resource "ah_cloud_server" "web" {
 	  name = "%s"
-	  datacenter = "c54e8896-53d8-479a-8ff1-4d7d9d856a50"
-	  image = "f0438a4b-7c4a-4a63-a593-8e619ec63d16"
-	  product = "df42a96b-b381-412c-a605-d66d7bf081af"
+	  datacenter = "%s"
+	  image = "${data.ah_cloud_images.test.images.0.id}"
+	  product = "%s"
 	}
 	
 	resource "ah_private_network_connection" "example" {
 	  cloud_server_id = ah_cloud_server.web.id
 	  private_network_id = ah_private_network.test.id
-	}`, cloudServerName)
+	}`, cloudServerName, DatacenterID, VpsPlanID)
 }
 
 func testAccCheckAHPrivateNetworkConnectionConfigUpdateIP(cloudServerName string) string {
@@ -156,16 +156,16 @@ func testAccCheckAHPrivateNetworkConnectionConfigUpdateIP(cloudServerName string
 	 
 	resource "ah_cloud_server" "web" {
 	  name = "%s"
-	  datacenter = "c54e8896-53d8-479a-8ff1-4d7d9d856a50"
-	  image = "f0438a4b-7c4a-4a63-a593-8e619ec63d16"
-	  product = "df42a96b-b381-412c-a605-d66d7bf081af"
+	  datacenter = "%s"
+	  image = "${data.ah_cloud_images.test.images.0.id}"
+	  product = "%s"
 	}
 	
 	resource "ah_private_network_connection" "example" {
 	  cloud_server_id = ah_cloud_server.web.id
 	  private_network_id = ah_private_network.test.id
 	  ip_address = "10.0.0.2"
-	}`, cloudServerName)
+	}`, cloudServerName, DatacenterID, VpsPlanID)
 }
 
 func testAccCheckAHPrivateNetworkConnectionConfigUpdateCloudServer(cloudServerName string) string {
@@ -178,15 +178,15 @@ func testAccCheckAHPrivateNetworkConnectionConfigUpdateCloudServer(cloudServerNa
 	resource "ah_cloud_server" "web" {
 	  count = 2
 	  name = "%s"
-	  datacenter = "c54e8896-53d8-479a-8ff1-4d7d9d856a50"
-	  image = "f0438a4b-7c4a-4a63-a593-8e619ec63d16"
-	  product = "df42a96b-b381-412c-a605-d66d7bf081af"
+	  datacenter = "%s"
+	  image = "${data.ah_cloud_images.test.images.0.id}"
+	  product = "%s"
 	}
 	
 	resource "ah_private_network_connection" "example" {
 	  cloud_server_id = ah_cloud_server.web.1.id
 	  private_network_id = ah_private_network.test.id
-	}`, cloudServerName)
+	}`, cloudServerName, DatacenterID, VpsPlanID)
 }
 
 func testAccCheckAHPrivateNetworkConnectionConfigUpdatePrivateNetwork(cloudServerName string) string {
@@ -199,15 +199,15 @@ func testAccCheckAHPrivateNetworkConnectionConfigUpdatePrivateNetwork(cloudServe
 	 
 	resource "ah_cloud_server" "web" {
 	  name = "%s"
-	  datacenter = "c54e8896-53d8-479a-8ff1-4d7d9d856a50"
-	  image = "f0438a4b-7c4a-4a63-a593-8e619ec63d16"
-	  product = "df42a96b-b381-412c-a605-d66d7bf081af"
+	  datacenter = "%s"
+	  image = "${data.ah_cloud_images.test.images.0.id}"
+	  product = "%s"
 	}
 	
 	resource "ah_private_network_connection" "example" {
 	  cloud_server_id = ah_cloud_server.web.id
 	  private_network_id = ah_private_network.test.1.id
-	}`, cloudServerName)
+	}`, cloudServerName, DatacenterID, VpsPlanID)
 }
 
 func testAccCheckAHPrivateNetworkConnectionExists(n string, privateNetworkID *string) resource.TestCheckFunc {

@@ -166,61 +166,61 @@ func testAccCheckAHCloudServerSnapshotDestroy(s *terraform.State) error {
 }
 
 func testAccCheckAHCloudServerSnapshotConfigBasic() string {
-	return `
+	return fmt.Sprintf(`
 	resource "ah_cloud_server" "web" {
 	  name = "test"
-	  datacenter = "ams1"
-	  image = "centos7-64"
-	  product = "start-xs"
+	  datacenter = "%s"
+	  image = "%s"
+	  product = "%s"
 	}
 
 	resource "ah_cloud_server_snapshot" "test" {
 	  cloud_server_id = ah_cloud_server.web.id
 	  name = "example-snapshot-1"
-	}`
+	}`, DatacenterName, ImageName, VpsPlanName)
 }
 
 func testAccCheckAHCloudServerSnapshotConfigEmptyName() string {
-	return `
+	return fmt.Sprintf(`
 	resource "ah_cloud_server" "web" {
 	  name = "test"
-	  datacenter = "ams1"
-	  image = "centos7-64"
-	  product = "start-xs"
+	  datacenter = "%s"
+	  image = "%s"
+	  product = "%s"
 	}
 	
 	resource "ah_cloud_server_snapshot" "test" {
 	  cloud_server_id = ah_cloud_server.web.id
-	}`
+	}`, DatacenterName, ImageName, VpsPlanName)
 }
 
 func testAccCheckAHCloudServerSnapshotConfigUpdateName() string {
-	return `
+	return fmt.Sprintf(`
 	resource "ah_cloud_server" "web" {
 	  name = "test"
-	  datacenter = "ams1"
-	  image = "centos7-64"
-	  product = "start-xs"
+	  datacenter = "%s"
+	  image = "%s"
+	  product = "%s"
 	}
 	
 	resource "ah_cloud_server_snapshot" "test" {
 	  cloud_server_id = ah_cloud_server.web.id
 	  name = "New Name"
-	}`
+	}`, DatacenterName, ImageName, VpsPlanName)
 }
 
 func testAccCheckAHCloudServerSnapshotConfigUpdateCloudServer() string {
-	return `
+	return fmt.Sprintf(`
 	resource "ah_cloud_server" "web" {
 	  count = 2
 	  name = "test"
-	  datacenter = "ams1"
-	  image = "centos7-64"
-	  product = "start-xs"
+	  datacenter = "%s"
+	  image = "%s"
+	  product = "%s"
 	}
 	
 	resource "ah_cloud_server_snapshot" "test" {
 	  cloud_server_id = ah_cloud_server.web.1.id
 	  name = "example-snapshot-1"
-	}`
+	}`, DatacenterName, ImageName, VpsPlanName)
 }
