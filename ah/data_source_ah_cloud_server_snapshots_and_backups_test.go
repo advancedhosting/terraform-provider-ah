@@ -1,6 +1,7 @@
 package ah
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
@@ -8,13 +9,13 @@ import (
 
 func TestAccDataSourceAHCloudServerSnapshotsAndBackups_Basic(t *testing.T) {
 
-	resourcesConfig := `
+	resourcesConfig := fmt.Sprintf(`
 	resource "ah_cloud_server" "web" {
 	  count = 3
 	  name = "test_${count.index}"
 	  datacenter = "ams1"
-	  image = "centos-7-x64"
-	  product = "start-xs"
+	  image = "%s"
+	  product = "%s"
 	}
 
 	resource "ah_cloud_server_snapshot" "test" {
@@ -25,7 +26,7 @@ func TestAccDataSourceAHCloudServerSnapshotsAndBackups_Basic(t *testing.T) {
 	resource "ah_cloud_server_snapshot" "test2" {
 		cloud_server_id = ah_cloud_server.web.1.id
 		name = "New Name"
-	}`
+	}`, ImageName, VpsPlanName)
 
 	datasourceConfig := `
 	data "ah_cloud_server_snapshot_and_backups" "test" {

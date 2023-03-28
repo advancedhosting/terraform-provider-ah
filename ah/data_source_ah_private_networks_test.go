@@ -1,6 +1,7 @@
 package ah
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
@@ -8,7 +9,7 @@ import (
 
 func TestAccDataSourceAHPrivateNetworks_Basic(t *testing.T) {
 
-	resourcesConfig := `
+	resourcesConfig := fmt.Sprintf(`
 	resource "ah_private_network" "test" {
 	  ip_range = "10.0.0.0/24"
 	  name = "Test Private Network"
@@ -17,15 +18,14 @@ func TestAccDataSourceAHPrivateNetworks_Basic(t *testing.T) {
 	resource "ah_cloud_server" "web" {
 	  name = "test"
 	  datacenter = "ams1"
-	  image = "centos-7-x64"
-	  product = "start-xs"
+	  image = "%s"
+	  product = "%s"
 	}
 	
 	resource "ah_private_network_connection" "example" {
 	  cloud_server_id = ah_cloud_server.web.id
 	  private_network_id = ah_private_network.test.id
-	}
-	`
+	}`, ImageName, VpsPlanName)
 
 	datasourceConfig := `
 	data "ah_private_networks" "test" {

@@ -193,7 +193,11 @@ func resourceAHCloudServerCreate(ctx context.Context, d *schema.ResourceData, me
 		}
 
 		if planID, err := strconv.Atoi(planAttr); err != nil {
-			request.PlanSlug = planAttr
+			if _, err := uuid.Parse(planAttr); err == nil {
+				request.ProductID = planAttr
+			} else {
+				request.PlanSlug = planAttr
+			}
 		} else {
 			request.PlanID = planID
 		}

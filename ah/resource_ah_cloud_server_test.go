@@ -107,13 +107,21 @@ func TestAccAHCloudServer_CreateWithSSHKey(t *testing.T) {
 		t.Fatalf("RandSSHKeyPair error: %s", err)
 	}
 
+	datasourceConfig := fmt.Sprintf(`
+	data "ah_cloud_images" "test" {
+		filter {
+			key = "slug"
+			values = ["%s"]
+		  }
+	}`, ImageName)
+
 	resource.ParallelTest(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
 		ProviderFactories: testAccProviderFactories,
 		CheckDestroy:      testAccCheckAHCloudServerDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAHCloudServerConfigWithSSHKeys(name, publicKey, secondPublicKey),
+				Config: datasourceConfig + testAccCheckAHCloudServerConfigWithSSHKeys(name, publicKey, secondPublicKey),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("ah_cloud_server.web", "ssh_keys.#", "2"),
 					resource.TestCheckResourceAttrPair("ah_cloud_server.web", "ssh_keys.0", "ah_ssh_key.ssh_key1", "id"),
@@ -127,13 +135,21 @@ func TestAccAHCloudServer_CreateWithSSHKey(t *testing.T) {
 func TestAccAHCloudServer_CreateWithoutPublicIP(t *testing.T) {
 	name := fmt.Sprintf("test-%s", acctest.RandString(10))
 
+	datasourceConfig := fmt.Sprintf(`
+	data "ah_cloud_images" "test" {
+		filter {
+			key = "slug"
+			values = ["%s"]
+		  }
+	}`, ImageName)
+
 	resource.ParallelTest(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
 		ProviderFactories: testAccProviderFactories,
 		CheckDestroy:      testAccCheckAHCloudServerDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAHCloudServerConfigWithoutPublicIP(name),
+				Config: datasourceConfig + testAccCheckAHCloudServerConfigWithoutPublicIP(name),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckNoResourceAttr("ah_cloud_server.web", "ips.0"),
 				),
@@ -192,13 +208,21 @@ func TestAccAHCloudServer_Upgrade(t *testing.T) {
 	var beforeID, afterID string
 	name := fmt.Sprintf("test-%s", acctest.RandString(10))
 
+	datasourceConfig := fmt.Sprintf(`
+	data "ah_cloud_images" "test" {
+		filter {
+			key = "slug"
+			values = ["%s"]
+		  }
+	}`, ImageName)
+
 	resource.ParallelTest(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
 		ProviderFactories: testAccProviderFactories,
 		CheckDestroy:      testAccCheckAHCloudServerDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAHCloudServerConfigBasic(name),
+				Config: datasourceConfig + testAccCheckAHCloudServerConfigBasic(name),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("ah_cloud_server.web", "name", name),
 					testAccCheckAHCloudServerExists("ah_cloud_server.web", &beforeID),
@@ -206,7 +230,7 @@ func TestAccAHCloudServer_Upgrade(t *testing.T) {
 				),
 			},
 			{
-				Config: testAccCheckAHCloudServerConfigUpgrade(name),
+				Config: datasourceConfig + testAccCheckAHCloudServerConfigUpgrade(name),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("ah_cloud_server.web", "product", "start-xs"),
 					testAccCheckAHCloudServerExists("ah_cloud_server.web", &afterID),
@@ -298,66 +322,66 @@ func testAccCheckAHCloudServerConfigBasic(name string) string {
 	return fmt.Sprintf(`
 	 resource "ah_cloud_server" "web" {
 	   name = "%s"
-	   datacenter = "c54e8896-53d8-479a-8ff1-4d7d9d856a50"
-	   image = "8ed8bea7-69f0-40de-ab07-6a6b5a13581d"
-	   product = "start-xs"
-	 }`, name)
+	   datacenter = "%s"
+	   image = "%s"
+	   product = "%s"
+	 }`, name, DatacenterName, ImageName, VpsPlanName)
 }
 
 func testAccCheckAHCloudServerConfigCreateWithSlugs(name string) string {
 	return fmt.Sprintf(`
 	 resource "ah_cloud_server" "web" {
 	   name = "%s"
-	   datacenter = "ams1"
-	   image = "ubuntu-20_04-x64"
-	   product = "start-xs"
-	 }`, name)
+	   datacenter = "%s"
+	   image = "%s"
+	   product = "%s"
+	 }`, name, DatacenterName, ImageName, VpsPlanName)
 }
 
 func testAccCheckAHCloudServerConfigCreateWithPlan(name string) string {
 	return fmt.Sprintf(`
 	 resource "ah_cloud_server" "web" {
 	   name = "%s"
-	   datacenter = "ams1"
-	   image = "ubuntu-20_04-x64"
-	   plan = "start-xs"
-	 }`, name)
+	   datacenter = "%s"
+	   image = "%s"
+	   product = "%s"
+	 }`, name, DatacenterName, ImageName, VpsPlanName)
 }
 
 func testAccCheckAHCloudServerConfigCreateWithAutoBackups(name string) string {
 	return fmt.Sprintf(`
 	 resource "ah_cloud_server" "web" {
 	   name = "%s"
-	   datacenter = "ams1"
-	   image = "ubuntu-20_04-x64"
-	   product = "start-xs"
-	   backups = true
-	 }`, name)
+	   datacenter = "%s"
+	   image = "%s"
+	   product = "%s"
+       backups = true
+	}`, name, DatacenterName, ImageName, VpsPlanName)
 }
 
 func testAccCheckAHCloudServerConfigCreateInPrivateCloud(name string) string {
 	return fmt.Sprintf(`
 	 resource "ah_cloud_server" "web" {
 	   name = "%s"
-	   datacenter = "ams1"
-	   image = "ubuntu-20_04-x64"
+	   datacenter = "%s"
+	   image = "%s"
        private_cloud = true
-	   node_id = "2486b2f8-f7a6-4207-979b-9b94d93c174e"
-       cluster_id = "6770e666-7a7b-4e9f-816d-cfc98a52c84d"
+	   node_id = "%s"
+       cluster_id = "%s"
        vcpu = 1
 	   ram = 64
 	   disk = 10
-	 }`, name)
+	 }`, name, DatacenterName, ImageName, NodeID, ClusterID)
 }
 
 func testAccCheckAHCloudServerConfigUpgradeWithSlug(name string) string {
 	return fmt.Sprintf(`
 	 resource "ah_cloud_server" "web" {
 	   name = "%s"
-	   datacenter = "ams1"
+	   datacenter = "%s"
 	   image = "ubuntu-20_04-x64"
 	   product = "start-m"
-	 }`, name)
+	 }`, name, DatacenterName)
 }
 
 func testAccCheckAHCloudServerConfigWithSSHKeys(name string, ssh1PublicKey, ssh2PublicKey string) string {
@@ -372,42 +396,42 @@ func testAccCheckAHCloudServerConfigWithSSHKeys(name string, ssh1PublicKey, ssh2
 	 }
 	 resource "ah_cloud_server" "web" {
 	   name = "%s"
-	   datacenter = "c54e8896-53d8-479a-8ff1-4d7d9d856a50"
-	   image = "8ed8bea7-69f0-40de-ab07-6a6b5a13581d"
-	   product = "start-xs"
+	   datacenter = "%s"
+	   image = "${data.ah_cloud_images.test.images.0.id}"
+	   product = "%s"
 	   ssh_keys = [ah_ssh_key.ssh_key1.id, ah_ssh_key.ssh_key2.fingerprint]
-	 }`, ssh1PublicKey, ssh2PublicKey, name)
+	 }`, ssh1PublicKey, ssh2PublicKey, name, DatacenterID, VpsPlanName)
 }
 
 func testAccCheckAHCloudServerConfigWithoutPublicIP(name string) string {
 	return fmt.Sprintf(`
 	 resource "ah_cloud_server" "web" {
 	   name = "%s"
-	   datacenter = "c54e8896-53d8-479a-8ff1-4d7d9d856a50"
-	   image = "8ed8bea7-69f0-40de-ab07-6a6b5a13581d"
-	   product = "start-xs"
+	   datacenter = "%s"
+	   image = "${data.ah_cloud_images.test.images.0.id}"
+	   product = "%s"
 	   create_public_ip_address = false
-	 }`, name)
+	 }`, name, DatacenterID, VpsPlanName)
 }
 
 func testAccCheckAHCloudServerConfigUpgrade(name string) string {
 	return fmt.Sprintf(`
 	 resource "ah_cloud_server" "web" {
 	   name = "%s"
-	   datacenter = "c54e8896-53d8-479a-8ff1-4d7d9d856a50"
-	   image = "8ed8bea7-69f0-40de-ab07-6a6b5a13581d"
-	   product = "start-xs"
-	 }`, name)
+	   datacenter = "%s"
+	   image = "${data.ah_cloud_images.test.images.0.id}"
+	   product = "%s"
+	 }`, name, DatacenterID, VpsPlanName)
 }
 
 func testAccCheckAHCloudServerConfigUpdateImageID(name string) string {
 	return fmt.Sprintf(`
 	 resource "ah_cloud_server" "web" {
 	   name = "%s"
-	   datacenter = "c54e8896-53d8-479a-8ff1-4d7d9d856a50"
+	   datacenter = "%s"
 	   image = "8ed8bea7-69f0-40de-ab07-6a6b5a13581d"
-	   product = "start-xs"
-	 }`, name)
+	   product = "%s"
+	 }`, name, DatacenterID, VpsPlanName)
 }
 
 func testAccCheckAHCloudServerExists(n string, instanceID *string) resource.TestCheckFunc {

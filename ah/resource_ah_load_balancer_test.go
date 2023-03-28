@@ -20,7 +20,7 @@ func TestAccAHLoadBalancer_Basic(t *testing.T) {
 		CheckDestroy:      testAccCheckAHLoadBalancerDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAHLoadBalancerConfig_Basic(name),
+				Config: datasourceConfigBasic() + testAccCheckAHLoadBalancerConfig_Basic(name),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("ah_load_balancer.web", "name", name),
 					resource.TestCheckResourceAttr("ah_load_balancer.web", "state", "active"),
@@ -243,7 +243,7 @@ func TestAccAHLoadBalancer_ConnectBackendNode(t *testing.T) {
 		CheckDestroy:      testAccCheckAHLoadBalancerDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAHLoadBalancerConfig_Empty(name),
+				Config: datasourceConfigBasic() + testAccCheckAHLoadBalancerConfig_Empty(name),
 			},
 			{
 				Config: testAccCheckAHLoadBalancerConfig_WithBackendNode(name),
@@ -264,13 +264,13 @@ func TestAccAHLoadBalancer_RemoveBackendNode(t *testing.T) {
 		CheckDestroy:      testAccCheckAHLoadBalancerDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAHLoadBalancerConfig_WithBackendNode(name),
+				Config: datasourceConfigBasic() + testAccCheckAHLoadBalancerConfig_WithBackendNode(name),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("ah_load_balancer.web", "backend_node.#", "1"),
 				),
 			},
 			{
-				Config: testAccCheckAHLoadBalancerConfig_WithoutBackendNode(name),
+				Config: datasourceConfigBasic() + testAccCheckAHLoadBalancerConfig_WithoutBackendNode(name),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckNoResourceAttr("ah_load_balancer.web", "backend_node"),
 				),
@@ -288,13 +288,13 @@ func TestAccAHLoadBalancer_ChangeBackendNode(t *testing.T) {
 		CheckDestroy:      testAccCheckAHLoadBalancerDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAHLoadBalancerConfig_WithBackendNode(name),
+				Config: datasourceConfigBasic() + testAccCheckAHLoadBalancerConfig_WithBackendNode(name),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("ah_load_balancer.web", "backend_node.#", "1"),
 				),
 			},
 			{
-				Config: testAccCheckAHLoadBalancerConfig_ChangeBackendNode(name),
+				Config: datasourceConfigBasic() + testAccCheckAHLoadBalancerConfig_ChangeBackendNode(name),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("ah_load_balancer.web", "backend_node.#", "1"),
 				),
@@ -404,11 +404,11 @@ func testAccCheckAHLoadBalancerConfig_Basic(name string) string {
 	 resource "ah_cloud_server" "web" {
        count = 2
 	   name = "cs-%[1]s-${count.index}"
-	   datacenter = "ams1"
-	   image = "f0438a4b-7c4a-4a63-a593-8e619ec63d16"
-	   product = "df42a96b-b381-412c-a605-d66d7bf081af"
+	   datacenter = "%s"
+	   image = "${data.ah_cloud_images.test.images.0.id}"
+	   product = "%s"
 	 }
-	
+
 	 resource "ah_private_network_connection" "example" {
        count = 2 
 	   cloud_server_id = ah_cloud_server.web[count.index].id
@@ -420,7 +420,7 @@ func testAccCheckAHLoadBalancerConfig_Basic(name string) string {
          ah_private_network_connection.example,
 	   ]
 	   name = "%[1]s"
-	   datacenter = "ams1"
+	   datacenter = "%s"
 	   balancing_algorithm = "round_robin"
        private_network {
          id = ah_private_network.test.id
@@ -447,34 +447,34 @@ func testAccCheckAHLoadBalancerConfig_Basic(name string) string {
          type = "tcp"
          port = "9090"
        }
-	 }`, name)
+	 }`, name, DatacenterName, VpsPlanID, DatacenterName)
 }
 
 func testAccCheckAHLoadBalancerConfig_Empty(name string) string {
 	return fmt.Sprintf(`
 	 resource "ah_load_balancer" "web" {
 	   name = "%s"
-	   datacenter = "ams1"
+	   datacenter = "%s"
 	   balancing_algorithm = "round_robin"
        create_public_ip_address = false
-	 }`, name)
+	 }`, name, DatacenterName)
 }
 
 func testAccCheckAHLoadBalancerConfig_LeastRequests(name string) string {
 	return fmt.Sprintf(`
 	 resource "ah_load_balancer" "web" {
 	   name = "%s"
-	   datacenter = "ams1"
+	   datacenter = "%s"
 	   balancing_algorithm = "least_requests"
        create_public_ip_address = false
-	 }`, name)
+	 }`, name, DatacenterName)
 }
 
 func testAccCheckAHLoadBalancerConfig_WithFR(name string) string {
 	return fmt.Sprintf(`
 	 resource "ah_load_balancer" "web" {
 	   name = "%s"
-	   datacenter = "ams1"
+	   datacenter = "%s"
 	   balancing_algorithm = "round_robin"
        create_public_ip_address = false
        forwarding_rule {
@@ -489,14 +489,14 @@ func testAccCheckAHLoadBalancerConfig_WithFR(name string) string {
          communication_protocol = "tcp"
          communication_port = 8080
        }
-	 }`, name)
+	 }`, name, DatacenterName)
 }
 
 func testAccCheckAHLoadBalancerConfig_UpdateFR(name string) string {
 	return fmt.Sprintf(`
 	 resource "ah_load_balancer" "web" {
 	   name = "%s"
-	   datacenter = "ams1"
+	   datacenter = "%s"
 	   balancing_algorithm = "round_robin"
        create_public_ip_address = false
        forwarding_rule {
@@ -511,7 +511,7 @@ func testAccCheckAHLoadBalancerConfig_UpdateFR(name string) string {
          communication_protocol = "tcp"
          communication_port = 8080
        }
-	 }`, name)
+	 }`, name, DatacenterName)
 }
 
 func testAccCheckAHLoadBalancerConfig_WithPN(name string) string {
@@ -523,13 +523,13 @@ func testAccCheckAHLoadBalancerConfig_WithPN(name string) string {
 
 	 resource "ah_load_balancer" "web" {
 	   name = "%s"
-	   datacenter = "ams1"
+	   datacenter = "%s"
 	   balancing_algorithm = "round_robin"
        create_public_ip_address = false
        private_network {
          id = ah_private_network.test.id
        }
-	 }`, name)
+	 }`, name, DatacenterName)
 }
 
 func testAccCheckAHLoadBalancerConfig_RemovePN(name string) string {
@@ -541,10 +541,10 @@ func testAccCheckAHLoadBalancerConfig_RemovePN(name string) string {
 
 	 resource "ah_load_balancer" "web" {
 	   name = "%s"
-	   datacenter = "ams1"
+	   datacenter = "%s"
 	   balancing_algorithm = "round_robin"
        create_public_ip_address = false
-	 }`, name)
+	 }`, name, DatacenterName)
 }
 
 func testAccCheckAHLoadBalancerConfig_WithBackendNode(name string) string {
@@ -552,9 +552,9 @@ func testAccCheckAHLoadBalancerConfig_WithBackendNode(name string) string {
      resource "ah_cloud_server" "web" {
 	   count = 2
 	   name = "cs-%[1]s-${count.index}"
-	   datacenter = "ams1"
-	   image = "f0438a4b-7c4a-4a63-a593-8e619ec63d16"
-	   product = "df42a96b-b381-412c-a605-d66d7bf081af"
+	   datacenter = "%s"
+	   image = "${data.ah_cloud_images.test.images.0.id}"
+	   product = "%s"
 	 }
      
      resource "ah_private_network" "test" {
@@ -573,7 +573,7 @@ func testAccCheckAHLoadBalancerConfig_WithBackendNode(name string) string {
          ah_private_network_connection.example,
 	   ]
 	   name = "%[1]s"
-	   datacenter = "ams1"
+	   datacenter = "%s"
 	   balancing_algorithm = "round_robin"
        create_public_ip_address = false
        private_network {
@@ -582,7 +582,7 @@ func testAccCheckAHLoadBalancerConfig_WithBackendNode(name string) string {
        backend_node {
          cloud_server_id = ah_cloud_server.web[0].id
        }
-	 }`, name)
+	 }`, name, DatacenterName, VpsPlanID, DatacenterName)
 
 }
 
@@ -591,9 +591,9 @@ func testAccCheckAHLoadBalancerConfig_WithoutBackendNode(name string) string {
      resource "ah_cloud_server" "web" {
 	   count = 2
 	   name = "cs-%[1]s-${count.index}"
-	   datacenter = "ams1"
-	   image = "f0438a4b-7c4a-4a63-a593-8e619ec63d16"
-	   product = "df42a96b-b381-412c-a605-d66d7bf081af"
+	   datacenter = "%s"
+	   image = "${data.ah_cloud_images.test.images.0.id}"
+	   product = "%s"
 	 }
      
      resource "ah_private_network" "test" {
@@ -612,13 +612,13 @@ func testAccCheckAHLoadBalancerConfig_WithoutBackendNode(name string) string {
          ah_private_network_connection.example,
 	   ]
 	   name = "%[1]s"
-	   datacenter = "ams1"
+	   datacenter = "%s"
 	   balancing_algorithm = "round_robin"
        create_public_ip_address = false
        private_network {
          id = ah_private_network.test.id
        }
-	 }`, name)
+	 }`, name, DatacenterName, VpsPlanID, DatacenterName)
 
 }
 
@@ -627,9 +627,9 @@ func testAccCheckAHLoadBalancerConfig_ChangeBackendNode(name string) string {
      resource "ah_cloud_server" "web" {
 	   count = 2
 	   name = "cs-%[1]s-${count.index}"
-	   datacenter = "ams1"
-	   image = "f0438a4b-7c4a-4a63-a593-8e619ec63d16"
-	   product = "df42a96b-b381-412c-a605-d66d7bf081af"
+	   datacenter = "%s"
+	   image = "${data.ah_cloud_images.test.images.0.id}"
+	   product = "%s"
 	 }
      
      resource "ah_private_network" "test" {
@@ -648,7 +648,7 @@ func testAccCheckAHLoadBalancerConfig_ChangeBackendNode(name string) string {
          ah_private_network_connection.example,
 	   ]
 	   name = "%[1]s"
-	   datacenter = "ams1"
+	   datacenter = "%s"
 	   balancing_algorithm = "round_robin"
        create_public_ip_address = false
        private_network {
@@ -657,7 +657,7 @@ func testAccCheckAHLoadBalancerConfig_ChangeBackendNode(name string) string {
        backend_node {
          cloud_server_id = ah_cloud_server.web[1].id
        }
-	 }`, name)
+	 }`, name, DatacenterName, VpsPlanID, DatacenterName)
 
 }
 
@@ -665,21 +665,21 @@ func testAccCheckAHLoadBalancerConfig_WithHealthCheck(name string) string {
 	return fmt.Sprintf(`
 	 resource "ah_load_balancer" "web" {
 	   name = "%s"
-	   datacenter = "ams1"
+	   datacenter = "%s"
 	   balancing_algorithm = "round_robin"
        create_public_ip_address = false
        health_check {
          type = "tcp"
          port = "9090"
        }
-	 }`, name)
+	 }`, name, DatacenterName)
 }
 
 func testAccCheckAHLoadBalancerConfig_UpdateHealthCheck(name string) string {
 	return fmt.Sprintf(`
 	 resource "ah_load_balancer" "web" {
 	   name = "%s"
-	   datacenter = "ams1"
+	   datacenter = "%s"
 	   balancing_algorithm = "round_robin"
        create_public_ip_address = false
        health_check {
@@ -687,5 +687,5 @@ func testAccCheckAHLoadBalancerConfig_UpdateHealthCheck(name string) string {
          port = "9091"
          unhealthy_threshold = 3
        }
-	 }`, name)
+	 }`, name, DatacenterName)
 }

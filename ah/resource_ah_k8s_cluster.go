@@ -54,12 +54,25 @@ func resourceAHK8sCluster() *schema.Resource {
 				Required:     true,
 				ValidateFunc: validation.NoZeroValues,
 			},
-			"plan": {
-				Type:     schema.TypeString,
-				Required: true,
-			},
 			"private_cloud": {
 				Type:     schema.TypeBool,
+				Optional: true,
+			},
+			"plan": {
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
+			"vcpu": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"ram": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"disk": {
+				Type:     schema.TypeString,
 				Optional: true,
 			},
 		},
@@ -85,9 +98,16 @@ func resourceAHK8sClusterCreate(ctx context.Context, d *schema.ResourceData, met
 		request.DatacenterID = datacenterAttr
 	}
 
-	planAttr := d.Get("plan").(string)
-	if planID, err := strconv.Atoi(planAttr); err == nil {
-		request.PlanId = planID
+	request.PrivateCloud = d.Get("private_cloud").(bool)
+	if request.PrivateCloud {
+		request.Vcpu = d.Get("vcpu").(int)
+		request.Ram = d.Get("ram").(int)
+		request.Disk = d.Get("disk").(int)
+	} else {
+		planAttr := d.Get("plan").(string)
+		if planID, err := strconv.Atoi(planAttr); err == nil {
+			request.PlanId = planID
+		}
 	}
 
 	cluster, err := client.Clusters.Create(ctx, request)
@@ -114,7 +134,6 @@ func resourceAHK8sClusterRead(ctx context.Context, d *schema.ResourceData, meta 
 	}
 
 	d.Set("name", cluster.Name)
-	d.Set("datacenter", cluster.DatacenterID)
 	d.Set("state", cluster.State)
 	d.Set("created_at", cluster.CreatedAt)
 	d.Set("number", cluster.Number)

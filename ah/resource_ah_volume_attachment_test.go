@@ -37,13 +37,13 @@ func TestAccAHVolume_IncreaseSizeAttachedVolume(t *testing.T) {
 		CheckDestroy:      testAccCheckAHVolumeDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAHVolumeAttachmentConfigBasic(20),
+				Config: datasourceConfigBasic() + testAccCheckAHVolumeAttachmentConfigBasic(20),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckAHVolumeExists("ah_volume.test", &beforeID),
 				),
 			},
 			{
-				Config: testAccCheckAHVolumeAttachmentConfigBasic(30),
+				Config: datasourceConfigBasic() + testAccCheckAHVolumeAttachmentConfigBasic(30),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckAHVolumeExists("ah_volume.test", &afterID),
 					resource.TestCheckResourceAttr("ah_volume.test", "size", "30"),
@@ -163,29 +163,29 @@ func testAccCheckAHVolumeAttachmentConfigBasic(volumeSize int) string {
 	return fmt.Sprintf(`
 	resource "ah_volume" "test" {
 		name = "Volume Name"
-		product = "03bebb65-22d8-43c6-819b-5b85b5e49c82"
+		product = "%s"
 		file_system = "ext4"
 		size = "%d"
 	}
 	 
 	resource "ah_cloud_server" "web" {
 	  name = "test"
-	  datacenter = "c54e8896-53d8-479a-8ff1-4d7d9d856a50"
-	  image = "f0438a4b-7c4a-4a63-a593-8e619ec63d16"
-	  product = "1a4cdeb2-6ca4-4745-819e-ac2ea99dc0cc"
+	  datacenter = "%s"
+	  image = "${data.ah_cloud_images.test.images.0.id}"
+	  product = "%s"
 	}
 	
 	resource "ah_volume_attachment" "test" {
 	  cloud_server_id = ah_cloud_server.web.id
 	  volume_id = ah_volume.test.id
-	}`, volumeSize)
+	}`, VolumePlanID, volumeSize, DatacenterID, VpsPlanID)
 }
 
 func testAccCheckAHVolumeAttachmentConfigChangeCloudServer(volumeSize int) string {
 	return fmt.Sprintf(`
 	resource "ah_volume" "test" {
 		name = "Volume Name"
-		product = "03bebb65-22d8-43c6-819b-5b85b5e49c82"
+		product = "%s"
 		file_system = "ext4"
 		size = "%d"
 	}
@@ -193,15 +193,15 @@ func testAccCheckAHVolumeAttachmentConfigChangeCloudServer(volumeSize int) strin
 	resource "ah_cloud_server" "web" {
 	  count = 2
 	  name = "test"
-	  datacenter = "c54e8896-53d8-479a-8ff1-4d7d9d856a50"
-	  image = "f0438a4b-7c4a-4a63-a593-8e619ec63d16"
-	  product = "1a4cdeb2-6ca4-4745-819e-ac2ea99dc0cc"
+	  datacenter = "%s"
+	  image = "${data.ah_cloud_images.test.images.0.id}"
+	  product = "%s"
 	}
 	
 	resource "ah_volume_attachment" "test" {
 	  cloud_server_id = ah_cloud_server.web.1.id
 	  volume_id = ah_volume.test.id
-	}`, volumeSize)
+	}`, VolumePlanID, volumeSize, DatacenterID, VpsPlanID)
 }
 
 func testAccCheckAHVolumeAttachmentConfigChangeVolume(volumeSize int) string {

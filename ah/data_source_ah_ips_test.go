@@ -1,6 +1,7 @@
 package ah
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
@@ -8,12 +9,12 @@ import (
 
 func TestAccDataSourceAHIPs_Basic(t *testing.T) {
 
-	resourcesConfig := `
+	resourcesConfig := fmt.Sprintf(`
 	resource "ah_ip" "test" {
 	  count = 2
 	  type = "public"
-	  datacenter = "c54e8896-53d8-479a-8ff1-4d7d9d856a50"
-	}`
+	  datacenter = "%s"
+	}`, DatacenterID)
 
 	datasourceConfig := `
 	data "ah_ips" "test" {

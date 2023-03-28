@@ -25,7 +25,7 @@ func TestAccDataSourceAHImages_Basic(t *testing.T) {
 					resource.TestCheckResourceAttrSet("data.ah_cloud_images.test", "images.0.distribution"),
 					resource.TestCheckResourceAttrSet("data.ah_cloud_images.test", "images.0.version"),
 					resource.TestCheckResourceAttrSet("data.ah_cloud_images.test", "images.0.architecture"),
-					//resource.TestCheckResourceAttrSet("data.ah_cloud_images.test", "images.0.slug"),
+					resource.TestCheckResourceAttrSet("data.ah_cloud_images.test", "images.0.slug"),
 				),
 			},
 		},
