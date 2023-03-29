@@ -95,7 +95,6 @@ func resourceAHLoadBalancer() *schema.Resource {
 			"backend_node": {
 				Type:     schema.TypeSet,
 				Optional: true,
-				Computed: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"id": {
@@ -567,7 +566,7 @@ func addForwardingRule(ctx context.Context, d *schema.ResourceData, meta interfa
 		return newFR.ID, fr.State, nil
 	}
 
-	if err := waitForState(ctx, stateFunc, "creating", "active", d); err != nil {
+	if err := waitForState(ctx, stateFunc, "updating", "active", d); err != nil {
 		return err
 	}
 
