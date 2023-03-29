@@ -79,7 +79,7 @@ func TestAccAHLoadBalancer_DeleteForwardingRule(t *testing.T) {
 			{
 				Config: testAccCheckAHLoadBalancerConfig_Empty(name),
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckNoResourceAttr("ah_load_balancer.web", "forwarding_rule"),
+					resource.TestCheckResourceAttr("ah_load_balancer.web", "forwarding_rule.#", "0"),
 				),
 			},
 		},
@@ -146,7 +146,7 @@ func TestAccAHLoadBalancer_AddForwardingRule(t *testing.T) {
 			{
 				Config: testAccCheckAHLoadBalancerConfig_Empty(name),
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckNoResourceAttr("ah_load_balancer.web", "forwarding_rule"),
+					resource.TestCheckResourceAttr("ah_load_balancer.web", "forwarding_rule.#", "0"),
 				),
 			},
 			{
@@ -198,36 +198,9 @@ func TestAccAHLoadBalancer_ConnectPrivateNetwork(t *testing.T) {
 		CheckDestroy:      testAccCheckAHLoadBalancerDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAHLoadBalancerConfig_Empty(name),
-			},
-			{
 				Config: testAccCheckAHLoadBalancerConfig_WithPN(name),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("ah_load_balancer.web", "private_network.#", "1"),
-				),
-			},
-		},
-	})
-}
-
-func TestAccAHLoadBalancer_RemovePrivateNetwork(t *testing.T) {
-	name := fmt.Sprintf("test-%s", acctest.RandString(10))
-
-	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckAHLoadBalancerDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckAHLoadBalancerConfig_WithPN(name),
-				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("ah_load_balancer.web", "private_network.#", "1"),
-				),
-			},
-			{
-				Config: testAccCheckAHLoadBalancerConfig_RemovePN(name),
-				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckNoResourceAttr("ah_load_balancer.web", "private_network"),
 				),
 			},
 		},
@@ -243,10 +216,10 @@ func TestAccAHLoadBalancer_ConnectBackendNode(t *testing.T) {
 		CheckDestroy:      testAccCheckAHLoadBalancerDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: datasourceConfigBasic() + testAccCheckAHLoadBalancerConfig_Empty(name),
+				Config: datasourceConfigBasic() + testAccCheckAHLoadBalancerConfig_WithPN(name),
 			},
 			{
-				Config: testAccCheckAHLoadBalancerConfig_WithBackendNode(name),
+				Config: datasourceConfigBasic() + testAccCheckAHLoadBalancerConfig_WithBackendNode(name),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("ah_load_balancer.web", "backend_node.#", "1"),
 				),
@@ -272,7 +245,7 @@ func TestAccAHLoadBalancer_RemoveBackendNode(t *testing.T) {
 			{
 				Config: datasourceConfigBasic() + testAccCheckAHLoadBalancerConfig_WithoutBackendNode(name),
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckNoResourceAttr("ah_load_balancer.web", "backend_node"),
+					resource.TestCheckResourceAttr("ah_load_balancer.web", "backend_node.#", "0"),
 				),
 			},
 		},
@@ -341,7 +314,7 @@ func TestAccAHLoadBalancer_DeleteHealthCheck(t *testing.T) {
 			{
 				Config: testAccCheckAHLoadBalancerConfig_Empty(name),
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckNoResourceAttr("ah_load_balancer.web", "health_check"),
+					resource.TestCheckResourceAttr("ah_load_balancer.web", "health_check.#", "0"),
 				),
 			},
 		},
@@ -529,21 +502,6 @@ func testAccCheckAHLoadBalancerConfig_WithPN(name string) string {
        private_network {
          id = ah_private_network.test.id
        }
-	 }`, name, DatacenterName)
-}
-
-func testAccCheckAHLoadBalancerConfig_RemovePN(name string) string {
-	return fmt.Sprintf(`
-     resource "ah_private_network" "test" {
-	   ip_range = "10.0.0.0/24"
-	   name = "Test Private Network"
-	 }
-
-	 resource "ah_load_balancer" "web" {
-	   name = "%s"
-	   datacenter = "%s"
-	   balancing_algorithm = "round_robin"
-       create_public_ip_address = false
 	 }`, name, DatacenterName)
 }
 

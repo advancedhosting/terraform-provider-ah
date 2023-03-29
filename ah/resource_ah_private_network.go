@@ -120,7 +120,7 @@ func resourceAHPrivateNetworkDelete(d *schema.ResourceData, meta interface{}) er
 		if err == ah.ErrResourceNotFound {
 			return nil
 		}
-		return fmt.Errorf("Error deleting private network (%s): %s", d.Id(), err)
+		return fmt.Errorf("error deleting private network (%s): %s", d.Id(), err)
 	}
 	if err := waitForPrivateNetworkDestroy(d, meta); err != nil {
 		return err
