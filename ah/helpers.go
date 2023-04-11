@@ -6,6 +6,9 @@ import (
 	"fmt"
 	"github.com/advancedhosting/advancedhosting-api-go/ah"
 	"github.com/google/uuid"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
+	"testing"
 )
 
 const (
@@ -14,6 +17,8 @@ const (
 	DatacenterName = "ams1"
 	VpsPlanID      = "381347529"
 	VpsPlanName    = "start-xs"
+	VpsUpgPlanName = "start-m"
+	VpsUpgPlanID   = "381347841"
 	VolumePlanID   = "381347560"
 	VolumePlanName = "hdd2-ash1"
 	ClusterID      = ""
@@ -43,4 +48,44 @@ func datacenterIDBySlug(ctx context.Context, client *ah.APIClient, datacenterSlu
 		}
 	}
 	return "", fmt.Errorf("datacenter slug %s not found", datacenterSlug)
+}
+
+func testAccCheckAHResourceNoRecreated(t *testing.T, beforeID, afterID *string) resource.TestCheckFunc {
+	return func(s *terraform.State) error {
+		if *beforeID == "" {
+			t.Fatalf("Old ID has not been set")
+		}
+		if *afterID == "" {
+			t.Fatalf("New ID has not been set")
+		}
+		if *beforeID != *afterID {
+			t.Fatalf("Resource has been recreated, old ID: %s, new ID: %s", *beforeID, *afterID)
+		}
+		return nil
+	}
+}
+
+func testAccCheckAHResourceRecreated(t *testing.T, beforeID, afterID *string) resource.TestCheckFunc {
+	return func(s *terraform.State) error {
+		if *beforeID == "" {
+			t.Fatalf("Old ID has not been set")
+		}
+		if *afterID == "" {
+			t.Fatalf("New ID has not been set")
+		}
+		if *beforeID == *afterID {
+			t.Fatalf("Resource hasn't been recreated, ID: %s", *beforeID)
+		}
+		return nil
+	}
+}
+
+func datasourceConfigBasic() string {
+	return fmt.Sprintf(`
+	data "ah_cloud_images" "test" {
+		filter {
+			key = "slug"
+			values = ["%s"]
+		  }
+	}`, ImageName)
 }

@@ -51,7 +51,6 @@ func resourceAHCloudServer() *schema.Resource {
 			"plan": {
 				Type:          schema.TypeString,
 				Optional:      true,
-				ForceNew:      true,
 				ConflictsWith: []string{"product"},
 			},
 			"use_password": {

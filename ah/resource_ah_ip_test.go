@@ -115,7 +115,7 @@ func TestAccAHIP_UpdateReverseDNS(t *testing.T) {
 				Config: testAccCheckAHPublicIPConfigBasicWithReserveDNS(),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckAHIPExists("ah_ip.test", &afterID),
-					testAccCheckAHResourceNoRecreated(t, beforeID, afterID),
+					testAccCheckAHResourceNoRecreated(t, &beforeID, &afterID),
 					resource.TestCheckResourceAttr("ah_ip.test", "reverse_dns", "ip-185-189-69-16.ah-server22.com"),
 				),
 			},

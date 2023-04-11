@@ -20,11 +20,11 @@ func TestAccAHCloudServer_Basic(t *testing.T) {
 		CheckDestroy:      testAccCheckAHCloudServerDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAHCloudServerConfigBasic(name),
+				Config: datasourceConfigBasic() + testAccCheckAHCloudServerConfigBasic(name),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("ah_cloud_server.web", "name", name),
 					resource.TestCheckResourceAttr("ah_cloud_server.web", "state", "running"),
-					resource.TestCheckResourceAttrSet("ah_cloud_server.web", "product"),
+					resource.TestCheckResourceAttrSet("ah_cloud_server.web", "plan"),
 					resource.TestCheckResourceAttrSet("ah_cloud_server.web", "vcpu"),
 					resource.TestCheckResourceAttrSet("ah_cloud_server.web", "ram"),
 					resource.TestCheckResourceAttrSet("ah_cloud_server.web", "disk"),
@@ -189,13 +189,13 @@ func TestAccAHCloudServer_Rename(t *testing.T) {
 		CheckDestroy:      testAccCheckAHCloudServerDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAHCloudServerConfigBasic(name),
+				Config: datasourceConfigBasic() + testAccCheckAHCloudServerConfigBasic(name),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("ah_cloud_server.web", "name", name),
 				),
 			},
 			{
-				Config: testAccCheckAHCloudServerConfigBasic(newName),
+				Config: datasourceConfigBasic() + testAccCheckAHCloudServerConfigBasic(newName),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("ah_cloud_server.web", "name", newName),
 				),
@@ -208,33 +208,25 @@ func TestAccAHCloudServer_Upgrade(t *testing.T) {
 	var beforeID, afterID string
 	name := fmt.Sprintf("test-%s", acctest.RandString(10))
 
-	datasourceConfig := fmt.Sprintf(`
-	data "ah_cloud_images" "test" {
-		filter {
-			key = "slug"
-			values = ["%s"]
-		  }
-	}`, ImageName)
-
 	resource.ParallelTest(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
 		ProviderFactories: testAccProviderFactories,
 		CheckDestroy:      testAccCheckAHCloudServerDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: datasourceConfig + testAccCheckAHCloudServerConfigBasic(name),
+				Config: datasourceConfigBasic() + testAccCheckAHCloudServerConfigBasic(name),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("ah_cloud_server.web", "name", name),
 					testAccCheckAHCloudServerExists("ah_cloud_server.web", &beforeID),
-					resource.TestCheckResourceAttr("ah_cloud_server.web", "product", "start-xs"),
+					resource.TestCheckResourceAttr("ah_cloud_server.web", "plan", VpsPlanID),
 				),
 			},
 			{
-				Config: datasourceConfig + testAccCheckAHCloudServerConfigUpgrade(name),
+				Config: datasourceConfigBasic() + testAccCheckAHCloudServerConfigUpgrade(name),
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("ah_cloud_server.web", "product", "start-xs"),
+					resource.TestCheckResourceAttr("ah_cloud_server.web", "plan", VpsUpgPlanID),
 					testAccCheckAHCloudServerExists("ah_cloud_server.web", &afterID),
-					testAccCheckAHResourceNoRecreated(t, beforeID, afterID),
+					testAccCheckAHResourceNoRecreated(t, &beforeID, &afterID),
 				),
 			},
 		},
@@ -251,19 +243,19 @@ func TestAccAHCloudServer_UpgradeWithSlug(t *testing.T) {
 		CheckDestroy:      testAccCheckAHCloudServerDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAHCloudServerConfigCreateWithSlugs(name),
+				Config: datasourceConfigBasic() + testAccCheckAHCloudServerConfigCreateWithSlugs(name),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("ah_cloud_server.web", "name", name),
 					testAccCheckAHCloudServerExists("ah_cloud_server.web", &beforeID),
-					resource.TestCheckResourceAttr("ah_cloud_server.web", "product", "start-xs"),
+					resource.TestCheckResourceAttr("ah_cloud_server.web", "plan", "start-xs"),
 				),
 			},
 			{
-				Config: testAccCheckAHCloudServerConfigUpgradeWithSlug(name),
+				Config: datasourceConfigBasic() + testAccCheckAHCloudServerConfigUpgradeWithSlug(name),
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("ah_cloud_server.web", "product", "start-m"),
+					resource.TestCheckResourceAttr("ah_cloud_server.web", "plan", VpsUpgPlanName),
 					testAccCheckAHCloudServerExists("ah_cloud_server.web", &afterID),
-					testAccCheckAHResourceNoRecreated(t, beforeID, afterID),
+					testAccCheckAHResourceNoRecreated(t, &beforeID, &afterID),
 				),
 			},
 		},
@@ -280,14 +272,14 @@ func TestAccAHCloudServer_UpdateImage(t *testing.T) {
 		CheckDestroy:      testAccCheckAHCloudServerDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAHCloudServerConfigBasic(name),
+				Config: datasourceConfigBasic() + testAccCheckAHCloudServerConfigBasic(name),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("ah_cloud_server.web", "name", name),
 					testAccCheckAHCloudServerExists("ah_cloud_server.web", &beforeID),
 				),
 			},
 			{
-				Config: testAccCheckAHCloudServerConfigUpdateImageID(name),
+				Config: datasourceConfigBasic() + testAccCheckAHCloudServerConfigUpdateImageID(name),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("ah_cloud_server.web", "image", "8ed8bea7-69f0-40de-ab07-6a6b5a13581d"),
 					testAccCheckAHCloudServerExists("ah_cloud_server.web", &afterID),
@@ -323,9 +315,9 @@ func testAccCheckAHCloudServerConfigBasic(name string) string {
 	 resource "ah_cloud_server" "web" {
 	   name = "%s"
 	   datacenter = "%s"
-	   image = "%s"
-	   product = "%s"
-	 }`, name, DatacenterName, ImageName, VpsPlanName)
+	   image = "${data.ah_cloud_images.test.images.0.id}"
+	   plan = "%s"
+	 }`, name, DatacenterID, VpsPlanID)
 }
 
 func testAccCheckAHCloudServerConfigCreateWithSlugs(name string) string {
@@ -334,7 +326,7 @@ func testAccCheckAHCloudServerConfigCreateWithSlugs(name string) string {
 	   name = "%s"
 	   datacenter = "%s"
 	   image = "%s"
-	   product = "%s"
+	   plan = "%s"
 	 }`, name, DatacenterName, ImageName, VpsPlanName)
 }
 
@@ -344,7 +336,7 @@ func testAccCheckAHCloudServerConfigCreateWithPlan(name string) string {
 	   name = "%s"
 	   datacenter = "%s"
 	   image = "%s"
-	   product = "%s"
+	   plan = "%s"
 	 }`, name, DatacenterName, ImageName, VpsPlanName)
 }
 
@@ -354,8 +346,8 @@ func testAccCheckAHCloudServerConfigCreateWithAutoBackups(name string) string {
 	   name = "%s"
 	   datacenter = "%s"
 	   image = "%s"
-	   product = "%s"
-       backups = true
+	   plan = "%s"
+	  backups = true
 	}`, name, DatacenterName, ImageName, VpsPlanName)
 }
 
@@ -365,10 +357,10 @@ func testAccCheckAHCloudServerConfigCreateInPrivateCloud(name string) string {
 	   name = "%s"
 	   datacenter = "%s"
 	   image = "%s"
-       private_cloud = true
+	  private_cloud = true
 	   node_id = "%s"
-       cluster_id = "%s"
-       vcpu = 1
+	  cluster_id = "%s"
+	  vcpu = 1
 	   ram = 64
 	   disk = 10
 	 }`, name, DatacenterName, ImageName, NodeID, ClusterID)
@@ -379,9 +371,9 @@ func testAccCheckAHCloudServerConfigUpgradeWithSlug(name string) string {
 	 resource "ah_cloud_server" "web" {
 	   name = "%s"
 	   datacenter = "%s"
-	   image = "ubuntu-20_04-x64"
-	   product = "start-m"
-	 }`, name, DatacenterName)
+	   image = "%s"
+	   plan = "%s"
+	 }`, name, DatacenterName, ImageName, VpsUpgPlanName)
 }
 
 func testAccCheckAHCloudServerConfigWithSSHKeys(name string, ssh1PublicKey, ssh2PublicKey string) string {
@@ -398,7 +390,7 @@ func testAccCheckAHCloudServerConfigWithSSHKeys(name string, ssh1PublicKey, ssh2
 	   name = "%s"
 	   datacenter = "%s"
 	   image = "${data.ah_cloud_images.test.images.0.id}"
-	   product = "%s"
+	   plan = "%s"
 	   ssh_keys = [ah_ssh_key.ssh_key1.id, ah_ssh_key.ssh_key2.fingerprint]
 	 }`, ssh1PublicKey, ssh2PublicKey, name, DatacenterID, VpsPlanName)
 }
@@ -409,7 +401,7 @@ func testAccCheckAHCloudServerConfigWithoutPublicIP(name string) string {
 	   name = "%s"
 	   datacenter = "%s"
 	   image = "${data.ah_cloud_images.test.images.0.id}"
-	   product = "%s"
+	   plan = "%s"
 	   create_public_ip_address = false
 	 }`, name, DatacenterID, VpsPlanName)
 }
@@ -420,8 +412,8 @@ func testAccCheckAHCloudServerConfigUpgrade(name string) string {
 	   name = "%s"
 	   datacenter = "%s"
 	   image = "${data.ah_cloud_images.test.images.0.id}"
-	   product = "%s"
-	 }`, name, DatacenterID, VpsPlanName)
+	   plan = "%s"
+	 }`, name, DatacenterID, VpsUpgPlanID)
 }
 
 func testAccCheckAHCloudServerConfigUpdateImageID(name string) string {
@@ -430,7 +422,7 @@ func testAccCheckAHCloudServerConfigUpdateImageID(name string) string {
 	   name = "%s"
 	   datacenter = "%s"
 	   image = "8ed8bea7-69f0-40de-ab07-6a6b5a13581d"
-	   product = "%s"
+	   plan = "%s"
 	 }`, name, DatacenterID, VpsPlanName)
 }
 
@@ -442,28 +434,10 @@ func testAccCheckAHCloudServerExists(n string, instanceID *string) resource.Test
 		}
 
 		if rs.Primary.ID == "" {
-			return fmt.Errorf("No instance ID is set")
+			return fmt.Errorf("no instance ID is set")
 		}
 
 		*instanceID = rs.Primary.ID
-		return nil
-	}
-}
-
-func testAccCheckAHResourceNoRecreated(t *testing.T, beforeID, afterID string) resource.TestCheckFunc {
-	return func(s *terraform.State) error {
-		if beforeID != afterID {
-			t.Fatalf("Resource has been recreated, old ID: %s, new ID: %s", beforeID, afterID)
-		}
-		return nil
-	}
-}
-
-func testAccCheckAHResourceRecreated(t *testing.T, beforeID, afterID *string) resource.TestCheckFunc {
-	return func(s *terraform.State) error {
-		if beforeID == afterID {
-			t.Fatalf("Resource hasn't been recreated, ID: %s", *beforeID)
-		}
 		return nil
 	}
 }

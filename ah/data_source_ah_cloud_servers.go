@@ -71,7 +71,11 @@ func dataSourceAHCloudServers() *schema.Resource {
 						},
 						"product": {
 							Type:     schema.TypeString,
-							Computed: true,
+							Optional: true,
+						},
+						"plan": {
+							Type:     schema.TypeString,
+							Optional: true,
 						},
 						"state": {
 							Type:     schema.TypeString,

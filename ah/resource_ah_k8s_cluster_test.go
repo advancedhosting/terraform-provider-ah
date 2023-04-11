@@ -64,7 +64,7 @@ func TestAccAHK8sCluster_UpdateName(t *testing.T) {
 					resource.TestCheckResourceAttrSet("ah_k8s_cluster.test", "created_at"),
 					resource.TestCheckResourceAttrSet("ah_k8s_cluster.test", "number"),
 					resource.TestCheckResourceAttrSet("ah_k8s_cluster.test", "plan"),
-					testAccCheckAHResourceNoRecreated(t, beforeID, afterID),
+					testAccCheckAHResourceNoRecreated(t, &beforeID, &afterID),
 				),
 			},
 		},

@@ -48,7 +48,7 @@ func TestAccAHPrivateNetwork_UpdateName(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckAHPrivateNetworkExists("ah_private_network.test", &afterID),
 					resource.TestCheckResourceAttr("ah_private_network.test", "name", "New Private Network"),
-					testAccCheckAHResourceNoRecreated(t, beforeID, afterID),
+					testAccCheckAHResourceNoRecreated(t, &beforeID, &afterID),
 				),
 			},
 		},
