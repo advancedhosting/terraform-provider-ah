@@ -50,7 +50,7 @@ func TestAccAHPrivateNetworkConnection_UpdateIP(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("ah_private_network_connection.example", "ip_address", "10.0.0.2"),
 					testAccCheckAHPrivateNetworkConnectionExists("ah_private_network_connection.example", &afterID),
-					testAccCheckAHResourceNoRecreated(t, beforeID, afterID),
+					testAccCheckAHResourceNoRecreated(t, &beforeID, &afterID),
 				),
 			},
 		},

@@ -186,13 +186,3 @@ func testAccCheckAHIPAssignmentConfigDeleteAssignment(cloudServerName string) st
 	  product = "%s"
 	}`, DatacenterID, cloudServerName, DatacenterID, VpsPlanID)
 }
-
-func datasourceConfigBasic() string {
-	return fmt.Sprintf(`
-	data "ah_cloud_images" "test" {
-		filter {
-			key = "slug"
-			values = ["%s"]
-		  }
-	}`, ImageName)
-}
