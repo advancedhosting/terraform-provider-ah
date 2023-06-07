@@ -6,7 +6,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"log"
-	"strconv"
 	"time"
 
 	"github.com/advancedhosting/advancedhosting-api-go/ah"
@@ -37,6 +36,10 @@ func resourceAHK8sCluster() *schema.Resource {
 				ForceNew:     true,
 				ValidateFunc: validation.NoZeroValues,
 			},
+			"private_network": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 			"state": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -45,76 +48,73 @@ func resourceAHK8sCluster() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"account_id": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 			"created_at": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"nodes_count": {
-				Type:         schema.TypeInt,
+			"k8s_version": {
+				Type:         schema.TypeString,
 				Required:     true,
+				ForceNew:     true,
 				ValidateFunc: validation.NoZeroValues,
 			},
-			"private_cloud": {
-				Type:     schema.TypeBool,
-				Optional: true,
-			},
-			"plan": {
-				Type:     schema.TypeString,
-				Optional: true,
-				ForceNew: true,
-			},
-			"vcpu": {
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"ram": {
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"disk": {
-				Type:     schema.TypeString,
-				Optional: true,
+			"node_pools": {
+				Type:     schema.TypeList,
+				Required: true,
+				Elem:     &schema.Resource{Schema: NodePoolSchema},
 			},
 		},
 	}
 }
 
 func resourceAHK8sClusterCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	var datacenterID string
+	var nodePools []ah.CreateKubernetesNodePoolRequest
+
 	client := meta.(*ah.APIClient)
 
-	request := &ah.ClusterCreateRequest{
-		Name:  d.Get("name").(string),
-		Count: d.Get("nodes_count").(int),
-	}
-
 	datacenterAttr := d.Get("datacenter").(string)
-	if _, err := uuid.Parse(datacenterAttr); err != nil {
-		datacenterID, err := datacenterIDBySlug(ctx, client, d.Get("datacenter").(string))
+
+	if _, err := uuid.Parse(datacenterAttr); err == nil {
+		datacenterID = datacenterAttr
+	} else {
+		id, err := datacenterIDBySlug(ctx, client, datacenterAttr)
 		if err != nil {
 			return diag.FromErr(err)
 		}
-		request.DatacenterID = datacenterID
-	} else {
-		request.DatacenterID = datacenterAttr
+		datacenterID = id
 	}
 
-	request.PrivateCloud = d.Get("private_cloud").(bool)
-	if request.PrivateCloud {
-		request.Vcpu = d.Get("vcpu").(int)
-		request.Ram = d.Get("ram").(int)
-		request.Disk = d.Get("disk").(int)
-	} else {
-		planAttr := d.Get("plan").(string)
-		if planID, err := strconv.Atoi(planAttr); err == nil {
-			request.PlanId = planID
+	k8sVersion, err := kubernetesVersion(ctx, client, d.Get("k8s_version").(string))
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
+	for _, nodePool := range d.Get("node_pools").([]interface{}) {
+		nodePoolRequest, err := expandCreateNodePoolRequest(nodePool)
+		if err != nil {
+			return diag.FromErr(err)
 		}
+		nodePools = append(nodePools, *nodePoolRequest)
 	}
 
-	cluster, err := client.Clusters.Create(ctx, request)
+	request := &ah.KubernetesClusterCreateRequest{
+		Name:         d.Get("name").(string),
+		DatacenterID: datacenterID,
+		K8sVersion:   k8sVersion,
+		NodePools:    nodePools,
+	}
+
+	cluster, err := client.KubernetesClusters.Create(ctx, request)
 
 	if err != nil {
 		return diag.Errorf("Error creating k8s cluster: %s", err)
 	}
+
 	d.SetId(cluster.ID)
 
 	if err := waitForK8sClusterStatus(ctx, []string{"creating"}, []string{"active"}, d, meta); err != nil {
@@ -128,35 +128,50 @@ func resourceAHK8sClusterCreate(ctx context.Context, d *schema.ResourceData, met
 
 func resourceAHK8sClusterRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*ah.APIClient)
-	cluster, err := client.Clusters.Get(ctx, d.Id())
+
+	clusterID := d.Id()
+	if clusterID == "" {
+		return diag.Errorf("resource ID is required")
+	}
+
+	cluster, err := client.KubernetesClusters.Get(ctx, d.Id())
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
 	d.Set("name", cluster.Name)
+	d.Set("datacenter", cluster.DatacenterSlug)
+	d.Set("private_network", cluster.PrivateNetworkName)
 	d.Set("state", cluster.State)
 	d.Set("created_at", cluster.CreatedAt)
 	d.Set("number", cluster.Number)
-	d.Set("nodes_count", cluster.Count)
+	d.Set("account_id", cluster.AccountID)
+	d.Set("k8s_version", cluster.K8sVersion)
+
+	if err = dataSourceAHNodePoolSchema(d, cluster.NodePools); err != nil {
+		return diag.FromErr(err)
+	}
+
+	d.SetId(cluster.ID)
 
 	return nil
-
 }
 
 func resourceAHK8sClusterUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*ah.APIClient)
 
-	if d.HasChange("name") {
-		request := &ah.ClusterUpdateRequest{
-			Name: d.Get("name").(string),
-		}
+	if !d.HasChanges("name") {
+		return resourceAHK8sClusterRead(ctx, d, meta)
+	}
 
-		err := client.Clusters.Update(ctx, d.Id(), request)
+	request := &ah.KubernetesClusterUpdateRequest{
+		Name: d.Get("name").(string),
+	}
 
-		if err != nil {
-			return diag.Errorf(
-				"Error renaming k8s cluster (%s): %s", d.Id(), err)
-		}
+	err := client.KubernetesClusters.Update(ctx, d.Id(), request)
+
+	if err != nil {
+		return diag.Errorf("Error renaming k8s cluster (%s): %s", d.Id(), err)
 	}
 
 	return resourceAHK8sClusterRead(ctx, d, meta)
@@ -164,7 +179,7 @@ func resourceAHK8sClusterUpdate(ctx context.Context, d *schema.ResourceData, met
 
 func resourceAHK8sClusterDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*ah.APIClient)
-	if err := client.Clusters.Delete(ctx, d.Id()); err != nil {
+	if err := client.KubernetesClusters.Delete(ctx, d.Id()); err != nil {
 		return diag.Errorf(
 			"Error deleting k8s cluster (%s): %s", d.Id(), err)
 	}
@@ -181,7 +196,7 @@ func waitForK8sClusterStatus(ctx context.Context, pendingStatuses, targetStatuse
 	client := meta.(*ah.APIClient)
 
 	stateRefreshFunc := func() (interface{}, string, error) {
-		cluster, err := client.Clusters.Get(context.Background(), d.Id())
+		cluster, err := client.KubernetesClusters.Get(context.Background(), d.Id())
 		if err != nil {
 			log.Printf("Error on waitForK8sClusterStatus: %v", err)
 			return nil, "", err
@@ -211,7 +226,7 @@ func waitForK8sClusterDestroy(ctx context.Context, d *schema.ResourceData, meta 
 	client := meta.(*ah.APIClient)
 
 	stateRefreshFunc := func() (interface{}, string, error) {
-		cluster, err := client.Clusters.Get(context.Background(), d.Id())
+		cluster, err := client.KubernetesClusters.Get(context.Background(), d.Id())
 		if err == ah.ErrResourceNotFound {
 			return d.Id(), "deleted", nil
 		}
@@ -237,6 +252,89 @@ func waitForK8sClusterDestroy(ctx context.Context, d *schema.ResourceData, meta 
 		return fmt.Errorf(
 			"error waiting for k8s cluster to reach desired status deleted: %s", err)
 	}
+
+	return nil
+}
+
+func expandCreateNodePoolRequest(np interface{}) (*ah.CreateKubernetesNodePoolRequest, error) {
+	labels := ah.Labels{}
+	nodePool := np.(map[string]interface{})
+
+	nodePoolRequest := &ah.CreateKubernetesNodePoolRequest{Type: nodePool["type"].(string)}
+
+	if l, ok := nodePool["labels"].(map[string]interface{}); ok {
+		for k, v := range l {
+			labels[k] = fmt.Sprintf("%v", v)
+		}
+		nodePoolRequest.Labels = &labels
+	}
+
+	if autoScale, ok := nodePool["auto_scale"]; !ok {
+		nodePoolRequest.AutoScale = autoScale.(bool)
+		nodePoolRequest.MaxCount = nodePool["max_count"].(int)
+		nodePoolRequest.MinCount = nodePool["min_count"].(int)
+	} else {
+		nodePoolRequest.Count = nodePool["nodes_count"].(int)
+	}
+
+	if _, ok := nodePool["public_properties"]; !ok {
+		if _, ok := nodePool["private_properties"]; !ok {
+			return nil, fmt.Errorf("must set either public_properties or private_properties")
+		}
+		privateProperties := nodePool["private_properties"].(map[string]interface{})
+		nodePoolRequest.PrivateProperties = &ah.PrivateProperties{
+			NetworkID:     privateProperties["network_id"].(string),
+			ClusterID:     privateProperties["cluster_id"].(string),
+			ClusterNodeID: privateProperties["cluster_node_id"].(string),
+			Vcpu:          privateProperties["vcpu"].(int),
+			Ram:           privateProperties["ram"].(int),
+			Disk:          privateProperties["disk"].(int),
+		}
+	} else {
+		planID := nodePool["public_properties"].(map[string]interface{})["plan_id"].(int)
+		nodePoolRequest.PublicProperties = &ah.PublicProperties{PlanID: planID}
+	}
+
+	return nodePoolRequest, nil
+}
+
+func dataSourceAHNodePoolSchema(d *schema.ResourceData, nodePools []ah.KubernetesNodePool) error {
+	allNodePools := make([]map[string]interface{}, len(nodePools))
+	var ids string
+	for i, nodePool := range nodePools {
+		nodePoolInfo := map[string]interface{}{
+			"id":          nodePool.ID,
+			"name":        nodePool.Name,
+			"type":        nodePool.Type,
+			"nodes_count": nodePool.Count,
+			"auto_scale":  nodePool.AutoScale,
+			"min_count":   nodePool.MinCount,
+			"max_count":   nodePool.MaxCount,
+			"labels":      nodePool.Labels,
+		}
+
+		if nodePool.PublicProperties.PlanID != 0 {
+			nodePoolInfo["public_properties"] = map[string]int{
+				"plan_id": nodePool.PublicProperties.PlanID,
+			}
+		} else {
+			nodePoolInfo["private_properties"] = map[string]interface{}{
+				"network_id":      nodePool.PrivateProperties.NetworkID,
+				"cluster_id":      nodePool.PrivateProperties.ClusterID,
+				"cluster_node_id": nodePool.PrivateProperties.ClusterNodeID,
+				"vcpu":            nodePool.PrivateProperties.Vcpu,
+				"ram":             nodePool.PrivateProperties.Ram,
+				"disk":            nodePool.PrivateProperties.Disk,
+			}
+		}
+
+		allNodePools[i] = nodePoolInfo
+		ids += nodePool.ID
+	}
+	if err := d.Set("node_pools", allNodePools); err != nil {
+		return fmt.Errorf("unable to set Node Pools attribute: %s", err)
+	}
+	d.SetId(generateHash(ids))
 
 	return nil
 }
