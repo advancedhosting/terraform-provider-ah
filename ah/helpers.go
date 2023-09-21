@@ -23,6 +23,9 @@ const (
 	VolumePlanName = "hdd2-ash1"
 	ClusterID      = ""
 	NodeID         = "2486b2f8-f7a6-4207-979b-9b94d93c174e"
+	K8SVersion     = "v1.19.0"
+	NodePoolName   = "KNP100243"
+	NodePoolType   = "public"
 )
 
 // IsUUID checks if string is in valid UUID format.
@@ -48,6 +51,19 @@ func datacenterIDBySlug(ctx context.Context, client *ah.APIClient, datacenterSlu
 		}
 	}
 	return "", fmt.Errorf("datacenter slug %s not found", datacenterSlug)
+}
+
+func kubernetesVersion(ctx context.Context, client *ah.APIClient, k8sVersion string) (string, error) {
+	versions, err := client.KubernetesClusters.GetKubernetesClustersVersions(ctx)
+	if err != nil {
+		return "", err
+	}
+	for _, version := range versions {
+		if version == k8sVersion {
+			return k8sVersion, nil
+		}
+	}
+	return "", fmt.Errorf("kubernetes version %s not found", k8sVersion)
 }
 
 func testAccCheckAHResourceNoRecreated(t *testing.T, beforeID, afterID *string) resource.TestCheckFunc {
