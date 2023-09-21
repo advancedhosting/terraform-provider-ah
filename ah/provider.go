@@ -48,7 +48,6 @@ func Provider() *schema.Provider {
 			"ah_ssh_key":                    resourceAHSSHKey(),
 			"ah_load_balancer":              resourceAHLoadBalancer(),
 			"ah_k8s_cluster":                resourceAHK8sCluster(),
-			"ah_k8s_node_pool":              resourceAHK8sNodePool(),
 		},
 	}
 

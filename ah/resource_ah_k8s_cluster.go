@@ -2,6 +2,7 @@ package ah
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -9,7 +10,7 @@ import (
 	"time"
 
 	"github.com/advancedhosting/advancedhosting-api-go/ah"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	state "github.com/hashicorp/terraform-plugin-sdk/v2/helper/retry"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
@@ -64,18 +65,23 @@ func resourceAHK8sCluster() *schema.Resource {
 			},
 			"node_pools": {
 				Type:     schema.TypeList,
-				Required: true,
-				Elem:     &schema.Resource{Schema: NodePoolSchema},
+				Optional: true,
+				Computed: true,
+				MinItems: 1,
+				MaxItems: 1,
+				Elem: &schema.Resource{
+					Schema: NodePoolSchema,
+				},
 			},
 		},
 	}
 }
 
 func resourceAHK8sClusterCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	client := meta.(*ah.APIClient)
+
 	var datacenterID string
 	var nodePools []ah.CreateKubernetesNodePoolRequest
-
-	client := meta.(*ah.APIClient)
 
 	datacenterAttr := d.Get("datacenter").(string)
 
@@ -117,7 +123,7 @@ func resourceAHK8sClusterCreate(ctx context.Context, d *schema.ResourceData, met
 
 	d.SetId(cluster.ID)
 
-	if err := waitForK8sClusterStatus(ctx, []string{"creating"}, []string{"active"}, d, meta); err != nil {
+	if err := waitForK8sClusterStatus(ctx, []string{"creating", "creation_failed"}, []string{"active"}, d, meta); err != nil {
 		return diag.Errorf(
 			"Error waiting for k8s cluster (%s) to become ready: %s", d.Id(), err)
 	}
@@ -204,7 +210,7 @@ func waitForK8sClusterStatus(ctx context.Context, pendingStatuses, targetStatuse
 		return cluster.ID, cluster.State, nil
 	}
 
-	stateChangeConf := resource.StateChangeConf{
+	stateChangeConf := state.StateChangeConf{
 		Delay:      20 * time.Second,
 		Pending:    pendingStatuses,
 		Refresh:    stateRefreshFunc,
@@ -215,8 +221,7 @@ func waitForK8sClusterStatus(ctx context.Context, pendingStatuses, targetStatuse
 	_, err := stateChangeConf.WaitForStateContext(ctx)
 
 	if err != nil {
-		return fmt.Errorf(
-			"error waiting for k8s cluster to reach desired status %s: %s", targetStatuses, err)
+		return fmt.Errorf("error waiting for k8s cluster to reach desired status %s: %s", targetStatuses, err)
 	}
 
 	return nil
@@ -227,7 +232,7 @@ func waitForK8sClusterDestroy(ctx context.Context, d *schema.ResourceData, meta 
 
 	stateRefreshFunc := func() (interface{}, string, error) {
 		cluster, err := client.KubernetesClusters.Get(context.Background(), d.Id())
-		if err == ah.ErrResourceNotFound {
+		if errors.Is(err, ah.ErrResourceNotFound) {
 			return d.Id(), "deleted", nil
 		}
 		if err != nil {
@@ -238,7 +243,7 @@ func waitForK8sClusterDestroy(ctx context.Context, d *schema.ResourceData, meta 
 		return cluster.ID, cluster.State, nil
 	}
 
-	stateChangeConf := resource.StateChangeConf{
+	stateChangeConf := state.StateChangeConf{
 		Delay:      5 * time.Second,
 		Pending:    []string{"active", "deleting"},
 		Refresh:    stateRefreshFunc,

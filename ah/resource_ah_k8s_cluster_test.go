@@ -2,6 +2,7 @@ package ah
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
 	"testing"
@@ -13,7 +14,7 @@ import (
 
 const (
 	K8sPlanID    = "381347758"
-	resourceName = "ah_k8s_cluster.test"
+	resourceName = "ah_k8s_cluster.ah_test_cluster"
 )
 
 func TestAccAHK8sCluster_Basic(t *testing.T) {
@@ -40,13 +41,9 @@ func TestAccAHK8sCluster_Basic(t *testing.T) {
 					resource.TestCheckResourceAttrSet(resourceName, "node_pools.0.id"),
 					resource.TestCheckResourceAttrSet(resourceName, "node_pools.0.name"),
 					resource.TestCheckResourceAttr(resourceName, "node_pools.0.type", NodePoolType),
-					resource.TestCheckResourceAttr(resourceName, "node_pools.0.count", "1"),
+					resource.TestCheckResourceAttr(resourceName, "node_pools.0.nodes_count", "1"),
 					resource.TestCheckResourceAttrSet(resourceName, "node_pools.0.labels.%"),
 					resource.TestCheckResourceAttr(resourceName, "node_pools.0.public_properties.plan_id", K8sPlanID),
-
-					//resource.TestCheckResourceAttrSet(resourceName, "node_pools.0.nodes.0.id"),
-					//resource.TestCheckResourceAttrSet(resourceName, "node_pools.0.nodes.0.name"),
-					//resource.TestCheckResourceAttrSet(resourceName, "node_pools.0.nodes.0.state"),
 				),
 			},
 		},
@@ -111,7 +108,7 @@ func testAccCheckAHK8sClusterDestroy(s *terraform.State) error {
 
 		_, err := client.KubernetesClusters.Get(context.Background(), rs.Primary.ID)
 
-		if err != ah.ErrResourceNotFound {
+		if !errors.Is(err, ah.ErrResourceNotFound) {
 			return fmt.Errorf("error removing k8s cluster (%s): %s", rs.Primary.ID, err)
 		}
 	}
@@ -121,7 +118,7 @@ func testAccCheckAHK8sClusterDestroy(s *terraform.State) error {
 
 func testAccCheckAHK8sClusterConfigBasic(name string) string {
 	return fmt.Sprintf(`
-resource "ah_k8s_cluster" "test" {
+resource "ah_k8s_cluster" "ah_test_cluster" {
 	name                      = "%s"
     datacenter                = "%s"
     k8s_version               = "%s"
@@ -129,7 +126,8 @@ resource "ah_k8s_cluster" "test" {
 			type              = "%s"
 			nodes_count       = 1
 			labels            = {
-				"labels.websa.com/technologies": "terraform"
+				"labels.websa.com/technologies": "terraform",
+				"labels.websa.com/terraform": "default-node-pool",
 			}
 			public_properties = {
 				plan_id = "%s"
@@ -141,7 +139,7 @@ resource "ah_k8s_cluster" "test" {
 
 func testAccCheckAHK8sClusterConfigUpdateName(name string) string {
 	return fmt.Sprintf(`
-resource "ah_k8s_cluster" "test" {
+resource "ah_k8s_cluster" "ah_test_cluster" {
 	name                      = "%s"
     datacenter                = "%s"
     k8s_version               = "%s"
@@ -149,7 +147,8 @@ resource "ah_k8s_cluster" "test" {
 			type              = "%s"
 			nodes_count       = 1
 			labels            = {
-				"labels.websa.com/technologies": "terraform"
+				"labels.websa.com/technologies": "terraform",
+				"labels.websa.com/terraform": "default-node-pool",
 			}
 			public_properties = {
 				plan_id = "%s"
