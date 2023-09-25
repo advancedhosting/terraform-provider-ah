@@ -252,7 +252,7 @@ func resourceAHLoadBalancerCreate(ctx context.Context, d *schema.ResourceData, m
 			hcRequest := makeHCCreateRequest(hc)
 			hcsRequest = append(hcsRequest, hcRequest)
 		}
-		request.HealthChecks = hcsRequest
+		request.HealthCheck = &hcsRequest[0]
 	}
 
 	lb, err := client.LoadBalancers.Create(ctx, request)
@@ -261,7 +261,7 @@ func resourceAHLoadBalancerCreate(ctx context.Context, d *schema.ResourceData, m
 		return diag.Errorf("Error creating load balancer: %s", err)
 	}
 	d.SetId(lb.ID)
-	if err := waitForLoadBalancerStatus(ctx, []string{"creating"}, []string{"active"}, d, meta); err != nil {
+	if err := waitForLoadBalancerStatus(ctx, []string{"creating", "defined"}, []string{"active"}, d, meta); err != nil {
 		return diag.Errorf(
 			"Error waiting for load balancer (%s) to become ready: %s", d.Id(), err)
 	}
@@ -286,7 +286,6 @@ func resourceAHLoadBalancerRead(ctx context.Context, d *schema.ResourceData, met
 		item["address"] = ipAddress.Address
 		item["state"] = ipAddress.State
 		ipsAddresses[i] = item
-
 	}
 	d.Set("ip_address", ipsAddresses)
 
@@ -319,30 +318,26 @@ func resourceAHLoadBalancerRead(ctx context.Context, d *schema.ResourceData, met
 		item["communication_protocol"] = fr.CommunicationProtocol
 		item["communication_port"] = fr.CommunicationPort
 		forwardingRules[i] = item
-
 	}
 	d.Set("forwarding_rule", forwardingRules)
-	healthChecks := make([]map[string]interface{}, len(loadBalancer.HealthChecks))
-	for i, hc := range loadBalancer.HealthChecks {
-		item := make(map[string]interface{})
-		item["id"] = hc.ID
-		item["type"] = hc.Type
-		if hc.URL != "" {
-			item["url"] = hc.URL
+
+	healthChecks := make([]map[string]interface{}, 1)
+	if loadBalancer.HealthCheck.ID != "" {
+		healthChecks[0] = make(map[string]interface{})
+		healthChecks[0]["id"] = loadBalancer.HealthCheck.ID
+		healthChecks[0]["type"] = loadBalancer.HealthCheck.Type
+		if loadBalancer.HealthCheck.URL != "" {
+			healthChecks[0]["url"] = loadBalancer.HealthCheck.URL
 		}
-		item["interval"] = hc.Interval
-		item["timeout"] = hc.Timeout
-		item["unhealthy_threshold"] = hc.UnhealthyThreshold
-		item["healthy_threshold"] = hc.HealthyThreshold
-		item["port"] = hc.Port
-
-		healthChecks[i] = item
-
+		healthChecks[0]["interval"] = loadBalancer.HealthCheck.Interval
+		healthChecks[0]["timeout"] = loadBalancer.HealthCheck.Timeout
+		healthChecks[0]["unhealthy_threshold"] = loadBalancer.HealthCheck.UnhealthyThreshold
+		healthChecks[0]["healthy_threshold"] = loadBalancer.HealthCheck.HealthyThreshold
+		healthChecks[0]["port"] = loadBalancer.HealthCheck.Port
+		d.Set("health_check", healthChecks)
 	}
-	d.Set("health_check", healthChecks)
 
 	return nil
-
 }
 
 func resourceAHLoadBalancerUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
@@ -566,7 +561,7 @@ func addForwardingRule(ctx context.Context, d *schema.ResourceData, meta interfa
 		return newFR.ID, fr.State, nil
 	}
 
-	if err := waitForState(ctx, stateFunc, "updating", "active", d); err != nil {
+	if err := waitForState(ctx, stateFunc, []string{"updating"}, []string{"active"}, d); err != nil {
 		return err
 	}
 
@@ -590,7 +585,7 @@ func removeForwardingRule(ctx context.Context, d *schema.ResourceData, meta inte
 		return frID, fr.State, nil
 	}
 
-	if err := waitForState(ctx, stateFunc, "deleting", "deleted", d); err != nil {
+	if err := waitForState(ctx, stateFunc, []string{"deleting"}, []string{"deleted"}, d); err != nil {
 		return err
 	}
 
@@ -608,13 +603,13 @@ func updateForwardingRule(ctx context.Context, d *schema.ResourceData, meta inte
 	return nil
 }
 
-func waitForState(ctx context.Context, stateFunc resource.StateRefreshFunc, pendingState, expectedState string, d *schema.ResourceData) error {
+func waitForState(ctx context.Context, stateFunc resource.StateRefreshFunc, pendingStatuses, targetStatuses []string, d *schema.ResourceData) error {
 
 	stateChangeConf := resource.StateChangeConf{
 		Delay:      5 * time.Second,
-		Pending:    []string{pendingState},
+		Pending:    pendingStatuses,
 		Refresh:    stateFunc,
-		Target:     []string{expectedState},
+		Target:     targetStatuses,
 		Timeout:    d.Timeout(schema.TimeoutUpdate),
 		MinTimeout: 2 * time.Second,
 	}
@@ -622,7 +617,7 @@ func waitForState(ctx context.Context, stateFunc resource.StateRefreshFunc, pend
 
 	if err != nil {
 		return fmt.Errorf(
-			"error waiting for state: %s", err)
+			"error waiting for LB state: %s", err)
 	}
 
 	return nil
@@ -679,7 +674,7 @@ func addPrivateNetwork(ctx context.Context, d *schema.ResourceData, meta interfa
 		return pnID, pn.State, nil
 	}
 
-	if err := waitForState(ctx, stateFunc, "updating", "active", d); err != nil {
+	if err := waitForState(ctx, stateFunc, []string{"updating"}, []string{"active"}, d); err != nil {
 		return err
 	}
 
@@ -703,7 +698,7 @@ func removePrivateNetwork(ctx context.Context, d *schema.ResourceData, meta inte
 		return pnID, fr.State, nil
 	}
 
-	if err := waitForState(ctx, stateFunc, "deleting", "deleted", d); err != nil {
+	if err := waitForState(ctx, stateFunc, []string{"deleting"}, []string{"deleted"}, d); err != nil {
 		return err
 	}
 
@@ -763,7 +758,7 @@ func addBackendNode(ctx context.Context, d *schema.ResourceData, meta interface{
 		return bnID, bn.State, nil
 	}
 
-	if err := waitForState(ctx, stateFunc, "updating", "active", d); err != nil {
+	if err := waitForState(ctx, stateFunc, []string{"updating"}, []string{"active"}, d); err != nil {
 		return err
 	}
 
@@ -787,7 +782,7 @@ func removeBackendNode(ctx context.Context, d *schema.ResourceData, meta interfa
 		return bnID, fr.State, nil
 	}
 
-	if err := waitForState(ctx, stateFunc, "deleting", "deleted", d); err != nil {
+	if err := waitForState(ctx, stateFunc, []string{"deleting"}, []string{"deleted"}, d); err != nil {
 		return err
 	}
 
@@ -866,7 +861,7 @@ func addHealthCheck(ctx context.Context, d *schema.ResourceData, meta interface{
 		return newHC.ID, fr.State, nil
 	}
 
-	if err := waitForState(ctx, stateFunc, "creating", "active", d); err != nil {
+	if err := waitForState(ctx, stateFunc, []string{"creating", "defined"}, []string{"active"}, d); err != nil {
 		return err
 	}
 
@@ -890,7 +885,7 @@ func removeHealthCheck(ctx context.Context, d *schema.ResourceData, meta interfa
 		return hcID, hc.State, nil
 	}
 
-	if err := waitForState(ctx, stateFunc, "deleting", "deleted", d); err != nil {
+	if err := waitForState(ctx, stateFunc, []string{"deleting"}, []string{"deleted"}, d); err != nil {
 		return err
 	}
 
@@ -933,7 +928,7 @@ func updateHealthCheck(ctx context.Context, d *schema.ResourceData, meta interfa
 		return hcID, fr.State, nil
 	}
 
-	if err := waitForState(ctx, stateFunc, "updating", "active", d); err != nil {
+	if err := waitForState(ctx, stateFunc, []string{"updating"}, []string{"active"}, d); err != nil {
 		return err
 	}
 
