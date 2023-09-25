@@ -3,7 +3,7 @@ module github.com/advancedhosting/terraform-provider-ah
 go 1.19
 
 require (
-	github.com/advancedhosting/advancedhosting-api-go v0.10.6
+	github.com/advancedhosting/advancedhosting-api-go v0.10.12
 	github.com/google/uuid v1.3.0
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.28.0
 	golang.org/x/crypto v0.12.0
