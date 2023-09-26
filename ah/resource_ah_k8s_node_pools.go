@@ -5,7 +5,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
-var NodePoolSchema = map[string]*schema.Schema{
+var WorkerPoolSchema = map[string]*schema.Schema{
 	"id": {
 		Type:     schema.TypeString,
 		Computed: true,

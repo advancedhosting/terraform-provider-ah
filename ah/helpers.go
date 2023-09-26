@@ -24,8 +24,8 @@ const (
 	ClusterID      = ""
 	NodeID         = "2486b2f8-f7a6-4207-979b-9b94d93c174e"
 	K8SVersion     = "v1.19.0"
-	NodePoolName   = "KNP100243"
-	NodePoolType   = "public"
+	WorkerPoolType = "public"
+	LBType         = "http"
 )
 
 // IsUUID checks if string is in valid UUID format.

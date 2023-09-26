@@ -70,7 +70,7 @@ func resourceAHK8sCluster() *schema.Resource {
 				MinItems: 1,
 				MaxItems: 1,
 				Elem: &schema.Resource{
-					Schema: NodePoolSchema,
+					Schema: WorkerPoolSchema,
 				},
 			},
 		},
@@ -81,7 +81,7 @@ func resourceAHK8sClusterCreate(ctx context.Context, d *schema.ResourceData, met
 	client := meta.(*ah.APIClient)
 
 	var datacenterID string
-	var nodePools []ah.CreateKubernetesNodePoolRequest
+	var nodePools []ah.CreateKubernetesWorkerPoolRequest
 
 	datacenterAttr := d.Get("datacenter").(string)
 
@@ -101,7 +101,7 @@ func resourceAHK8sClusterCreate(ctx context.Context, d *schema.ResourceData, met
 	}
 
 	for _, nodePool := range d.Get("node_pools").([]interface{}) {
-		nodePoolRequest, err := expandCreateNodePoolRequest(nodePool)
+		nodePoolRequest, err := expandCreateWorkerPoolRequest(nodePool)
 		if err != nil {
 			return diag.FromErr(err)
 		}
@@ -112,7 +112,7 @@ func resourceAHK8sClusterCreate(ctx context.Context, d *schema.ResourceData, met
 		Name:         d.Get("name").(string),
 		DatacenterID: datacenterID,
 		K8sVersion:   k8sVersion,
-		NodePools:    nodePools,
+		WorkerPools:  nodePools,
 	}
 
 	cluster, err := client.KubernetesClusters.Create(ctx, request)
@@ -154,7 +154,7 @@ func resourceAHK8sClusterRead(ctx context.Context, d *schema.ResourceData, meta 
 	d.Set("account_id", cluster.AccountID)
 	d.Set("k8s_version", cluster.K8sVersion)
 
-	if err = dataSourceAHNodePoolSchema(d, cluster.NodePools); err != nil {
+	if err = dataSourceAHWorkerPoolSchema(d, cluster.WorkerPools); err != nil {
 		return diag.FromErr(err)
 	}
 
@@ -261,11 +261,11 @@ func waitForK8sClusterDestroy(ctx context.Context, d *schema.ResourceData, meta 
 	return nil
 }
 
-func expandCreateNodePoolRequest(np interface{}) (*ah.CreateKubernetesNodePoolRequest, error) {
+func expandCreateWorkerPoolRequest(np interface{}) (*ah.CreateKubernetesWorkerPoolRequest, error) {
 	labels := ah.Labels{}
 	nodePool := np.(map[string]interface{})
 
-	nodePoolRequest := &ah.CreateKubernetesNodePoolRequest{Type: nodePool["type"].(string)}
+	nodePoolRequest := &ah.CreateKubernetesWorkerPoolRequest{Type: nodePool["type"].(string)}
 
 	if l, ok := nodePool["labels"].(map[string]interface{}); ok {
 		for k, v := range l {
@@ -303,8 +303,8 @@ func expandCreateNodePoolRequest(np interface{}) (*ah.CreateKubernetesNodePoolRe
 	return nodePoolRequest, nil
 }
 
-func dataSourceAHNodePoolSchema(d *schema.ResourceData, nodePools []ah.KubernetesNodePool) error {
-	allNodePools := make([]map[string]interface{}, len(nodePools))
+func dataSourceAHWorkerPoolSchema(d *schema.ResourceData, nodePools []ah.KubernetesWorkerPool) error {
+	allWorkerPools := make([]map[string]interface{}, len(nodePools))
 	var ids string
 	for i, nodePool := range nodePools {
 		nodePoolInfo := map[string]interface{}{
@@ -333,11 +333,11 @@ func dataSourceAHNodePoolSchema(d *schema.ResourceData, nodePools []ah.Kubernete
 			}
 		}
 
-		allNodePools[i] = nodePoolInfo
+		allWorkerPools[i] = nodePoolInfo
 		ids += nodePool.ID
 	}
-	if err := d.Set("node_pools", allNodePools); err != nil {
-		return fmt.Errorf("unable to set Node Pools attribute: %s", err)
+	if err := d.Set("node_pools", allWorkerPools); err != nil {
+		return fmt.Errorf("unable to set Worker Pools attribute: %s", err)
 	}
 	d.SetId(generateHash(ids))
 

@@ -40,7 +40,7 @@ func TestAccAHK8sCluster_Basic(t *testing.T) {
 
 					resource.TestCheckResourceAttrSet(resourceName, "node_pools.0.id"),
 					resource.TestCheckResourceAttrSet(resourceName, "node_pools.0.name"),
-					resource.TestCheckResourceAttr(resourceName, "node_pools.0.type", NodePoolType),
+					resource.TestCheckResourceAttr(resourceName, "node_pools.0.type", WorkerPoolType),
 					resource.TestCheckResourceAttr(resourceName, "node_pools.0.nodes_count", "1"),
 					resource.TestCheckResourceAttrSet(resourceName, "node_pools.0.labels.%"),
 					resource.TestCheckResourceAttr(resourceName, "node_pools.0.public_properties.plan_id", K8sPlanID),
@@ -134,7 +134,7 @@ resource "ah_k8s_cluster" "ah_test_cluster" {
 			}
 		}
 	}
-    `, name, DatacenterName, K8SVersion, NodePoolType, K8sPlanID)
+    `, name, DatacenterName, K8SVersion, WorkerPoolType, K8sPlanID)
 }
 
 func testAccCheckAHK8sClusterConfigUpdateName(name string) string {
@@ -155,5 +155,5 @@ resource "ah_k8s_cluster" "ah_test_cluster" {
 			}
 		}
 	}
-    `, name, DatacenterName, K8SVersion, NodePoolType, K8sPlanID)
+    `, name, DatacenterName, K8SVersion, WorkerPoolType, K8sPlanID)
 }
