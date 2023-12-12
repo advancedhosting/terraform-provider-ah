@@ -23,7 +23,7 @@ const (
 	VolumePlanName = "hdd2-ash1"
 	ClusterID      = ""
 	NodeID         = "2486b2f8-f7a6-4207-979b-9b94d93c174e"
-	K8SVersion     = "v1.19.0"
+	K8SVersion     = "v1.27.1"
 	WorkerPoolType = "public"
 	LBType         = "http"
 )
