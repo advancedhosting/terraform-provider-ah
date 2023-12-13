@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	K8sPlanID    = "381347758"
+	K8sPlanID    = "391445273"
 	resourceName = "ah_k8s_cluster.ah_test_cluster"
 )
 
