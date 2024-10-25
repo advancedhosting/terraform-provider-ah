@@ -104,26 +104,13 @@ func resourceAHCloudServerSnapshotRead(d *schema.ResourceData, meta interface{})
 
 func snapshotInfo(d *schema.ResourceData, meta interface{}) (*ah.Backup, string, error) {
 	client := meta.(*ah.APIClient)
-	options := &ah.ListOptions{
-		Filters: []ah.FilterInterface{
-			&ah.EqFilter{
-				Keys:  []string{"id"},
-				Value: d.Id(),
-			},
-		},
-	}
-	instanceBackups, err := client.Backups.List(context.Background(), options)
+	backup, err := client.Backups.Get(context.Background(), d.Id())
+
 	if err != nil {
 		return nil, "", err
 	}
 
-	if len(instanceBackups) != 1 {
-		return nil, "", ah.ErrResourceNotFound
-	}
-
-	instanceBackup := instanceBackups[0]
-	return &instanceBackup.Backups[0], instanceBackup.InstanceName, nil
-
+	return backup, backup.InstanceName, nil
 }
 
 func resourceAHCloudServerSnapshotUpdate(d *schema.ResourceData, meta interface{}) error {
