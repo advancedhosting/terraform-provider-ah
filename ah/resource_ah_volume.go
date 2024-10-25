@@ -221,12 +221,12 @@ func waitForVolumeState(volumeID string, pending, target []string, d *schema.Res
 	}
 
 	stateChangeConf := resource.StateChangeConf{
-		Delay:      2 * time.Second,
+		Delay:      5 * time.Second,
 		Pending:    pending,
 		Refresh:    stateRefreshFunc,
 		Target:     target,
 		Timeout:    d.Timeout(schema.TimeoutUpdate),
-		MinTimeout: 2 * time.Second,
+		MinTimeout: 5 * time.Second,
 	}
 	_, err := stateChangeConf.WaitForState()
 
@@ -257,11 +257,11 @@ func waitForVolumeDestroy(d *schema.ResourceData, meta interface{}) error {
 
 	stateChangeConf := resource.StateChangeConf{
 		Delay:      5 * time.Second,
-		Pending:    []string{"deleting", "detaching"},
+		Pending:    []string{"resizing", "detaching"},
 		Refresh:    stateRefreshFunc,
-		Target:     []string{"deleted"},
+		Target:     []string{"deleted", "deleting"},
 		Timeout:    d.Timeout(schema.TimeoutUpdate),
-		MinTimeout: 2 * time.Second,
+		MinTimeout: 5 * time.Second,
 	}
 	_, err := stateChangeConf.WaitForState()
 

@@ -395,6 +395,7 @@ func testAccCheckAHLoadBalancerConfig_Basic(name string) string {
 	   name = "%[1]s"
 	   datacenter = "%s"
 	   balancing_algorithm = "round_robin"
+	   instance_count = 1
        private_network {
          id = ah_private_network.test.id
        }
@@ -429,6 +430,7 @@ func testAccCheckAHLoadBalancerConfig_Empty(name string) string {
 	   name = "%s"
 	   datacenter = "%s"
 	   balancing_algorithm = "round_robin"
+	   instance_count = 1
        create_public_ip_address = false
 	 }`, name, DatacenterName)
 }
@@ -439,6 +441,7 @@ func testAccCheckAHLoadBalancerConfig_LeastRequests(name string) string {
 	   name = "%s"
 	   datacenter = "%s"
 	   balancing_algorithm = "least_requests"
+	   instance_count = 1
        create_public_ip_address = false
 	 }`, name, DatacenterName)
 }
@@ -449,6 +452,7 @@ func testAccCheckAHLoadBalancerConfig_WithFR(name string) string {
 	   name = "%s"
 	   datacenter = "%s"
 	   balancing_algorithm = "round_robin"
+	   instance_count = 1
        create_public_ip_address = false
        forwarding_rule {
          request_protocol = "tcp"
@@ -471,6 +475,7 @@ func testAccCheckAHLoadBalancerConfig_UpdateFR(name string) string {
 	   name = "%s"
 	   datacenter = "%s"
 	   balancing_algorithm = "round_robin"
+	   instance_count = 1
        create_public_ip_address = false
        forwarding_rule {
          request_protocol = "tcp"
@@ -498,6 +503,7 @@ func testAccCheckAHLoadBalancerConfig_WithPN(name string) string {
 	   name = "%s"
 	   datacenter = "%s"
 	   balancing_algorithm = "round_robin"
+	   instance_count = 1
        create_public_ip_address = false
        private_network {
          id = ah_private_network.test.id
@@ -533,6 +539,7 @@ func testAccCheckAHLoadBalancerConfig_WithBackendNode(name string) string {
 	   name = "%[1]s"
 	   datacenter = "%s"
 	   balancing_algorithm = "round_robin"
+	   instance_count = 1
        create_public_ip_address = false
        private_network {
          id = ah_private_network.test.id
@@ -572,6 +579,7 @@ func testAccCheckAHLoadBalancerConfig_WithoutBackendNode(name string) string {
 	   name = "%[1]s"
 	   datacenter = "%s"
 	   balancing_algorithm = "round_robin"
+	   instance_count = 1
        create_public_ip_address = false
        private_network {
          id = ah_private_network.test.id
@@ -608,6 +616,7 @@ func testAccCheckAHLoadBalancerConfig_ChangeBackendNode(name string) string {
 	   name = "%[1]s"
 	   datacenter = "%s"
 	   balancing_algorithm = "round_robin"
+	   instance_count = 1
        create_public_ip_address = false
        private_network {
          id = ah_private_network.test.id
@@ -625,6 +634,7 @@ func testAccCheckAHLoadBalancerConfig_WithHealthCheck(name string) string {
 	   name = "%s"
 	   datacenter = "%s"
 	   balancing_algorithm = "round_robin"
+	   instance_count = 1
        create_public_ip_address = false
        health_check {
          type = "tcp"
@@ -639,6 +649,7 @@ func testAccCheckAHLoadBalancerConfig_UpdateHealthCheck(name string) string {
 	   name = "%s"
 	   datacenter = "%s"
 	   balancing_algorithm = "round_robin"
+	   instance_count = 1
        create_public_ip_address = false
        health_check {
          type = "tcp"

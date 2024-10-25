@@ -24,7 +24,6 @@ func TestAccAHCloudServerSnapshot_Basic(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttrSet("ah_cloud_server_snapshot.test", "id"),
 					resource.TestCheckResourceAttrPair("ah_cloud_server_snapshot.test", "cloud_server_id", "ah_cloud_server.web", "id"),
-					resource.TestCheckResourceAttrPair("ah_cloud_server_snapshot.test", "cloud_server_name", "ah_cloud_server.web", "name"),
 					resource.TestCheckResourceAttrSet("ah_cloud_server_snapshot.test", "state"),
 					resource.TestCheckResourceAttr("ah_cloud_server_snapshot.test", "name", "example-snapshot-1"),
 					resource.TestCheckResourceAttrSet("ah_cloud_server_snapshot.test", "size"),

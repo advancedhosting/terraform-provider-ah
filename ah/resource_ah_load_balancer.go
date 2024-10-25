@@ -50,6 +50,11 @@ func resourceAHLoadBalancer() *schema.Resource {
 				Optional:     true,
 				ValidateFunc: validation.NoZeroValues,
 			},
+			"instance_count": {
+				Type:         schema.TypeInt,
+				Required:     true,
+				ValidateFunc: validation.NoZeroValues,
+			},
 			"ip_address": {
 				Type:     schema.TypeSet,
 				Optional: true,
@@ -192,6 +197,7 @@ func resourceAHLoadBalancerCreate(ctx context.Context, d *schema.ResourceData, m
 	request := &ah.LoadBalancerCreateRequest{
 		Name:                  d.Get("name").(string),
 		CreatePublicIPAddress: d.Get("create_public_ip_address").(bool),
+		InstanceCount:         d.Get("instance_count").(int),
 	}
 
 	datacenterAttr := d.Get("datacenter").(string)
@@ -377,6 +383,19 @@ func resourceAHLoadBalancerUpdate(ctx context.Context, d *schema.ResourceData, m
 		err := updateForwardingRules(ctx, d, meta)
 		if err != nil {
 			return diag.FromErr(err)
+		}
+	}
+
+	if d.HasChange("instance_count") {
+		request := &ah.LoadBalancerUpdateRequest{
+			InstanceCount: d.Get("instance_count").(int),
+		}
+
+		err := client.LoadBalancers.Update(ctx, d.Id(), request)
+
+		if err != nil {
+			return diag.Errorf(
+				"Error updating load balancer (%s): %s", d.Id(), err)
 		}
 	}
 

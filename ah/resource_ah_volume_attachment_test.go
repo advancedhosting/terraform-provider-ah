@@ -17,7 +17,7 @@ func TestAccAHVolumeAttachment_Basic(t *testing.T) {
 		CheckDestroy:      testAccCheckAHVolumeAttachmentDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAHVolumeAttachmentConfigBasic(20),
+				Config: datasourceConfigBasic() + testAccCheckAHVolumeAttachmentConfigBasic(20),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttrSet("ah_volume_attachment.test", "id"),
 					resource.TestCheckResourceAttrPair("ah_volume_attachment.test", "cloud_server_id", "ah_cloud_server.web", "id"),
@@ -63,13 +63,13 @@ func TestAccAHVolumeAttachment_ChangeCloudServer(t *testing.T) {
 		CheckDestroy:      testAccCheckAHVolumeAttachmentDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAHVolumeAttachmentConfigBasic(20),
+				Config: datasourceConfigBasic() + testAccCheckAHVolumeAttachmentConfigBasic(20),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckAHVolumeAttachmentExists("ah_volume_attachment.test", &beforeID),
 				),
 			},
 			{
-				Config: testAccCheckAHVolumeAttachmentConfigChangeCloudServer(20),
+				Config: datasourceConfigBasic() + testAccCheckAHVolumeAttachmentConfigChangeCloudServer(20),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckAHVolumeAttachmentExists("ah_volume_attachment.test", &afterID),
 					testAccCheckAHVolumeAttachmentRecreated(t, &beforeID, &afterID),
@@ -88,13 +88,13 @@ func TestAccAHVolumeAttachment_ChangeVolume(t *testing.T) {
 		CheckDestroy:      testAccCheckAHVolumeAttachmentDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAHVolumeAttachmentConfigBasic(20),
+				Config: datasourceConfigBasic() + testAccCheckAHVolumeAttachmentConfigBasic(20),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckAHVolumeAttachmentExists("ah_volume_attachment.test", &beforeID),
 				),
 			},
 			{
-				Config: testAccCheckAHVolumeAttachmentConfigChangeVolume(20),
+				Config: datasourceConfigBasic() + testAccCheckAHVolumeAttachmentConfigChangeVolume(20),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckAHVolumeAttachmentExists("ah_volume_attachment.test", &afterID),
 					testAccCheckAHVolumeAttachmentRecreated(t, &beforeID, &afterID),
@@ -209,7 +209,7 @@ func testAccCheckAHVolumeAttachmentConfigChangeVolume(volumeSize int) string {
 	resource "ah_volume" "test" {
 		count = 2
 		name = "Volume Name"
-		product = "03bebb65-22d8-43c6-819b-5b85b5e49c82"
+		product = "%s"
 		file_system = "ext4"
 		size = "%d"
 	}
@@ -217,12 +217,12 @@ func testAccCheckAHVolumeAttachmentConfigChangeVolume(volumeSize int) string {
 	resource "ah_cloud_server" "web" {
 	  name = "test"
 	  datacenter = "c54e8896-53d8-479a-8ff1-4d7d9d856a50"
-	  image = "f0438a4b-7c4a-4a63-a593-8e619ec63d16"
-	  product = "1a4cdeb2-6ca4-4745-819e-ac2ea99dc0cc"
+	  image = "b63d5134-4a1b-4329-ab23-e6597daa53a5"
+	  product = "%s"
 	}
 	
 	resource "ah_volume_attachment" "test" {
 	  cloud_server_id = ah_cloud_server.web.id
 	  volume_id = ah_volume.test.1.id
-	}`, volumeSize)
+	}`, VolumePlanID, volumeSize, VpsPlanID)
 }
