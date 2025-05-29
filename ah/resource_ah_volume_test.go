@@ -189,7 +189,7 @@ func testAccCheckAHVolumeDestroy(s *terraform.State) error {
 
 		_, err := client.Volumes.Get(context.Background(), rs.Primary.ID)
 
-		if err != ah.ErrResourceNotFound {
+		if err != nil && err != ah.ErrResourceNotFound {
 			return fmt.Errorf("Error removing volume (%s): %s", rs.Primary.ID, err)
 		}
 	}

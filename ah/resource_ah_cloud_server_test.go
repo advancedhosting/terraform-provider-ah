@@ -247,7 +247,7 @@ func TestAccAHCloudServer_UpgradeWithSlug(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("ah_cloud_server.web", "name", name),
 					testAccCheckAHCloudServerExists("ah_cloud_server.web", &beforeID),
-					resource.TestCheckResourceAttr("ah_cloud_server.web", "plan", "start-xs"),
+					resource.TestCheckResourceAttr("ah_cloud_server.web", "plan", VpsPlanName),
 				),
 			},
 			{
@@ -281,7 +281,7 @@ func TestAccAHCloudServer_UpdateImage(t *testing.T) {
 			{
 				Config: datasourceConfigBasic() + testAccCheckAHCloudServerConfigUpdateImageID(name),
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("ah_cloud_server.web", "image", "8ed8bea7-69f0-40de-ab07-6a6b5a13581d"),
+					resource.TestCheckResourceAttr("ah_cloud_server.web", "image", "98ed9d84-5efc-4de0-8ed1-67367b27d5b6"),
 					testAccCheckAHCloudServerExists("ah_cloud_server.web", &afterID),
 					testAccCheckAHResourceRecreated(t, &beforeID, &afterID),
 				),
@@ -421,7 +421,7 @@ func testAccCheckAHCloudServerConfigUpdateImageID(name string) string {
 	 resource "ah_cloud_server" "web" {
 	   name = "%s"
 	   datacenter = "%s"
-	   image = "8ed8bea7-69f0-40de-ab07-6a6b5a13581d"
+	   image = "98ed9d84-5efc-4de0-8ed1-67367b27d5b6"
 	   plan = "%s"
 	 }`, name, DatacenterID, VpsPlanName)
 }

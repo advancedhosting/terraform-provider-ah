@@ -88,11 +88,10 @@ func dataSourceAHCloudServerPlansSchema(d *schema.ResourceData, cloudServerPlans
 			"slug":               cloudServerPlan.CustomAttributes.Slug,
 			"currency":           cloudServerPlan.Currency,
 			"available_on_trial": cloudServerPlan.CustomAttributes.AvailableOnTrial,
+			"vcpu":               cloudServerPlan.CustomAttributes.Vcpu,
+			"ram":                cloudServerPlan.CustomAttributes.RAM,
+			"disk":               cloudServerPlan.CustomAttributes.Disk,
 		}
-
-		cloudServerPlanInfo["vcpu"], _ = strconv.Atoi(cloudServerPlan.CustomAttributes.Vcpu)
-		cloudServerPlanInfo["ram"], _ = strconv.Atoi(cloudServerPlan.CustomAttributes.RAM)
-		cloudServerPlanInfo["disk"], _ = strconv.Atoi(cloudServerPlan.CustomAttributes.Disk)
 
 		for _, price := range cloudServerPlan.Prices {
 			if price.Type == "monthly,vps" {
