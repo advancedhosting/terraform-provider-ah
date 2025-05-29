@@ -146,14 +146,16 @@ func dataSourceAHCloudServerSnapshotsAndBackupsRead(d *schema.ResourceData, meta
 func dataSourceAHCloudServerSnapshotsAndBackupsSchema(d *schema.ResourceData, meta interface{}, instancesBackups []ah.InstanceBackups) error {
 	var allBackups []map[string]interface{}
 	var ids string
+
 	for _, instanceBackup := range instancesBackups {
+		instanceRemoved := instanceBackup.InstanceRemoved
+
 		for _, backup := range instanceBackup.Backups {
 			backupInfo := map[string]interface{}{
 				"id":                   backup.ID,
 				"name":                 backup.Note,
 				"cloud_server_id":      backup.InstanceID,
-				"cloud_server_name":    instanceBackup.InstanceName,
-				"cloud_server_deleted": instanceBackup.InstanceRemoved,
+				"cloud_server_deleted": instanceRemoved,
 				"state":                backup.Status,
 				"size":                 backup.Size,
 				"type":                 backup.Type,
@@ -163,10 +165,11 @@ func dataSourceAHCloudServerSnapshotsAndBackupsSchema(d *schema.ResourceData, me
 			ids += backup.ID
 		}
 	}
+
 	if err := d.Set("snapshots_and_backups", allBackups); err != nil {
 		return fmt.Errorf("unable to set snapshots_and_backups attribute: %s", err)
 	}
-	d.SetId(generateHash(ids))
 
+	d.SetId(generateHash(ids))
 	return nil
 }

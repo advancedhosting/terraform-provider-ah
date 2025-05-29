@@ -15,17 +15,16 @@ const (
 	ImageName      = "centos-7-x64"
 	DatacenterID   = "c54e8896-53d8-479a-8ff1-4d7d9d856a50"
 	DatacenterName = "ams1"
-	VpsPlanID      = "381347529"
-	VpsPlanName    = "start-xs"
-	VpsUpgPlanName = "start-m"
-	VpsUpgPlanID   = "381347841"
+	VpsPlanID      = "391445271"
+	VpsPlanName    = "dg-1-4"
+	VpsUpgPlanName = "dg-2-8"
+	VpsUpgPlanID   = "391445277"
 	VolumePlanID   = "381347560"
 	VolumePlanName = "hdd2-ash1"
 	ClusterID      = ""
 	NodeID         = "2486b2f8-f7a6-4207-979b-9b94d93c174e"
 	K8SVersion     = "v1.27.1"
 	WorkerPoolType = "public"
-	LBType         = "http"
 )
 
 // IsUUID checks if string is in valid UUID format.

@@ -54,7 +54,6 @@ func TestAccDataSourceAHCloudServerSnapshotsAndBackups_Basic(t *testing.T) {
 					resource.TestCheckResourceAttrPair("data.ah_cloud_server_snapshot_and_backups.test", "snapshots_and_backups.0.id", "ah_cloud_server_snapshot.test", "id"),
 					resource.TestCheckResourceAttrPair("data.ah_cloud_server_snapshot_and_backups.test", "snapshots_and_backups.0.name", "ah_cloud_server_snapshot.test", "name"),
 					resource.TestCheckResourceAttrPair("data.ah_cloud_server_snapshot_and_backups.test", "snapshots_and_backups.0.cloud_server_id", "ah_cloud_server_snapshot.test", "cloud_server_id"),
-					resource.TestCheckResourceAttrPair("data.ah_cloud_server_snapshot_and_backups.test", "snapshots_and_backups.0.cloud_server_name", "ah_cloud_server_snapshot.test", "cloud_server_name"),
 					resource.TestCheckResourceAttrPair("data.ah_cloud_server_snapshot_and_backups.test", "snapshots_and_backups.0.state", "ah_cloud_server_snapshot.test", "state"),
 					resource.TestCheckResourceAttrPair("data.ah_cloud_server_snapshot_and_backups.test", "snapshots_and_backups.0.size", "ah_cloud_server_snapshot.test", "size"),
 					resource.TestCheckResourceAttrPair("data.ah_cloud_server_snapshot_and_backups.test", "snapshots_and_backups.0.type", "ah_cloud_server_snapshot.test", "type"),
